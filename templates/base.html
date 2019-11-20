@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>P-Seminar PROJECT JUMBO - Startseite</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+	<script src="{{ url_for('static', filename='js/base.js') }}" defer></script>
+	<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Heebo:800|Roboto&display=swap" rel="stylesheet">
+    {% block head %}  {% endblock %}
+</head>
+<body>
+    <div id="wrapper">
+        <nav id="main-nav">
+            <div id="menu-container">
+                <button onclick="toggleMenu();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="white"/></svg>
+                </button>
+                <p>Startseite</p>
+            </div>
+            <ul>
+                <li><a href="#">Startseite</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Kontakt</a></li>
+                <li><a href="#">Impressum</a></li>
+                <li><a href="#">Datenschutz</a></li>
+            </ul>
+        </nav>
+        <div class="spacer" style="width: 100vw; height: 56px;" />
+    </div>
+    {% block content %}  {% endblock %}
+</body>
+</html>
