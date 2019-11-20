@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block head%}
+    <!-- put additional css/js-links for console here -->
+    <title>P-Seminar PROJECT JUMBO - Console</title>
+{% endblock %}
+
+{% block content %} 
+    <!-- put content for console here -->
+    <p>console</p>
+
+    <!-- TODO: add login -->
+
+    <p>Create new Blog Post:</p>
+
+    <form action="/console" method="POST">
+        <input type="text" name="caption">
+        <input type="text" name="body">
+        <input type="submit" value="Post Blog">
+    </form>
+
+    <p>Remove existing Blog Post</p>
+    <form action="/console" method="REMOVE">
+        <input type="text" name="id">
+        <input type="submit" value="Remove Blog">
+    </form>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Time-created</th>
+            <th>Caption</th>
+            <th>Body</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <th>{{ task.id }}</th>
+                <th>{{ task.time_created.__format__("%d.%m.%Y %H:%M") }}</th>
+                <th>{{ task.caption }}</th>
+                <th>{{ task.body }}</th>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
