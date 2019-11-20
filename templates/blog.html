@@ -5,7 +5,32 @@
     <title>P-Seminar PROJECT JUMBO - Blog</title>
 {% endblock %}
 
+{% block menu_name %}
+    Blog
+{% endblock %}
+
 {% block content %} 
     <!-- put content for blogpage here -->
     <p>blog</p>
+
+    {% if tasks|length < 1 %}
+        <p>There are no Blogposts available!</p>
+    {% else %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Time-created</th>
+                <th>Caption</th>
+                <th>Body</th>
+            </tr>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.id }}</td>
+                    <td>{{ task.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
+                    <td>{{ task.caption }}</td>
+                    <td>{{ task.body }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 {% endblock %}

@@ -5,9 +5,12 @@
     <title>P-Seminar PROJECT JUMBO - Console</title>
 {% endblock %}
 
+{% block menu_name %}
+    Console
+{% endblock %}
+
 {% block content %} 
     <!-- put content for console here -->
-    <p>console</p>
 
     <!-- TODO: add login -->
 
@@ -19,26 +22,29 @@
         <input type="submit" value="Post Blog">
     </form>
 
-    <p>Remove existing Blog Post</p>
-    <form action="/console" method="REMOVE">
-        <input type="text" name="id">
-        <input type="submit" value="Remove Blog">
-    </form>
-
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Time-created</th>
-            <th>Caption</th>
-            <th>Body</th>
-        </tr>
-        {% for task in tasks %}
+    {% if tasks|length < 1 %}
+        <p>There are no Blogposts available!</p>
+    {% else %}
+        <table>
             <tr>
-                <th>{{ task.id }}</th>
-                <th>{{ task.time_created.__format__("%d.%m.%Y %H:%M") }}</th>
-                <th>{{ task.caption }}</th>
-                <th>{{ task.body }}</th>
+                <th>ID</th>
+                <th>Time-created</th>
+                <th>Caption</th>
+                <th>Body</th>
             </tr>
-        {% endfor %}
-    </table>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.id }}</td>
+                    <td>{{ task.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
+                    <td>{{ task.caption }}</td>
+                    <td>{{ task.body }}</td>
+                    <td>
+                        <a href="/delete/{{ task.id }}">Delete</a>
+                        <br>
+                        <a href="/edit/{{ task.id }}">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 {% endblock %}

@@ -21,7 +21,8 @@ def index():
 
 @app.route("/blog")
 def blog():
-    return render_template("blog.html")
+    tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
+    return render_template("blog.html", tasks=tasks)
 
 @app.route("/console", methods=['POST', 'GET'])
 def console():
@@ -43,17 +44,47 @@ def console():
 
             return 'There was an issue adding the post!'
 
-        return redirect('/console')
     else:
         tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
         return render_template("console.html", tasks=tasks)
 
 @app.route("/delete/<int:id>")
 def delete(id):
+
+    # TODO: Add login, so only andims can delete posts
+
     to_delete = Blog_Post.query.get_or_404(id)
 
     try: 
         db.session.delete(to_delete)
+        db.session.commit()
+        return redirect("/console")
+    except: 
+
+        # TODO: Add detailed error message
+
+        return 'There was an issue removing the post!'
+
+@app.route("/edit/<int:id>", methods=['POST', 'GET'])
+def edit(id):
+    
+    # TODO: Add login, so only andims can edit posts
+
+    task = Blog_Post.query.get_or_404(id)
+
+    if request.method == 'POST':
+        task.caption = request.form['caption']
+        task.body = request.form['body']
+        try: 
+            db.session.commit()
+            return redirect("/console")
+        except: 
+
+            # TODO: Add detailed error message
+
+            return 'There was an issue editing the post!'
+    else:
+        return render_template("edit.html", task=task)
 
 if __name__ == "__main__":
     app.run()
