@@ -37,12 +37,14 @@ def console():
         try: 
             db.session.add(new_post)
             db.session.commit()
-            return redirect("/console")
+            
         except: 
 
             # TODO: Add detailed error message
 
-            return 'There was an issue adding the post!'
+            pass
+        finally:
+            return redirect("/console")
 
     else:
         tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
@@ -58,12 +60,13 @@ def delete(id):
     try: 
         db.session.delete(to_delete)
         db.session.commit()
-        return redirect("/console")
     except: 
 
         # TODO: Add detailed error message
 
-        return 'There was an issue removing the post!'
+        pass
+    finally:
+        return redirect("/console")
 
 @app.route("/edit/<int:id>", methods=['POST', 'GET'])
 def edit(id):
@@ -77,12 +80,14 @@ def edit(id):
         task.body = request.form['body']
         try: 
             db.session.commit()
-            return redirect("/console")
+            
         except: 
-
+            
             # TODO: Add detailed error message
-
-            return 'There was an issue editing the post!'
+            
+            pass
+        finally:
+            return redirect("/console")
     else:
         return render_template("edit.html", task=task)
 
