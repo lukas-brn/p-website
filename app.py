@@ -18,12 +18,12 @@ class Blog_Post(db.Model):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", title="Startseite")
 
 @app.route("/blog")
 def blog():
     tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
-    return render_template("blog.html", tasks=tasks)
+    return render_template("blog.html", title="Blog", tasks=tasks)
 
 @app.route("/console", methods=['POST', 'GET'])
 def console():
@@ -41,10 +41,10 @@ def console():
             return redirect("/console")
             raise Exception("error accured")
         except Exception as e: 
-            return render_template("error.html", error=e)      
+            return render_template("error.html", title="Error", error=e)      
     else:
         tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
-        return render_template("console.html", tasks=tasks)
+        return render_template("console.html", title="Console", tasks=tasks)
 
 @app.route("/delete/<int:id>")
 def delete(id):
@@ -74,13 +74,13 @@ def edit(id):
             db.session.commit()
             return redirect("/console")
         except Exception as e: 
-            return render_template("error.html", error=e)
+            return render_template("error.html", title="Error", error=e)
     else:
-        return render_template("edit.html", task=task)
+        return render_template("edit.html", title="Edit", task=task)
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html")
+    return render_template("404.html", title="404")
 
 
 if __name__ == "__main__":
