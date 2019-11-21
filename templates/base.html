@@ -20,12 +20,12 @@
                 <p>{% block menu_name %}  {% endblock %}</p>
             </div>
             <ul>
-                <li><a href="/">Startseite</a></li>
-                <li><a href="/blog">Blog</a></li>
+                <li><a href="{{ url_for('index') }}">Startseite</a></li>
+                <li><a href="{{ url_for('blog') }}">Blog</a></li>
                 <li><a href="#">Kontakt</a></li>
                 <li><a href="#">Impressum</a></li>
                 <li><a href="#">Datenschutz</a></li>
-                <li><a href="/console">Console</a></li>
+                <li><a href="{{ url_for('console') }}">Console</a></li>
             </ul>
         </nav>
         <div class="spacer" style="width: 100vw; height: 56px;" />

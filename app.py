@@ -1,3 +1,4 @@
+# standard imports
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 import datetime
@@ -37,15 +38,10 @@ def console():
         try: 
             db.session.add(new_post)
             db.session.commit()
-            
-        except: 
-
-            # TODO: Add detailed error message
-
-            pass
-        finally:
             return redirect("/console")
-
+            raise Exception("error accured")
+        except Exception as e: 
+            return render_template("error.html", error=e)      
     else:
         tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
         return render_template("console.html", tasks=tasks)
@@ -60,13 +56,9 @@ def delete(id):
     try: 
         db.session.delete(to_delete)
         db.session.commit()
-    except: 
-
-        # TODO: Add detailed error message
-
-        pass
-    finally:
         return redirect("/console")
+    except Exception as e: 
+            return e
 
 @app.route("/edit/<int:id>", methods=['POST', 'GET'])
 def edit(id):
@@ -80,16 +72,16 @@ def edit(id):
         task.body = request.form['body']
         try: 
             db.session.commit()
-            
-        except: 
-            
-            # TODO: Add detailed error message
-            
-            pass
-        finally:
             return redirect("/console")
+        except Exception as e: 
+            return render_template("error.html", error=e)
     else:
         return render_template("edit.html", task=task)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html")
+
 
 if __name__ == "__main__":
     app.run()
