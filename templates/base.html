@@ -26,7 +26,13 @@
                 <li><a href="#">Kontakt</a></li>
                 <li><a href="#">Impressum</a></li>
                 <li><a href="#">Datenschutz</a></li>
-                <li><a href="{{ url_for('console') }}">Console</a></li>
+                <li><a href="{{ url_for('admin') }}">Console</a></li>
+                {% if login_status == false %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                {% else %} 
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% endif %}
+
             </ul>
         </nav>
         <div class="spacer" style="width: 100vw; height: 56px;" />

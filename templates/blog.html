@@ -9,7 +9,7 @@
     <!-- put content for blogpage here -->
     <p>blog</p>
 
-    {% if tasks|length < 1 %}
+    {% if posts|length < 1 %}
         <p>There are no Blogposts available!</p>
     {% else %}
         <table>
@@ -19,12 +19,12 @@
                 <th>Caption</th>
                 <th>Body</th>
             </tr>
-            {% for task in tasks %}
+            {% for post in posts %}
                 <tr>
-                    <td>{{ task.id }}</td>
-                    <td>{{ task.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
-                    <td>{{ task.caption }}</td>
-                    <td>{{ task.body }}</td>
+                    <td>{{ post.id }}</td>
+                    <td>{{ post.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
+                    <td>{{ post.caption }}</td>
+                    <td>{{ post.body }}</td>
                 </tr>
             {% endfor %}
         </table>
