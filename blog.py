@@ -15,8 +15,8 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog_posts.db'
 app.config.update(
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///blog_posts.db',
     DEBUG = True,
     SECRET_KEY = 'secret_xxx'
 )
@@ -47,6 +47,7 @@ class User(db.Model):
     username = db.Column(db.String(64), nullable=False, unique=True)
     password_hash = db.Column(db.String(120))
     email = db.Column(db.String, nullable=False, unique=True)
+    admin_acc = db.Column(db.Boolean, default=False, nullable=False)
     is_active = True
     is_authenticated = True
 
@@ -56,11 +57,14 @@ class User(db.Model):
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    def check_password(self, password):
+    def check_password(self, password): 
         return check_password_hash(self.password_hash, password)
 
     def get_id(self):
         return self.user_id
+
+    def set_admin(self, is_admin):
+        self.admin_acc = is_admin
 
 @app.context_processor
 def inject_login_status():
@@ -87,12 +91,12 @@ def admin():
             db.session.add(new_post)
             db.session.commit()
             return redirect(url_for('admin'))
-            raise Exception("error accured")
         except Exception as e: 
             return render_template("error.html", title="Error", error=e)      
     else:
-        tasks = Blog_Post.query.order_by(Blog_Post.time_created).all()
-        return render_template("admin.html", title="Admin", tasks=tasks)
+        posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
+        users = User.query.order_by(User.user_id).all()
+        return render_template("admin.html", title="Admin", posts=posts, users=users)
 
 @app.route("/delete/<int:id>")
 @login_required
@@ -134,13 +138,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            # TODO: add message incorrect data
             return redirect(url_for('login'))
-        flash('Correct username and password')
-        try:
-            login_user(user, remember=form.remember_me.data)
-        except Exception as e:
-            return e
+        # TODO: add message logged in
+        login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
@@ -163,32 +164,33 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        # TODO: add message registered
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()], render_kw={"placeholder": "Username"})
+    password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    username = StringField(validators=[DataRequired()], render_kw={"placeholder": "Username"})
+    email = StringField(validators=[DataRequired(), Email()], render_kw={"placeholder": "Email"})
+    password = PasswordField(validators=[DataRequired()], render_kw={"placeholder": "Password"})
+    password2 = PasswordField(validators=[DataRequired(), EqualTo('password')], render_kw={"placeholder": "Repeat Password"})
     submit = SubmitField('Register')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
+            # TODO: warning: different username
             raise ValidationError('Please use a different username.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
+            # TODO: warning: different email
             raise ValidationError('Please use a different email address.')
 
 if __name__ == "__main__":
