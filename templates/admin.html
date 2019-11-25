@@ -28,14 +28,14 @@
             </tr>
             {% for post in posts %}
                 <tr>
-                    <td>{{ task.id }}</td>
-                    <td>{{ task.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
-                    <td>{{ task.caption }}</td>
-                    <td>{{ task.body }}</td>
+                    <td>{{ post.id }}</td>
+                    <td>{{ post.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
+                    <td>{{ post.caption }}</td>
+                    <td>{{ post.body }}</td>
                     <td>
-                        <a href="/delete/{{ task.id }}">Delete</a>
+                        <a href="/delete/{{ post.id }}">Delete</a>
                         <br>
-                        <a href="/edit/{{ task.id }}">Edit</a>
+                        <a href="/edit/{{ post.id }}">Edit</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -47,10 +47,10 @@
     {% else %}
         <table>
             <tr>
-                <th>ID</th>
-                <th>Time-created</th>
-                <th>Caption</th>
-                <th>Body</th>
+                <th>User_ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Admin</th>
             </tr>
             {% for user in users %}
                 <tr>
@@ -59,7 +59,7 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.admin_acc }}</td>
                     <td>
-                        <!--<a href="/make_admin/{{ user.id }}">Delete</a>-->
+                        <a href="/make_admin/{{ user.id }}">Make Admin</a>
                     </td>
                 </tr>
             {% endfor %}

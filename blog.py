@@ -82,49 +82,66 @@ def blog():
 @app.route("/admin", methods=['POST', 'GET'])
 @login_required
 def admin():
-    if request.method == 'POST':
-        caption_content = request.form['caption']
-        body_content = request.form['body']
-        new_post = Blog_Post(caption=caption_content, body=body_content)
-
-        try: 
-            db.session.add(new_post)
-            db.session.commit()
-            return redirect(url_for('admin'))
-        except Exception as e: 
-            return render_template("error.html", title="Error", error=e)      
+    if current_user.admin_acc == True:
+        if request.method == 'POST':
+            try: 
+                db.session.add(Blog_Post(caption=request.form['caption'], body=request.form['body']))
+                db.session.commit()
+                return redirect(url_for('admin'))
+            except Exception as e: 
+                return render_template("error.html", title="Error", error=e)      
+        else:
+            posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
+            users = User.query.order_by(User.user_id).all()
+            return render_template("admin.html", title="Admin", posts=posts, users=users)
     else:
-        posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
-        users = User.query.order_by(User.user_id).all()
-        return render_template("admin.html", title="Admin", posts=posts, users=users)
+        return render_template("error.html", title="Error", error="You're not allowed to use that page!")
 
 @app.route("/delete/<int:id>")
 @login_required
 def delete(id):
-    to_delete = Blog_Post.query.get_or_404(id)
-
-    try: 
-        db.session.delete(to_delete)
-        db.session.commit()
-        return redirect(url_for('admin'))
-    except Exception as e: 
-            return e
-
-@app.route("/edit/<int:id>", methods=['POST', 'GET'])
-@login_required
-def edit(id): 
-    task = Blog_Post.query.get_or_404(id)
-
-    if request.method == 'POST':
-        task.caption = request.form['caption']
-        task.body = request.form['body']
+    if current_user.admin_acc == True:
         try: 
+            db.session.delete(Blog_Post.query.get_or_404(id))
             db.session.commit()
             return redirect(url_for('admin'))
         except Exception as e: 
-            return render_template("error.html", title="Error", error=e)
+                return render_template("error.html", title="Error", error=e)
     else:
-        return render_template("edit.html", title="Edit", task=task)
+        return render_template("error.html", title="Error", error="You're not allowed to use that page!")
+
+@app.route("/edit/<int:id>", methods=['POST', 'GET'])
+@login_required
+def edit(id):
+    if current_user.admin_acc == True:
+        post = Blog_Post.query.get_or_404(id)
+
+        if request.method == 'POST':
+            post.caption = request.form['caption']
+            post.body = request.form['body']
+            try: 
+                db.session.commit()
+                return redirect(url_for('admin'))
+            except Exception as e: 
+                return render_template("error.html", title="Error", error=e)
+        else:
+            return render_template("edit.html", title="Edit", post=post)
+    else:
+        return render_template("error.html", title="Error", error="You're not allowed to use that page!")
+
+# TODO: "De-op"-Command
+@app.route("/make_admin/<int:user_id>")
+@login_required
+def delete(user_id):
+    if current_user.admin_acc == True:
+        try: 
+            User.query.get_or_404(user_id).set_admin(True)
+            db.session.commit()
+            return redirect(url_for('admin'))
+        except Exception as e: 
+                return render_template("error.html", title="Error", error=e)
+    else:
+        return render_template("error.html", title="Error", error="You're not allowed to use that page!")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -195,9 +212,11 @@ class RegistrationForm(FlaskForm):
 
 if __name__ == "__main__":
     db.create_all()
-    # try: 
-    #     db.session.delete(User.query.get_or_404(1))
-    #     db.session.commit()
-    # except Exception: 
-    #     pass
+
+    # User.query.get_or_404(1).set_admin(True)
+    # db.session.commit()
+
+    # db.session.delete(User.query.get_or_404(1))
+    # db.session.commit()
+
     app.run()
