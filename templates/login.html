@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 
 {% block head%}
-    <!-- put additional css/js-links for index-/frontpage here -->
+    
+    <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
-    <!-- put content for console here -->
 
-    <h1>Sign In</h1>
-    <form action="" method="POST" novalidate>
+<form action="" class="login" method="POST" novalidate>
+	<div class="inner">
+		<h1>Login</h1>
         {{ form.hidden_tag() }}
+<<<<<<< HEAD
         <p>
             {{ form.username(size=32) }}<br>
             {% for error in form.username.errors %}
@@ -26,5 +28,40 @@
         <p>{{ form.submit() }}</p>
     </form>
     <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
+=======
+        {{ form.username(size=32) }}
+			
+        {{ form.password(size=32) }}
+			
+		{{ form.submit() }}
+			
+		<div>
+			<div>{{ form.remember_me() }} <p id="keepLoggedInP">Angemeldet bleiben</p></div>
+			<a href="#">Passwort vergessen?</a>
+		</div>
+		
+        {% for error in form.username.errors %}
+        <span style="color: red;">Username: {{ error }}</span>
+        {% endfor %}
+			
+        {% for error in form.password.errors %}
+        <span style="color: red;">Password: {{ error }}</span>
+        {% endfor %}
+		
+	</div>
+	
+	<hr />
+	
+	<p>Noch kein Konto? <a href="{{ url_for('register') }}">Hier registrieren!</a></p>
+</form>
+>>>>>>> ff2c02662ae912081376f3ad52184f7ae2b095e7
 
+
+		<!--
+		<input type="text" placeholder="Benutzername"></input>
+		<input type="password" placeholder="Passwort"></input>
+		<input type="submit" value="Anmelden"></input>
+		<input type="checkbox"></input><p>Angemeldet bleiben</p>
+		<a href="#">Passwort vergessen?</a>
+	</form>-->
 {% endblock %}

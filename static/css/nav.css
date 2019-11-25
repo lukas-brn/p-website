@@ -61,18 +61,21 @@
 	transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out, fill 100ms;
 }
 
-
-
-
-
-
 @media only screen and (min-width: 900px) {
+	#nav {
+		padding: 24px;
+	}
+	
 	#nav button {
 		display: none;
 	}
 }
 
 @media only screen and (max-width: 900px) {
+	#nav {
+		padding: 24px 12px;
+	}
+	
 	#nav ul, #nav ul li, #nav ul li a {
 		width: 100%;
 	}
@@ -94,9 +97,7 @@
 		fill: #99CCFF;
 	}
 	
-	
-	
-	
+	/* Svg */
 	
 	#nav .line {
 		opacity: 1;
@@ -122,18 +123,3 @@
 }
 
 
-
-
-
-
-@media only screen and (min-width: 900px) {
-	#nav {
-		padding: 24px;
-	}
-}
-
-@media only screen and (max-width: 900px) {
-	#nav {
-		padding: 24px 12px;
-	}
-}

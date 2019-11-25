@@ -17,6 +17,13 @@ body {
 	scroll-behavior: smooth;
 }
 
+hr {
+	width: 100%;
+	border: none;
+	height: 1px;
+	background: #CCC;
+	margin: 16px 0;
+}
 
 .spacer {
 	width: 100vw;
@@ -30,7 +37,7 @@ body {
 	height: 105px;
 }
 
-#content * {
+#content p, #content img, #content span, #content article {
 	padding-bottom: 18px;
 	display: block;
 }
@@ -48,7 +55,7 @@ body {
 	text-decoration: underline;
 }
 
-#content h2 {
+#content h1, #content h2 {
 	font-size: 24px;
 	font-weight: 900;
 	padding-bottom: 4px;
@@ -63,7 +70,7 @@ body {
 	width: 100%;
 }
 
-#content p {
+#content article p {
 	font-family: 'Roboto Slab', serif;
 }
 
