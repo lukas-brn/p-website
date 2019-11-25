@@ -25,7 +25,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
-# TODO: check if it's secure to keep the same secrey key
+# TODO: same secret key is needed, implement a better one
 #SECRET_KEY = os.urandom(32)
 #app.config['SECRET_KEY'] = SECRET_KEY
 
