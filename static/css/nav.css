@@ -66,13 +66,13 @@
 
 
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 900px) {
 	#nav button {
 		display: none;
 	}
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
 	#nav ul, #nav ul li, #nav ul li a {
 		width: 100%;
 	}
@@ -80,6 +80,8 @@
 	#nav ul {
 		flex-direction: column;
 		margin-top: 24px;
+		height: calc(100% - 72px);
+		overflow-y: scroll;
 	}
 	
 	#nav button {
@@ -124,16 +126,13 @@
 
 
 
-@media only screen and (min-width: 824px) {
+@media only screen and (min-width: 900px) {
 	#nav {
 		padding: 24px;
 	}
-	#nav button {
-		display: none;
-	}
 }
 
-@media only screen and (max-width: 824px) {
+@media only screen and (max-width: 900px) {
 	#nav {
 		padding: 24px 12px;
 	}

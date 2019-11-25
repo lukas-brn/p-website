@@ -23,7 +23,7 @@ function toggleMenu()
 
 function closeNavOnDesktop()
 {
-	if($(window).width() > 700)
+	if($(window).width() > 900)
 	{
 		if($("#nav").attr("style") == "height: 100%;")
 		{
