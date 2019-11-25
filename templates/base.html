@@ -63,6 +63,31 @@
 			</footer>
 		
 		</div>
+
+		<!-- TODO: Sylying for the popup !important -->
+		<div id="popup_wrapper" style="display: none; position: absolute; top: 0; z-index: 1000;">
+			<div id="popup_inner">
+				<form action="" id="popup">
+					<div id="popup_main">
+		
+					</div>
+					<button type="submit">Submit</button>
+				</form>
+			</div>
+		</div>
+		
+
+		<script>
+			popup = () => {
+				destElem = $("#popup_main")
+				destWrapper = $("#popup_wrapper")
+				$.post('/popup').done(response => {
+					console.log("done")
+					destElem.html(response.text);
+					destWrapper.css({"display": "block"})
+				}).fail(() => destElem.html('Error: Could not contact server.'));
+			}
+		</script>
 		
 	</body>
 	

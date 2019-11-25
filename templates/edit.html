@@ -11,8 +11,8 @@
     <p>Edit Blog Post:</p>
 
     <form action="/edit/{{ post.id }}" method="POST">
-        <input type="text" name="caption" value="{{ task.caption }}">
-        <input type="text" name="body" value="{{ task.body }}">
+        <input type="text" name="caption" value="{{ post.caption }}">
+        <input type="text" name="body" value="{{ post.body }}">
         <input type="submit" value="Edit Blog">
     </form>
 

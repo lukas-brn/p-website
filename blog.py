@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request
+from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -125,15 +125,18 @@ def edit(id):
     else:
         return render_template("error.html", title="Error", error="You're not allowed to use that page!")
 
-# TODO: "De-op"-Command
-@app.route("/make_admin/<int:user_id>")
+@app.route("/manage_admins/<int:user_id>")
 @login_required
-def make_admin(user_id):
+def manage_admin(user_id):
     if current_user.admin_acc == True:
         try: 
-            User.query.get_or_404(user_id).set_admin(True)
-            db.session.commit()
-            return redirect(url_for('admin'))
+            user = User.query.get_or_404(user_id)
+            if current_user.user_id != user.user_id:
+                user.set_admin(not user.admin_acc)
+                db.session.commit()
+                return redirect(url_for('admin'))
+            else:
+                raise Exception("You're not allowed to change your own admin-status")
         except Exception as e: 
                 return render_template("error.html", title="Error", error=e)
     else:
@@ -151,8 +154,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            # TODO: add message incorrect data
-            return redirect(url_for('login'))
+            return redirect("javascript:popup()")
         # TODO: add message logged in
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -205,6 +207,10 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             # TODO: warning: different email
             raise ValidationError('Please use a different email address.')
+
+@app.route("/popup", methods=['POST'])
+def popup_json():
+    return jsonify({"text": "hallo"})
 
 if __name__ == "__main__":
     db.create_all()

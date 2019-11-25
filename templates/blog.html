@@ -14,14 +14,12 @@
     {% else %}
         <table>
             <tr>
-                <th>ID</th>
                 <th>Time-created</th>
                 <th>Caption</th>
                 <th>Body</th>
             </tr>
             {% for post in posts %}
-                <tr>
-                    <td>{{ post.id }}</td>
+                <tr id="post_{{ post.id }}">
                     <td>{{ post.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
                     <td>{{ post.caption }}</td>
                     <td>{{ post.body }}</td>

@@ -33,9 +33,9 @@
                     <td>{{ post.caption }}</td>
                     <td>{{ post.body }}</td>
                     <td>
-                        <a href="/delete/{{ post.id }}">Delete</a>
+                        <a href="{{ url_for( 'delete', id=post.id ) }}">Delete</a>
                         <br>
-                        <a href="/edit/{{ post.id }}">Edit</a>
+                        <a href="{{ url_for( 'edit', id=post.id ) }}">Edit</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -59,7 +59,13 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.admin_acc }}</td>
                     <td>
-                        <a href="/make_admin/{{ user.id }}">Make Admin</a>
+                        <a href="{{ url_for( 'manage_admin', user_id=user.user_id ) }}">
+                            {% if user.admin_acc==true %}
+                                Remove Admin
+                            {% else %}
+                                Make Admin
+                            {% endif %}
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
