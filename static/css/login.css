@@ -1,0 +1,63 @@
+
+.login {
+	max-width: 300px;
+	margin: 0 auto;
+}
+
+.login h1 {
+	margin-bottom: 8px;
+}
+
+.login input[type="text"], .login input[type="password"], .input input[type="submit"]{
+	margin: 0 0 16px 0;
+}
+
+.login input {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.login input[type="submit"] {
+	cursor: pointer;
+	background: #2654C8;
+	color: #FFFFFF;
+	border: none;
+	transition: background 200ms;
+	margin: 0 0 16px 0;
+}
+
+.login input[type="submit"]:hover {
+	background: #173A94;
+}
+
+.login input[type="checkbox"]{
+	float: left;
+	width: auto;
+	line-height: 20px;
+	height: 20px;
+}
+
+.login .inner p, .login .inner a {
+	line-height: 20px;
+	font-size: 14px;
+	margin-left: 8px;
+	padding-bottom: 0 !important;
+	font-family: 'Roboto', sans-serif;
+}
+
+.login .inner label {
+	display: none;
+}
+
+.login .inner div {
+	display: flex;
+	justify-content: space-between;
+}
+
+.login .inner span {
+	display: block;
+	float: none;
+}
