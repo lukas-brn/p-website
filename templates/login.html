@@ -11,24 +11,6 @@
 	<div class="inner">
 		<h1>Login</h1>
         {{ form.hidden_tag() }}
-<<<<<<< HEAD
-        <p>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
-    <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
-=======
         {{ form.username(size=32) }}
 			
         {{ form.password(size=32) }}
@@ -54,7 +36,6 @@
 	
 	<p>Noch kein Konto? <a href="{{ url_for('register') }}">Hier registrieren!</a></p>
 </form>
->>>>>>> ff2c02662ae912081376f3ad52184f7ae2b095e7
 
 
 		<!--
