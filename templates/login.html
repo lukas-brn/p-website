@@ -7,7 +7,7 @@
 
 {% block content %} 
 
-<form action="" class="login" method="POST" novalidate>
+<form action="javascript:loginPopup()" id="login_form" name="login_input" class="login" autocomplete="off" novalidate>
 	<div class="inner">
 		<h1>Login</h1>
         {{ form.hidden_tag() }}
@@ -35,21 +35,43 @@
 	<hr />
 	
     <p>Noch kein Konto? <a href="{{ url_for('register') }}">Hier registrieren!</a></p>
-    
-    <div id="stepDialog" class="modal fade" tabindex=-1 role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-          </div>
-        </div>
-      </div>
 </form>
 
+<script>
+	$.ajaxSetup({ 
+		beforeSend: (xhr, settings) => {
+			if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
+		} 
+	});
 
-		<!--
-		<input type="text" placeholder="Benutzername"></input>
-		<input type="password" placeholder="Passwort"></input>
-		<input type="submit" value="Anmelden"></input>
-		<input type="checkbox"></input><p>Angemeldet bleiben</p>
-		<a href="#">Passwort vergessen?</a>
-	</form>-->
+	let destElem = $("#login_popup_main")
+	let destWrapper = $("#login_popup_wrapper")
+
+	loginPopup = () => {
+		let fromElem = $('#login_form').serialize() + '&remember_me=' + $("#remember_me").attr("checked");
+		console.log(fromElem)
+		$.post('/login', fromElem).done(response => {
+			if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
+									else {
+										destElem.html(response.text);
+										destWrapper.css("display", "flex")
+									}
+		}).fail(() => destElem.html('Error: Could not contact server.'));
+	}
+
+	closeLoginPopup = () => {
+		destWrapper = $("#login_popup_wrapper")
+		destWrapper.css({"display": "none"})
+	}
+	closeLoginPopup();
+</script>
+
+<!-- TODO: Sylying for the popup !important -->
+<div id="login_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
+	<div id="login_popup_inner" style="height: 400px;">
+		<div id="login_popup_main"></div>
+		<button type="submit" onclick="closeLoginPopup()">Submit</button>
+	</div>
+</div>
+	
 {% endblock %}
