@@ -11,6 +11,7 @@
     <p>Edit Blog Post:</p>
 
     <form action="/edit/{{ post.id }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="text" name="caption" value="{{ post.caption }}">
         <input type="text" name="body" value="{{ post.body }}">
         <input type="submit" value="Edit Blog">
