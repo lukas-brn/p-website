@@ -25,6 +25,27 @@ hr {
 	margin: 16px 0;
 }
 
+span.button {
+	padding: 8px 12px;
+	cursor: pointer;
+	background: #2654C8;
+	color: #FFFFFF;
+	border: none;
+	transition: background 200ms;
+	box-sizing: border-box;
+	display: inline-block;
+	border-radius: 4px;
+	margin: 16px 0;
+}
+
+span.button, span.button a {
+	color: #FFFFFF;
+}
+
+span.button:hover {
+	background: #173A94;
+}
+
 .spacer {
 	width: 100vw;
 }
@@ -37,7 +58,7 @@ hr {
 	height: 105px;
 }
 
-#content p, #content img, #content span, #content article {
+#content article *, #content article {
 	padding-bottom: 18px;
 	display: block;
 }
@@ -47,11 +68,11 @@ hr {
 	padding: 0;
 }
 
-#content a {
+#content article a {
 	color: #006699;
 }
 
-#content a:hover {
+#content article a:hover {
 	text-decoration: underline;
 }
 
@@ -61,7 +82,7 @@ hr {
 	padding-bottom: 4px;
 }
 
-#content span, #content span>a {
+#content article span, #content article span>a {
 	font-size: 14px;
 	color: #666666;
 }
