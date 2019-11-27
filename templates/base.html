@@ -34,8 +34,6 @@
 					<li><a href="{{ url_for('index') }}">Startseite</a></li>
 					<li><a href="{{ url_for('blog') }}">Blog</a></li>
 					<li><a href="#">Kontakt</a></li>
-					<li><a href="#">Impressum</a></li>
-					<li><a href="#">Datenschutz</a></li>
 					{% if current_user.is_authenticated and current_user.admin_acc == true %}
 					<li><a href="{{ url_for('admin') }}">Konsole</a></li>
 					{% endif %}
