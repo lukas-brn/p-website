@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, current_user, log
 from werkzeug.urls import url_parse
 from blog import app, db
 from app.models import Blog_Post, User
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
 
 # @app.context_processor
 # def inject_login_status():
@@ -142,4 +142,18 @@ def user_page():
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    return "a"
+    if request.method == 'GET':
+        form = ChangePasswordForm()
+        return render_template('change_password.html', title='Passwort ändern', form=form)
+    else:
+        form = request.form
+        if current_user.check_password(form['password']):
+            if form['password2'] == form['password3']:
+                current_user.set_password(form['password2'])
+                db.session.commit()
+                return jsonify({"text": url_for('user_page'), "redirect": True})
+            else:
+                return jsonify({"text": "Die 2 neuen Passwörter stimmen nicht überein.", "redirect": False})
+        else: 
+            return jsonify({"text": "Das ursprüngliche Passwort passt nicht.", "redirect": False})
+        
