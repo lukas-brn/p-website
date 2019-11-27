@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from flask_migrate import Migrate
 import os
 
 app = Flask(__name__)
@@ -12,6 +13,7 @@ app.config.update(
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 )
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 csrf = CSRFProtect()
 csrf.init_app(app)
 login = LoginManager(app)
@@ -30,7 +32,7 @@ if __name__ == "__main__":
         # db.session.delete(User.query.get_or_404(1))
         # db.session.commit()
         pass
-    except Exception:
+    except:
         pass
 
     app.run()
