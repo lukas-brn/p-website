@@ -7,19 +7,19 @@
 
 {% block content %}
     
-<form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
-	<div class="inner">
-	
-		<h1>Registrieren</h1>
-	
-        {{ form.hidden_tag() }}
-        {{ form.username(size=32) }}
-        {{ form.email(size=64) }}
-        {{ form.password(size=32) }}
-        {{ form.password2(size=32) }}
-        {{ form.submit() }}
-	</div>
-</form>
+    <form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
+        <div class="inner">
+        
+            <h1>Registrieren</h1>
+        
+            {{ form.hidden_tag() }}
+            {{ form.username(size=32) }}
+            {{ form.email(size=64) }}
+            {{ form.password(size=32) }}
+            {{ form.password2(size=32) }}
+            {{ form.submit() }}
+        </div>
+    </form>
 
     <script>
         $.ajaxSetup({ 
@@ -43,11 +43,7 @@
             }).fail(() => destElem.html('Error: Could not contact server.'));
         }
     
-        closeRegisterPopup = () => {
-            destWrapper = $("#register_popup_wrapper")
-            destWrapper.css({"display": "none"})
-        }
-        closeRegisterPopup();
+        closeRegisterPopup = () => destWrapper.css({"display": "none"});
     </script>
         
     <div id="register_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">

@@ -13,4 +13,10 @@ class RegistrationForm(FlaskForm):
     email = StringField(validators=[DataRequired(), Email()], render_kw={"placeholder": "Email"})
     password = PasswordField(validators=[DataRequired()], render_kw={"placeholder": "Passwort"})
     password2 = PasswordField(validators=[DataRequired(), EqualTo('password')], render_kw={"placeholder": "Passwort wiederholen"})
-    submit = SubmitField('Register')
+    submit = SubmitField('Registrieren')
+
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField(validators=[DataRequired()], render_kw={"placeholder": "Altes Passwort"})
+    password2 = PasswordField(validators=[DataRequired()], render_kw={"placeholder": "Neues Passwort"})
+    password3 = PasswordField(validators=[DataRequired(), EqualTo('password2')], render_kw={"placeholder": "Neues Passwort"})
+    submit = SubmitField('Ändern')
