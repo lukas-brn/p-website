@@ -10,21 +10,9 @@
 	<div class="inner">
 		<h1>Login</h1>
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-			<span style="color: red;">Username: {{ error }}</span>
-			{% endfor %}
-        </p>
-			
-		<p>
-			{{ form.password(size=32) }}
-			{% for error in form.password.errors %}
-			<span style="color: red;">Password: {{ error }}</span>
-			{% endfor %}
-		</p>
-			
-		<p>{{ form.submit() }}</p>
+		{{ form.username(size=32) }}
+		{{ form.password(size=32) }}	
+		{{ form.submit() }}
 			
 		<div>
 			<div>{{ form.remember_me() }} <p id="keepLoggedInP">Angemeldet bleiben</p></div>
