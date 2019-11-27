@@ -35,7 +35,7 @@ span.button {
 	box-sizing: border-box;
 	display: inline-block;
 	border-radius: 4px;
-	margin: 16px 0;
+	margin: 16px 4px 16px 0;
 }
 
 span.button, span.button a {

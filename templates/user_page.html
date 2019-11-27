@@ -13,10 +13,10 @@
     <p>Email: {{ current_user.email }}</p>
     <p>Admin: {{ current_user.admin_acc }}</p>
 
-    <p><span class="button"><a href="{{ url_for('change_password') }}">Passwort ändern</a></span></a>
+    <span class="button"><a href="{{ url_for('change_password') }}">Passwort ändern</a></span></a>
     
     {% if current_user.admin_acc == true %}
-    <a href="{{ url_for('admin') }}">Konsole</a>
+    <span class="button"><a href="{{ url_for('admin') }}">Konsole</a></span>
     {% endif %}
     
 {% endblock %}
