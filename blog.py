@@ -24,8 +24,8 @@ if __name__ == "__main__":
     db.create_all()
 
     try: 
-        #User.query.get_or_404(2).set_admin(True)
-        #db.session.commit()
+        User.query.get_or_404(2).set_admin(True)
+        db.session.commit()
     
         # db.session.delete(User.query.get_or_404(1))
         # db.session.commit()

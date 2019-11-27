@@ -24,7 +24,7 @@
 	
 		<div id="container">
 		
-			<nav id="nav">
+			<nav id="nav" bg>
 					
 				<a href="{{ url_for('index') }}">Project Jumbo</a>
 				
@@ -49,9 +49,7 @@
 			
 			<div class="spacer nav"></div>
 
-			<header id="header"> 
-				{% block content_header %}  {% endblock %}
-			</header>
+			{% block content_header %}  {% endblock %}
 			
 			<section id="content">
 			

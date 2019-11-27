@@ -5,20 +5,18 @@ $(window).resize(function() {
 	closeNavOnDesktop();
 });
 
+if(header)
+{
+	$(window).scroll(function() {
+		headerActions();
+	});
+}
+
 // Functions
 
 function toggleMenu()
 {
-	if($("#nav").attr("style") == "height: 100%;")
-	{
-		$("#nav").removeAttr("style");
-		$("body").css("overflow-y", "scroll");
-	}
-	else
-	{
-		$("#nav").css("height", "100%");
-		$("body").css("overflow-y", "hidden");
-	}
+	$("#nav").attr("open", !($("#nav").attr("open")));
 }
 
 function closeNavOnDesktop()
@@ -32,3 +30,25 @@ function closeNavOnDesktop()
 		}
 	}
 }
+
+function headerActions() {
+	if($(window).scrollTop() == 0)
+	{
+		$("#nav").removeAttr("bg");
+	}
+	else
+	{
+		$("#nav").attr("bg", "bg");
+	}
+	
+	$("#header").css("background-position", "center "+$(window).scrollTop()*-0.3+"px");
+}
+
+headerActions();
+
+
+
+
+
+
+
