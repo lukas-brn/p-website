@@ -23,10 +23,14 @@ from app.models import *
 if __name__ == "__main__":
     db.create_all()
 
-    # User.query.get_or_404(1).set_admin(True)
-    # db.session.commit()
-
-    # db.session.delete(User.query.get_or_404(1))
-    # db.session.commit()
+    try: 
+        # User.query.get_or_404(1).set_admin(True)
+        # db.session.commit()
+    
+        # db.session.delete(User.query.get_or_404(1))
+        # db.session.commit()
+        pass
+    except Exception as e:
+        print("couldn't get user")
 
     app.run()

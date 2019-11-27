@@ -1,34 +1,35 @@
 {% extends 'base.html' %}
 
 {% block head%}
-    
-    <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
 
-<form action="javascript:loginPopup()" id="login_form" name="login_input" class="login" autocomplete="off" novalidate>
+<form action="javascript:loginPopup()" id="login_form" class="login" autocomplete="off" novalidate>
 	<div class="inner">
 		<h1>Login</h1>
         {{ form.hidden_tag() }}
-        {{ form.username(size=32) }}
+        <p>
+            {{ form.username(size=32) }}<br>
+            {% for error in form.username.errors %}
+			<span style="color: red;">Username: {{ error }}</span>
+			{% endfor %}
+        </p>
 			
-        {{ form.password(size=32) }}
+		<p>
+			{{ form.password(size=32) }}
+			{% for error in form.password.errors %}
+			<span style="color: red;">Password: {{ error }}</span>
+			{% endfor %}
+		</p>
 			
-		{{ form.submit() }}
+		<p>{{ form.submit() }}</p>
 			
 		<div>
 			<div>{{ form.remember_me() }} <p id="keepLoggedInP">Angemeldet bleiben</p></div>
 			<a href="#">Passwort vergessen?</a>
 		</div>
-		
-        {% for error in form.username.errors %}
-        <span style="color: red;">Username: {{ error }}</span>
-        {% endfor %}
-			
-        {% for error in form.password.errors %}
-        <span style="color: red;">Password: {{ error }}</span>
-        {% endfor %}
 		
 	</div>
 	
@@ -36,6 +37,14 @@
 	
     <p>Noch kein Konto? <a href="{{ url_for('register') }}">Hier registrieren!</a></p>
 </form>
+
+<!-- TODO: Sylying for the popup !important -->
+<div id="login_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
+	<div id="login_popup_inner" style="height: 400px;">
+		<div id="login_popup_main"></div>
+		<button type="submit" onclick="closeLoginPopup()">Submit</button>
+	</div>
+</div>
 
 <script>
 	$.ajaxSetup({ 
@@ -48,11 +57,13 @@
 	let destWrapper = $("#login_popup_wrapper")
 
 	loginPopup = () => {
-		let fromElem = $('#login_form').serialize() + '&remember_me=' + $("#remember_me").attr("checked");
+		let fromElem = $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked");
+		console.log($("#remember_me").is(":checked"))
 		console.log(fromElem)
 		$.post('/login', fromElem).done(response => {
 			if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
 									else {
+										console.log(response)
 										destElem.html(response.text);
 										destWrapper.css("display", "flex")
 									}
@@ -65,13 +76,5 @@
 	}
 	closeLoginPopup();
 </script>
-
-<!-- TODO: Sylying for the popup !important -->
-<div id="login_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-	<div id="login_popup_inner" style="height: 400px;">
-		<div id="login_popup_main"></div>
-		<button type="submit" onclick="closeLoginPopup()">Submit</button>
-	</div>
-</div>
 	
 {% endblock %}

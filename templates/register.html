@@ -3,7 +3,7 @@
 
 {% block content %}
     <h1>Register</h1>
-    <form action="javascript:registerPopup()" id="register_form" name="register_input" class="register" autocomplete="off" method="post">
+    <form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
         {{ form.hidden_tag() }}
         <p>
             {{ form.username(size=32) }}<br>
