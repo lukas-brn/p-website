@@ -5,9 +5,9 @@ from blog import app, db
 from app.models import Blog_Post, User
 from app.forms import LoginForm, RegistrationForm
 
-@app.context_processor
-def inject_login_status():
-    return dict(login_status=current_user.is_authenticated)
+# @app.context_processor
+# def inject_login_status():
+#     return dict(login_status=current_user.is_authenticated)
 
 @app.route("/")
 def index():
@@ -133,3 +133,13 @@ def register():
             db.session.add(user)
             db.session.commit()
             return jsonify({"text": url_for('login'), "redirect": True})
+
+@app.route('/user', methods=['GET'])
+@login_required
+def user_page():
+    return render_template('user_page.html', title='User')
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    return "a"

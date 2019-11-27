@@ -39,16 +39,21 @@
 					{% if current_user.is_authenticated and current_user.admin_acc == true %}
 					<li><a href="{{ url_for('admin') }}">Konsole</a></li>
 					{% endif %}
-					{% if login_status == false %}
-						<li><a href="{{ url_for('login') }}">Login</a></li>
+					{% if current_user.is_authenticated %}
+					<li><a href="{{ url_for('logout') }}">Logout</a></li>
+					<li><a href="{{ url_for('user_page') }}">Account</a></li>
 					{% else %} 
-						<li><a href="{{ url_for('logout') }}">Logout</a></li>
+					<li><a href="{{ url_for('login') }}">Login</a></li>	
 					{% endif %}
 				</ul>
 					
 			</nav>
 			
 			<div class="spacer nav"></div>
+
+			<header id="header"> 
+				{% block content_header %}  {% endblock %}
+			</header>
 			
 			<section id="content">
 			

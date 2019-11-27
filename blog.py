@@ -30,7 +30,7 @@ if __name__ == "__main__":
         # db.session.delete(User.query.get_or_404(1))
         # db.session.commit()
         pass
-    except Exception as e:
-        print("couldn't get user")
+    except Exception:
+        pass
 
     app.run()

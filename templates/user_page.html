@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block head%}
+    <!-- put additional css/js-links for index-/frontpage here -->
+
+{% endblock %}
+
+{% block content %} 
+
+    <p>Nutzer_ID: {{ current_user.user_id }}</p>
+    <p>Benutzername: {{ current_user.username }}</p>
+    <p>Email: {{ current_user.email }}</p>
+    <p>Admin: {{ current_user.admin_acc }}</p>
+
+    <a href="{{ url_for('change_password') }}">Passwort ändern</a>
+    
+{% endblock %}
