@@ -40,8 +40,8 @@
 					<li><a href="{{ url_for('admin') }}">Konsole</a></li>
 					{% endif %}
 					{% if current_user.is_authenticated %}
-					<li><a href="{{ url_for('logout') }}">Logout</a></li>
 					<li><a href="{{ url_for('user_page') }}">Account</a></li>
+					<li><a href="{{ url_for('logout') }}">Logout</a></li>
 					{% else %} 
 					<li><a href="{{ url_for('login') }}">Login</a></li>	
 					{% endif %}
@@ -56,9 +56,7 @@
 			</header>
 			
 			<section id="content">
-			
 				{% block content %}  {% endblock %}
-				
 			</section>
 			
 			<div class="spacer footer"></div>
