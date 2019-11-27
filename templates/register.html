@@ -1,16 +1,25 @@
 
 {% extends "base.html" %}
 
+{% block head%}
+<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-    <h1>Register</h1>
-    <form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
+    
+<form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
+	<div class="inner">
+	
+		<h1>Registrieren</h1>
+	
         {{ form.hidden_tag() }}
         {{ form.username(size=32) }}
         {{ form.email(size=64) }}
         {{ form.password(size=32) }}
         {{ form.password2(size=32) }}
         {{ form.submit() }}
-    </form>
+	</div>
+</form>
 
     <script>
         $.ajaxSetup({ 
