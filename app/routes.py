@@ -13,10 +13,17 @@ from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
 def index():
     return render_template("index.html", title="Startseite")
 
-@app.route("/blog")
+@app.route("/blog", methods=['POST', 'GET'])
 def blog():
-    posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
-    return render_template("blog.html", title="Blog", posts=posts)
+    if request.method == 'GET':
+        posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
+        return render_template("blog.html", title="Blog", posts=posts)
+    elif request.method == 'POST':
+        try:
+            post = Blog_Post.query.get_or_404(request.form['blog_id'])
+            return jsonify({"article": True, "caption": post.caption, "body": post.body, "time_created": post.time_created})
+        except Exception:
+            return jsonify({"article": False})
 
 @app.route("/admin", methods=['POST', 'GET'])
 @login_required

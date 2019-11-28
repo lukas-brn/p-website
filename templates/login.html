@@ -48,7 +48,7 @@
 			console.log($("#remember_me").is(":checked"))
 			console.log(fromElem)
 			$.post('/login', fromElem).done(response => {
-				if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
+				if (response.text!=="") if (response.redirect) window.location.href = response.text;
 										else {
 											console.log(response)
 											destElem.html(response.text);
