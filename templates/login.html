@@ -44,13 +44,9 @@
 		let destWrapper = $("#login_popup_wrapper")
 
 		loginPopup = () => {
-			let fromElem = $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked");
-			console.log($("#remember_me").is(":checked"))
-			console.log(fromElem)
-			$.post('/login', fromElem).done(response => {
+			$.post('/login', $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked")).done(response => {
 				if (response.text!=="") if (response.redirect) window.location.href = response.text;
 										else {
-											console.log(response)
 											destElem.html(response.text);
 											destWrapper.css("display", "flex")
 										}

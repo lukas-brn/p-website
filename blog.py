@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     try: 
         # make user admin by id
-        # User.query.get_or_404(2).set_admin(True)
+        # User.query.get_or_404(3).set_admin(True)
         # db.session.commit()
 
         # delete a user by id

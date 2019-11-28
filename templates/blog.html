@@ -11,6 +11,7 @@
         let max_article_reached = false;
         let posts_in_queue = 0
         let ajax_is_processing = false;
+        let route = "{{ route }}";
 
         $.ajaxSetup({ 
 			beforeSend: (xhr, settings) => {
@@ -35,11 +36,22 @@
         check_ajax_height = async () => {
             if (!max_article_reached) {
                 lowestScrollPos = document.documentElement.scrollTop>lowestScrollPos?document.documentElement.scrollTop:lowestScrollPos;
-                if (lowestScrollPos+1*$(window).height()>currentHeight) {
-                    await $.post('/blog', "blog_id="+blog_id).done(response => {
+                if (lowestScrollPos+(2*$(window).height())>currentHeight) {
+                    await $.post(route, "blog_id="+blog_id).done(response => {
                         if (response.article) {
+                            let url_author = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by)
                             $("#content").html( 
-                                $("#content").html().replace( /<!-- replace position for new blogs -->/g, `<article id='article_${ blog_id }'><h2>${ response.caption }</h2><span>Posted <a href="#">${ response.time_created }</a> by <a href="#">semmelsamu</a></span><p>${ response.body }</p></article>\n\n<!-- replace position for new blogs -->` )
+                                $("#content").html().replace( 
+                                    /<!-- replace position for new blogs -->/g, `
+                                        <article id='article_${ blog_id }'>
+                                            <h2>${ response.caption }</h2>
+                                            <span>Posted <a href="#">${ response.date_created }</a> by <a href="${url_author}">${ response.posted_by }</a></span>
+                                            <p>${ response.body }</p>
+                                        </article>
+                                        \n
+                                        \n
+                                        <!-- replace position for new blogs -->\n` 
+                                )
                             )
                             currentHeight += $(`#article_${ blog_id }`).height()
                             blog_id++;
@@ -59,9 +71,9 @@
 {% block content %} 
     <!-- put content for blogpage here -->
 	<article>
-    <h2>Blog</h2>
+    <h2>{{ title }}</h2>
 
-    {% if posts|length < 1 %}
+    {% if post_count == 0 %}
         <p>There are no Blogposts available!</p>
     {% endif %}
     </article>

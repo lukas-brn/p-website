@@ -55,12 +55,12 @@
             </tr>
             {% for user in users %}
                 <tr>
-                    <td>{{ user.user_id }}</td>
+                    <td>{{ user.id }}</td>
                     <td>{{ user.username }}</tds>
                     <td>{{ user.email }}</td>
                     <td>{{ user.admin_acc }}</td>
                     <td>
-                        <a href="{{ url_for( 'manage_admin', user_id=user.user_id ) }}">
+                        <a href="{{ url_for( 'manage_admin', id=user.id ) }}">
                             {% if user.admin_acc==true %}
                                 Remove Admin
                             {% else %}

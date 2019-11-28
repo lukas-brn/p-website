@@ -5,6 +5,7 @@ from datetime import datetime
 class Blog_Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     caption = db.Column(db.String, nullable=False)
+    posted_by = db.Column(db.Integer, db.ForeignKey("user.id"))
     body = db.Column(db.String, nullable=False)
     time_created = db.Column(db.DateTime, default=datetime.now() )
 
@@ -12,11 +13,11 @@ class Blog_Post(db.Model):
         return '<Blog_Post %r>' % self.id
 
 @login.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
+def load_user(id):
+    return User.query.get(id)
 
 class User(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), nullable=False, unique=True)
     password_hash = db.Column(db.String(120))
     email = db.Column(db.String, nullable=False, unique=True)
@@ -34,7 +35,7 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def get_id(self):
-        return self.user_id
+        return self.id
 
     def set_admin(self, is_admin):
         self.admin_acc = is_admin

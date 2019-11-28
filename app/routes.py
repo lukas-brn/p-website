@@ -16,14 +16,42 @@ def index():
 @app.route("/blog", methods=['POST', 'GET'])
 def blog():
     if request.method == 'GET':
-        posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
-        return render_template("blog.html", title="Blog", posts=posts)
+        post_count = Blog_Post.query.count()
+        return render_template("blog.html", title="Blog", post_count=post_count, route="/blog")
     elif request.method == 'POST':
         try:
             post = Blog_Post.query.get_or_404(request.form['blog_id'])
-            return jsonify({"article": True, "caption": post.caption, "body": post.body, "time_created": post.time_created})
+            try:
+                user = User.query.get_or_404(post.posted_by).username
+            except Exception:
+                user = "[deleted]"
+            return jsonify({"article": True, "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y")})
         except Exception:
             return jsonify({"article": False})
+
+@app.route("/blog/<string:username>", methods=['POST', 'GET'])
+def blog_user_query(username):
+    if request.method == 'GET':
+        user = User.query.filter_by(username=username).first()
+        if user is not None:
+            post_count = Blog_Post.query.filter_by(posted_by=user.id).count()
+        else: 
+            post_count = 0
+        return render_template("blog.html", title="Blog / "+username, post_count=post_count, route="/blog/"+username)
+    elif request.method == 'POST':
+        user = User.query.filter_by(username=username).first()
+        if user is not None:
+            posts = Blog_Post.query.filter_by(posted_by=user.id).all()
+            if posts is not None:
+                try:
+                    post = posts[int(request.form['blog_id'])-1]
+                except Exception:
+                    return jsonify({"article": False})
+                return jsonify({"article": True, "caption": post.caption, "posted_by": user.username, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y")})
+            else: 
+                return jsonify({"article": False})
+        else: 
+            return jsonify({})
 
 @app.route("/admin", methods=['POST', 'GET'])
 @login_required
@@ -31,14 +59,14 @@ def admin():
     if current_user.admin_acc == True:
         if request.method == 'POST':
             try: 
-                db.session.add(Blog_Post(caption=request.form['caption'], body=request.form['body']))
+                db.session.add(Blog_Post(caption=request.form['caption'], posted_by=current_user.id, body=request.form['body']))
                 db.session.commit()
                 return redirect(url_for('admin'))
             except Exception as e: 
                 return render_template("error.html", title="Error", error=e)      
         else:
             posts = Blog_Post.query.order_by(Blog_Post.time_created).all()
-            users = User.query.order_by(User.user_id).all()
+            users = User.query.order_by(User.id).all()
             return render_template("admin.html", title="Admin", posts=posts, users=users)
     else:
         return render_template("error.html", title="Error", error="You're not allowed to use that page!")
@@ -75,13 +103,13 @@ def edit(id):
     else:
         return render_template("error.html", title="Error", error="You're not allowed to use that page!")
 
-@app.route("/manage_admins/<int:user_id>")
+@app.route("/manage_admins/<int:id>")
 @login_required
-def manage_admin(user_id):
+def manage_admin(id):
     if current_user.admin_acc == True:
         try: 
-            user = User.query.get_or_404(user_id)
-            if current_user.user_id != user.user_id:
+            user = User.query.get_or_404(id)
+            if current_user.id != user.id:
                 user.set_admin(not user.admin_acc)
                 db.session.commit()
                 return redirect(url_for('admin'))

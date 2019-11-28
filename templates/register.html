@@ -31,10 +31,8 @@
         registerPopup = () => {
             destElem = $("#register_popup_main")
             destWrapper = $("#register_popup_wrapper")
-            var fromElem = $('#register_form').serialize();
-            console.log(fromElem)
             
-            $.post('/register', fromElem).done(response => {
+            $.post('/register', $('#register_form').serialize()).done(response => {
                 if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
                                         else {
                                             destElem.html(response.text);
