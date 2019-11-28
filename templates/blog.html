@@ -3,35 +3,56 @@
 {% block head%}
     <!-- put additional css/js-links for index-/frontpage here -->
     <script>
-        $(window).on('scroll', () => check_ajax_height())
+        $(window).on('scroll', () => ajax_request())
 
         let lowestScrollPos = 0;
         let currentHeight = 0;
         let blog_id = 1;
         let max_article_reached = false;
+        let posts_in_queue = 0
+        let ajax_is_processing = false;
 
         $.ajaxSetup({ 
 			beforeSend: (xhr, settings) => {
 				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
 			} 
-		});
+        });
 
-        check_ajax_height = () => {
-            // if ($("#ajax_limiter")[0].getBoundingClientRect().y-2*$(window).height()<0) console.log("alarm")
+        ajax_request = () => {
+            posts_in_queue++;
+            if (!ajax_is_processing) ajax_manager();
+        }
+        
+        ajax_manager = async () => {
+            ajax_is_processing = true;
+            while (posts_in_queue>0) {
+                await check_ajax_height();
+                posts_in_queue--;
+            }
+            ajax_is_processing = false;
+        }
+
+        check_ajax_height = async () => {
             if (!max_article_reached) {
                 lowestScrollPos = document.documentElement.scrollTop>lowestScrollPos?document.documentElement.scrollTop:lowestScrollPos;
-                if (lowestScrollPos+5*$(window).height()>currentHeight) {
-                    $.post('/blog', "blog_id="+blog_id).done(response => {
+                if (lowestScrollPos+1*$(window).height()>currentHeight) {
+                    await $.post('/blog', "blog_id="+blog_id).done(response => {
                         if (response.article) {
-                            $("#content").html($("#content").html()+`<article id='article_${ blog_id }'><h2>${ response.caption }</h2><span>Posted <a href="#">${ response.time_created }</a> by <a href="#">semmelsamu</a></span><p>${ response.body }</p></article>`)
+                            $("#content").html( 
+                                $("#content").html().replace( /<!-- replace position for new blogs -->/g, `<article id='article_${ blog_id }'><h2>${ response.caption }</h2><span>Posted <a href="#">${ response.time_created }</a> by <a href="#">semmelsamu</a></span><p>${ response.body }</p></article>\n\n<!-- replace position for new blogs -->` )
+                            )
                             currentHeight += $(`#article_${ blog_id }`).height()
                             blog_id++;
-                        } else max_article_reached = true;
+                            ajax_request();
+                        } else {
+                            $("#blog_loading_article").remove();
+                            max_article_reached = true;
+                        }
                     }).fail(() => destElem.html('Error: Could not contact server.'));
                 }
             }
         }
-        check_ajax_height();
+        ajax_request();
     </script>
 {% endblock %}
 
@@ -42,25 +63,10 @@
 
     {% if posts|length < 1 %}
         <p>There are no Blogposts available!</p>
-    {% else %}
-        <table>
-            <tr>
-                <th>Time-created</th>
-                <th>Caption</th>
-                <th>Body</th>
-            </tr>
-            {% for post in posts %}
-                <tr id="post_{{ post.id }}">
-                    <td>{{ post.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
-                    <td>{{ post.caption }}</td>
-                    <td>{{ post.body }}</td>
-                </tr>
-            {% endfor %}
-        </table>
     {% endif %}
-	</article>
-	
-	<article>
+    </article>
+    
+    <article>
 		<h2>Lorem ipsum</h2>
 		<span>Posted <a href="#">21.11.2019</a> by <a href="#">semmelsamu</a></span>
 		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, <a href="#">no sea takimata</a> sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
@@ -72,4 +78,11 @@
 		<span>Posted <a href="#">21.11.2019</a> by <a href="#">semmelsamu</a></span>
 		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
     </article>
+    
+    <!-- replace position for new blogs -->
+
+    <article id="blog_loading_article">
+        <h2>loading...</h2>
+    </article>
+	
 {% endblock %}
