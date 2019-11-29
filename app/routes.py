@@ -11,10 +11,15 @@ from sqlalchemy import extract
 # def inject_login_status():
 #     return dict(login_status=current_user.is_authenticated)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html", title="404")
+
 @app.route("/")
 def index():
     return render_template("index.html", title="Startseite")
 
+# region blog_queries
 @app.route("/blog", methods=['POST', 'GET'])
 def blog():
     if request.method == 'GET':
@@ -70,7 +75,9 @@ def blog_date_query(day, month, year):
             except Exception:
                 return jsonify({"article": False})
         return jsonify({"article": False})
+# endregion
 
+# region admin pages
 @app.route("/admin", methods=['POST', 'GET'])
 @login_required
 def admin():
@@ -140,11 +147,9 @@ def manage_admin(id):
                 return render_template("error.html", title="Error", error=e)
     else:
         return render_template("error.html", title="Error", error="You're not allowed to use that page!")
+# endregion
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template("404.html", title="404")
-
+# region login / registration
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -189,7 +194,9 @@ def register():
             db.session.add(user)
             db.session.commit()
             return jsonify({"text": url_for('login'), "redirect": True})
+# endregion
 
+# region user_page
 @app.route('/user', methods=['GET'])
 @login_required
 def user_page():
@@ -212,4 +219,5 @@ def change_password():
                 return jsonify({"text": "Die 2 neuen Passwörter stimmen nicht überein.", "redirect": False})
         else: 
             return jsonify({"text": "Das ursprüngliche Passwort passt nicht.", "redirect": False})
+# endregion
         
