@@ -3,34 +3,11 @@
 
 {% block head%}
     <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
-    <script>
-        $.ajaxSetup({ 
-            beforeSend: (xhr, settings) => {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
-            } 
-        });
-
-        registerPopup = () => {
-            destElem = $("#register_popup_main")
-            destWrapper = $("#register_popup_wrapper")
-            
-            $.post('/register', $('#register_form').serialize()).done(response => {
-                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
-                                        else {
-                                            destElem.html(response.text);
-                                            destWrapper.css("display", "flex")
-                                        }
-            }).fail(() => destElem.html('Error: Could not contact server.'));
-        }
-
-        closeRegisterPopup = () => destWrapper.css({"display": "none"});
-    </script>
 {% endblock %}
 
 {% block content %}
     <form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
         <div class="inner">
-        
             <h1>Registrieren</h1>
         
             {{ form.hidden_tag() }}
@@ -48,4 +25,29 @@
             <button type="submit" onclick="closeRegisterPopup()">Submit</button>
         </div>
     </div>
+{% endblock %}
+
+{% block script_footer %}
+    <script>
+        $.ajaxSetup({ 
+            beforeSend: (xhr, settings) => {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
+            } 
+        });
+
+        registerPopup = () => {
+            destElem = $("#register_popup_main")
+            destWrapper = $("#register_popup_wrapper")
+            
+            $.post('/register', $('#register_form').serialize()).done(response => {
+                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
+                                        else {
+                                            destElem.html(response.text);
+                                            destWrapper.css("display", "flex")
+                                        }
+            }).fail(() => console.log('Error: Could not contact server.'));
+        }
+
+        closeRegisterPopup = () => destWrapper.css({"display": "none"});
+    </script>
 {% endblock %}

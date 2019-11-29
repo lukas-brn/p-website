@@ -46,7 +46,7 @@
                                         <article id='article_${ blog_id }'>
                                             <h2>${ response.caption }</h2>
                                             <span>Veröffentlicht am <a href="${url_date}">${ response.date_created }</a> von <a href="${url_author}">${ response.posted_by }</a></span>
-                                            <p>${ response.body }</p>
+                                            <p>${ compile(response.body) }</p>
                                         </article>
                                         \n
                                         \n
@@ -60,12 +60,29 @@
                             $("#blog_loading_article").remove();
                             max_article_reached = true;
                         }
-                    }).fail(() => destElem.html('Error: Could not contact server.'));
+                    }).fail(() => console.log('Error: Could not contact server.'));
                 }
             }
         }
+
+        compile = input => {
+            let style_conv = input
+                            .replace( /\[fat]/g, '<span class="fat_span">' ).replace(  /\[\/fat]/g, '</span>'  )
+                            .replace( /\[italic]/g, '<span class="italic_span">' ).replace(  /\[\/italic]/g, '</span>'  )
+                            .replace( /\[underline]/g, '<span class="underlined_span">' ).replace(  /\[\/underline]/g, '</span>'  )
+            let link_count = style_conv.split("[link]").length
+            for (i=0; i<=link_count; i++) {
+                link_start = style_conv.search(/\[link]/)+6;
+                link_end = style_conv.search(/\[\/link]/);
+                link_string = style_conv.substring(link_start, link_end);
+                style_conv = style_conv.replace(/\[link]/, '<a class="link_span" href="').replace(/\[\/link]/, '">'+link_string+'</a>')
+            }
+            return style_conv;                                                   
+        }
+
         ajax_request();
     </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/parse_styling.css') }}">
 {% endblock %}
 
 {% block content %} 

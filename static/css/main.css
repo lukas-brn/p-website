@@ -86,18 +86,40 @@ span.button:hover a {
 	padding-bottom: 4px;
 }
 
+/* orginal
 #content article span, #content article span>a {
 	font-size: 14px;
 	color: #666666;
+}*/
+
+/* @semmel */
+#content>article>span, #content>article>span>a {
+	font-size: 14px;
+	color: #666666;
 }
+/* @semmel end */
 
 #content img {
 	width: 100%;
 }
 
+
+/* orginal
 #content article p {
 	font-family: 'Roboto Slab', serif;
+}/*
+
+/* @semmel */
+#content>article>p, #content>article>p>span {
+	font-family: 'Roboto Slab', serif;
 }
+
+#content>article>p span {
+	padding: 0;
+	width: auto;
+}
+/* @semmel end */
+
 
 #container {
 	display: block;

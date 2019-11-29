@@ -1,0 +1,19 @@
+.fat_span, .italic_span, .underlined_span, .link_span {
+    display: inline-block !important;
+}
+
+.fat_span {
+    font-weight: bold !important;
+}
+
+.italic_span {
+    font-style: italic !important;
+}
+
+.underlined_span {
+    text-decoration: underline !important;
+}
+
+.link_span {
+    text-decoration: none !important;
+}

@@ -20,3 +20,7 @@ class ChangePasswordForm(FlaskForm):
     password2 = PasswordField(validators=[DataRequired()], render_kw={"placeholder": "Neues Passwort"})
     password3 = PasswordField(validators=[DataRequired(), EqualTo('password2')], render_kw={"placeholder": "Neues Passwort"})
     submit = SubmitField('Ändern')
+
+class ChangeUsernameForm(FlaskForm):
+    username = StringField(validators=[DataRequired()], render_kw={"placeholder": "Benutzername"})
+    submit = SubmitField('Ändern')

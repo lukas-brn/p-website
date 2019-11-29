@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, current_user, log
 from werkzeug.urls import url_parse
 from blog import app, db
 from app.models import Blog_Post, User
-from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
+from app.forms import LoginForm, RegistrationForm, ChangePasswordForm, ChangeUsernameForm
 from datetime import datetime
 from sqlalchemy import extract
 
@@ -114,7 +114,6 @@ def delete(id):
 def edit(id):
     if current_user.admin_acc == True:
         post = Blog_Post.query.get_or_404(id)
-
         if request.method == 'POST':
             post.caption = request.form['caption']
             post.body = request.form['body']
@@ -219,5 +218,22 @@ def change_password():
                 return jsonify({"text": "Die 2 neuen Passwörter stimmen nicht überein.", "redirect": False})
         else: 
             return jsonify({"text": "Das ursprüngliche Passwort passt nicht.", "redirect": False})
+
+@app.route('/change_username', methods=['GET', 'POST'])
+@login_required
+def change_username():
+    if request.method == 'GET':
+        form = ChangeUsernameForm()
+        return render_template('change_username.html', title='Benutzernamen ändern', username=current_user.username, form=form)
+    elif request.method == 'POST':
+        if User.query.filter(User.username == request.form['username']).first() is not None:
+            return jsonify({"text":"Bitte wählen Sie einen anderen Benutzernamen.", "redirect": False})
+        else:
+            current_user.username = request.form['username']
+            db.session.commit()
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('user_page')
+            return jsonify({"text": next_page, "redirect": True})
 # endregion
         
