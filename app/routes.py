@@ -4,6 +4,8 @@ from werkzeug.urls import url_parse
 from blog import app, db
 from app.models import Blog_Post, User
 from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
+from datetime import datetime
+from sqlalchemy import extract
 
 # @app.context_processor
 # def inject_login_status():
@@ -25,11 +27,11 @@ def blog():
                 user = User.query.get_or_404(post.posted_by).username
             except Exception:
                 user = "[deleted]"
-            return jsonify({"article": True, "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y")})
+            return jsonify({"article": True, "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
             return jsonify({"article": False})
 
-@app.route("/blog/<string:username>", methods=['POST', 'GET'])
+@app.route("/blog/user/<string:username>", methods=['POST', 'GET'])
 def blog_user_query(username):
     if request.method == 'GET':
         user = User.query.filter_by(username=username).first()
@@ -37,7 +39,7 @@ def blog_user_query(username):
             post_count = Blog_Post.query.filter_by(posted_by=user.id).count()
         else: 
             post_count = 0
-        return render_template("blog.html", title="Blog / "+username, post_count=post_count, route="/blog/"+username)
+        return render_template("blog.html", title="Blog / "+username, post_count=post_count, route="/blog/user/"+username)
     elif request.method == 'POST':
         user = User.query.filter_by(username=username).first()
         if user is not None:
@@ -47,11 +49,27 @@ def blog_user_query(username):
                     post = posts[int(request.form['blog_id'])-1]
                 except Exception:
                     return jsonify({"article": False})
-                return jsonify({"article": True, "caption": post.caption, "posted_by": user.username, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y")})
-            else: 
+                return jsonify({"article": True, "caption": post.caption, "posted_by": user.username, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+        return jsonify({"article": False})
+
+@app.route("/blog/date/<int:day>-<int:month>-<int:year>", methods=['POST', 'GET'])
+def blog_date_query(day, month, year):
+    if request.method == 'GET':
+        post_count = Blog_Post.query.filter(extract('year', Blog_Post.time_created) == year, extract('month', Blog_Post.time_created) == month, extract('day', Blog_Post.time_created) == day).count()
+        return render_template("blog.html", title="Blog / "+str(day)+"."+str(month)+"."+str(year), post_count=post_count, route="/blog/date/"+str(day)+"-"+str(month)+"-"+str(year))
+    elif request.method == 'POST':
+        posts = Blog_Post.query.filter(extract('year', Blog_Post.time_created) == year, extract('month', Blog_Post.time_created) == month, extract('day', Blog_Post.time_created) == day).all()
+        if posts is not None:
+            try:
+                post = posts[int(request.form['blog_id'])-1]
+                try:
+                    user = User.query.get_or_404(post.posted_by).username
+                except Exception:
+                    user = "[deleted]"
+                return jsonify({"article": True, "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            except Exception:
                 return jsonify({"article": False})
-        else: 
-            return jsonify({})
+        return jsonify({"article": False})
 
 @app.route("/admin", methods=['POST', 'GET'])
 @login_required
