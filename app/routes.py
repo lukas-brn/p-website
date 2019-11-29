@@ -127,12 +127,15 @@ def manage_admin(id):
     if current_user.admin_acc == True:
         try: 
             user = User.query.get_or_404(id)
-            if current_user.id != user.id:
-                user.set_admin(not user.admin_acc)
-                db.session.commit()
-                return redirect(url_for('admin'))
+            if user.id != current_user.id:
+                if user.id != 1:
+                    user.set_admin(not user.admin_acc)
+                    db.session.commit()
+                    return redirect(url_for('admin'))
+                else:
+                    raise Exception("Sie können den Admin-Status des Hauptadmins nicht verandern")
             else:
-                raise Exception("Sie können nicht ihren eigenen Admin-Status verändern")
+                raise Exception("Sie können ihren eigenen Admin-Status nicht verändern")
         except Exception as e: 
                 return render_template("error.html", title="Error", error=e)
     else:

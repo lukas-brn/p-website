@@ -26,19 +26,11 @@ if __name__ == "__main__":
     db.create_all()
 
     try: 
-        # make user admin by id
-        # User.query.get_or_404(3).set_admin(True)
-        # db.session.commit()
-
         # delete a user by id
         # db.session.delete(User.query.get_or_404(1))
-        # db.session.commit()
-
-        # delete a blog_post by id
-        # db.session.delete(Blog_Post.query.get_or_404(4))
         # db.session.commit()
         pass
     except:
         pass
 
-    app.run()
+    app.run(use_evalex=False)  # remove in production version

@@ -46,7 +46,7 @@
                                     /<!-- replace position for new blogs -->/g, `
                                         <article id='article_${ blog_id }'>
                                             <h2>${ response.caption }</h2>
-                                            <span>Posted <a href="${url_date}">${ response.date_created }</a> by <a href="${url_author}">${ response.posted_by }</a></span>
+                                            <span>Veröffentlicht am <a href="${url_date}">${ response.date_created }</a> von <a href="${url_author}">${ response.posted_by }</a></span>
                                             <p>${ response.body }</p>
                                         </article>
                                         \n
@@ -78,19 +78,6 @@
         <p>There are no Blogposts available!</p>
     {% endif %}
     </article>
-    
-    <!-- <article>
-		<h2>Lorem ipsum</h2>
-		<span>Posted <a href="#">21.11.2019</a> by <a href="#">semmelsamu</a></span>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, <a href="#">no sea takimata</a> sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-		<img src="https://images.pexels.com/photos/2194062/pexels-photo-2194062.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" />
-	</article>
-				
-	<article>
-		<h2>Some more text</h2>
-		<span>Posted <a href="#">21.11.2019</a> by <a href="#">semmelsamu</a></span>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-    </article> -->
     
     <!-- replace position for new blogs -->
 
