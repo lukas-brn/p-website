@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
-{% block head%}
-    <!-- put additional css/js-links for index-/frontpage here -->
+{% block head %}
     <script>
         $(window).on('scroll', () => ajax_request())
 
@@ -70,7 +69,6 @@
 {% endblock %}
 
 {% block content %} 
-    <!-- put content for blogpage here -->
 	<article>
     <h2>{{ title }}</h2>
 

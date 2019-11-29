@@ -1,16 +1,8 @@
-
 // Event Listeners
 
 $(window).resize(function() {
 	closeNavOnDesktop();
 });
-
-if(header)
-{
-	$(window).scroll(function() {
-		headerActions();
-	});
-}
 
 // Functions
 
@@ -30,21 +22,6 @@ function closeNavOnDesktop()
 		}
 	}
 }
-
-function headerActions() {
-	if($(window).scrollTop() == 0)
-	{
-		$("#nav").removeAttr("bg");
-	}
-	else
-	{
-		$("#nav").attr("bg", "bg");
-	}
-	
-	$("#header").css("background-position", "center "+$(window).scrollTop()*-0.3+"px");
-}
-
-headerActions();
 
 
 

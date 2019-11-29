@@ -1,11 +1,33 @@
 {% extends 'base.html' %}
 
 {% block head%}
-<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+
+	<script>
+		$.ajaxSetup({ 
+			beforeSend: (xhr, settings) => {
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
+			} 
+		});
+
+		let destElem = $("#login_popup_main")
+		let destWrapper = $("#login_popup_wrapper")
+
+		loginPopup = () => {
+			$.post('/login', $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked")).done(response => {
+				if (response.text!=="") if (response.redirect) window.location.href = response.text;
+										else {
+											destElem.html(response.text);
+											destWrapper.css("display", "flex")
+										}
+			}).fail(() => destElem.html('Error: Could not contact server.'));
+		}
+
+		closeLoginPopup = () => destWrapper.css({"display": "none"});
+	</script>
 {% endblock %}
 
 {% block content %} 
-
 	<form action="javascript:loginPopup()" id="login_form" class="login" autocomplete="off" novalidate>
 		<div class="inner">
 			<h1>Login</h1>
@@ -32,28 +54,4 @@
 			<button type="submit" onclick="closeLoginPopup()">Submit</button>
 		</div>
 	</div>
-
-	<script>
-		$.ajaxSetup({ 
-			beforeSend: (xhr, settings) => {
-				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
-			} 
-		});
-
-		let destElem = $("#login_popup_main")
-		let destWrapper = $("#login_popup_wrapper")
-
-		loginPopup = () => {
-			$.post('/login', $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked")).done(response => {
-				if (response.text!=="") if (response.redirect) window.location.href = response.text;
-										else {
-											destElem.html(response.text);
-											destWrapper.css("display", "flex")
-										}
-			}).fail(() => destElem.html('Error: Could not contact server.'));
-		}
-
-		closeLoginPopup = () => destWrapper.css({"display": "none"});
-	</script>
-	
 {% endblock %}

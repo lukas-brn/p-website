@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 
-{% block head%}
-    <!-- put additional css/js-links for index-/frontpage here -->
-{% endblock %}
-
 {% block content %} 
-
 	<h1>Account</h1>
 	
     <p>ID: {{ current_user.id }}</p>
@@ -18,5 +13,4 @@
     {% if current_user.admin_acc == true %}
     <span class="button"><a href="{{ url_for('admin') }}">Konsole</a></span>
     {% endif %}
-    
 {% endblock %}

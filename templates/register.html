@@ -2,11 +2,32 @@
 {% extends "base.html" %}
 
 {% block head%}
-<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+    <script>
+        $.ajaxSetup({ 
+            beforeSend: (xhr, settings) => {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
+            } 
+        });
+
+        registerPopup = () => {
+            destElem = $("#register_popup_main")
+            destWrapper = $("#register_popup_wrapper")
+            
+            $.post('/register', $('#register_form').serialize()).done(response => {
+                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
+                                        else {
+                                            destElem.html(response.text);
+                                            destWrapper.css("display", "flex")
+                                        }
+            }).fail(() => destElem.html('Error: Could not contact server.'));
+        }
+
+        closeRegisterPopup = () => destWrapper.css({"display": "none"});
+    </script>
 {% endblock %}
 
 {% block content %}
-    
     <form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
         <div class="inner">
         
@@ -21,29 +42,6 @@
         </div>
     </form>
 
-    <script>
-        $.ajaxSetup({ 
-            beforeSend: (xhr, settings) => {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
-            } 
-        });
-    
-        registerPopup = () => {
-            destElem = $("#register_popup_main")
-            destWrapper = $("#register_popup_wrapper")
-            
-            $.post('/register', $('#register_form').serialize()).done(response => {
-                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
-                                        else {
-                                            destElem.html(response.text);
-                                            destWrapper.css("display", "flex")
-                                        }
-            }).fail(() => destElem.html('Error: Could not contact server.'));
-        }
-    
-        closeRegisterPopup = () => destWrapper.css({"display": "none"});
-    </script>
-        
     <div id="register_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
         <div id="register_popup_inner" style="height: 400px;">
             <div id="register_popup_main"></div>
