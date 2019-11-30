@@ -21,6 +21,8 @@ csrf.init_app(app)
 login = LoginManager(app)
 login.login_view = 'login'
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
 from app.routes import *
 from app.models import *
 
@@ -31,6 +33,9 @@ if __name__ == "__main__":
         # delete a user by id
         # db.session.delete(User.query.get_or_404(1))
         # db.session.commit()
+
+        User.query.get_or_404(1).admin_acc = True
+        db.session.commit()
         pass
     except:
         pass

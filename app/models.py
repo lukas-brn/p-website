@@ -10,6 +10,7 @@ class Blog_Post(db.Model):
     posted_by = db.Column(db.Integer, db.ForeignKey("user.id"))
     body = db.Column(db.String, nullable=False)
     time_created = db.Column(db.DateTime, default=datetime.now() )
+    images = db.Column(db.String)
 
     def __repr__(self):
         return '<Blog_Post %r>' % self.id

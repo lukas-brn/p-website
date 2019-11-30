@@ -2,11 +2,13 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
-from blog import app, db
+from blog import app, db, ALLOWED_EXTENSIONS
 from app.models import Blog_Post, User
 from app.forms import LoginForm, RegistrationForm, ChangePasswordForm, ChangeUsernameForm
 from datetime import datetime
 from sqlalchemy import extract
+import os
+from werkzeug.utils import secure_filename
 # endregion
 
 # @app.context_processor
@@ -20,6 +22,13 @@ def page_not_found(e):
 @app.route("/")
 def index():
     return render_template("index.html", title="Startseite")
+
+def max_post_id():
+    return Blog_Post.query.order_by(-Blog_Post.id).first().id
+
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # region blog_queries
 @app.route("/blog", methods=['POST', 'GET'])
@@ -104,8 +113,28 @@ def blog_post(id):
 def admin():
     if current_user.admin_acc == True:
         if request.method == 'POST':
+            images = []
+            try_image = 0
+            is_image = True
+            while True:
+                try:
+                    try_image+=1
+                    file = request.files['file'+str(try_image)]
+                    if file.filename != '':
+                        if file and allowed_file(file.filename):
+                            filename = secure_filename(file.filename)
+                            path = 'static/blog_images/'+str(max_post_id()+1)
+                            if not os.path.exists(path):
+                                os.makedirs(path)
+                            file.save(path+'/'+filename)
+                            images.append(filename)
+                except:
+                    break
+            result_string = ""
+            for image in images:
+                result_string += str(max_post_id()+1)+'/'+image+' ; '
             try: 
-                db.session.add(Blog_Post(caption=request.form['caption'], posted_by=current_user.id, body=request.form['body']))
+                db.session.add(Blog_Post(caption=request.form['caption'], posted_by=current_user.id, body=request.form['body'], images=result_string))
                 db.session.commit()
                 return redirect(url_for('admin'))
             except Exception as e: 

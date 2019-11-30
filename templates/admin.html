@@ -32,6 +32,8 @@
                         <a href="{{ url_for( 'delete', id=post.id ) }}">Delete</a>
                         <br>
                         <a href="{{ url_for( 'edit', id=post.id ) }}">Edit</a>
+                        <br>
+                        <a href="{{ url_for( 'blog_post', id=post.id ) }}">Go To</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -78,7 +80,7 @@
                 all_have_files = false;
                 last = i;
             }
-            $( `<input type=file name='file${ $("input[type=file]").length+1 }' id='file_input_${ $("input[type=file]").length+1 }' onchange='set_file_input()'>` ).insertAfter( $("input[type=file]")[last] );
+            if (all_have_files == true) $( `<input type=file name='file${ $("input[type=file]").length+1 }' id='file_input_${ $("input[type=file]").length+1 }' onchange='set_file_input()'>` ).insertAfter( $("input[type=file]")[last] );
             
         }
     </script>
