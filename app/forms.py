@@ -1,6 +1,8 @@
+# region imports
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
+# endregion
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[DataRequired()], render_kw={"placeholder": "Benutzername"})

@@ -76,6 +76,12 @@ span.button:hover a {
 	color: #006699;
 }
 
+/* @semmel */
+#content>article>a {
+	color: #000;
+}
+/* @semmel end */
+
 #content * a:hover {
 	text-decoration: underline;
 }

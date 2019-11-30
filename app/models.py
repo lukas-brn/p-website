@@ -1,6 +1,8 @@
+# region imports
 from blog import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+# endregion
 
 class Blog_Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
