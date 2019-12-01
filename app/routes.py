@@ -25,6 +25,7 @@ def page_not_found(e):
 def index():
     return render_template("index.html", title="Startseite")
 
+# region helper functions
 def max_post_id():
     return Blog_Post.query.order_by(-Blog_Post.id).first().id
 
@@ -66,6 +67,7 @@ def parse_images(id):
         return image_list
     except:
         return []
+# endregion
 
 # region blog_queries
 @app.route("/blog", methods=['POST', 'GET'])
@@ -270,7 +272,7 @@ def register():
         form = RegistrationForm()
         if current_user.is_authenticated:
             return redirect(url_for('index'))
-        return render_template('register.html', title='Register', form=form)
+        return render_template('register.html', title='Registrieren', form=form)
     elif request.method == 'POST':
         form = request.form
         if User.query.filter_by(username=form['username'].strip()).first() is not None:
