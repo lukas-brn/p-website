@@ -46,7 +46,7 @@
                                     /<!-- replace position for new blogs -->/g, `
                                         <article id='article_${ blog_id }'>
                                             <h2><a href="${ url_post_main }">${ response.caption }</a></h2>
-                                            <span>Veröffentlicht am <a href="${ url_date }">${ response.date_created }</a> von <a href="${ url_author }">${ response.posted_by }</a></span>
+                                            <span class="subTitle">Veröffentlicht am <a href="${ url_date }">${ response.date_created }</a> von <a href="${ url_author }">${ response.posted_by }</a></span>
                                             <p>${ response.body }</p>
                                         </article>
                                         \n
