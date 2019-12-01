@@ -19,6 +19,11 @@ import re
 
 @app.errorhandler(404)
 def page_not_found(e):
+    current_url = request.url
+    if current_url[-1] == '/':
+        return redirect(current_url[0:-1])
+    elif current_url.find('blog'):
+        return redirect( url_for('blog') )
     return render_template("404.html", title="404")
 
 @app.route("/")
