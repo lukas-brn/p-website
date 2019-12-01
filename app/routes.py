@@ -38,7 +38,9 @@ def max_post_id():
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# endregion
 
+# region parsing functions
 def parse_body(input, id):
     style_conv = re.sub( r'\\n', '<br/>', input )
     style_conv = re.sub( r"\[bold]", '<span class="fat_span">', style_conv )
@@ -50,8 +52,23 @@ def parse_body(input, id):
     style_conv = re.sub( r"\[head]", '</p><h3>', style_conv )
     style_conv = re.sub( r"\[/head]", '</h3><p>', style_conv )
 
+    list_count = len(style_conv.split("[list]"))
+    for i in range(1, list_count):
+        list_start = style_conv.find( "[list]" )+6
+        list_end = style_conv.find( "[/list]" )
+        list_string = style_conv[list_start:list_end]
+        style_conv = style_conv[0: list_start:] + style_conv[list_end::]
+        final_list_string = ""
+        item_list = list_string.split(";")
+        for list_item in item_list:
+            list_item = re.sub( r"\r\n", '', list_item)
+            final_list_string += '<li>- '+list_item+'</li>\n'
+        print(final_list_string[0:-1])
+        style_conv = re.sub( r"\[list]", '<ul class="parse_list">'+final_list_string, style_conv, 1 )
+        style_conv = re.sub( r"\[/list]", '</ul>', style_conv, 1 )
+
     link_count = len(style_conv.split("[link]"))
-    for i in range(0, link_count):
+    for i in range(1, link_count):
         link_start = style_conv.find( "[link]" )+6
         link_end = style_conv.find( "[/link]" )
         link_string = style_conv[link_start: link_end]
@@ -59,7 +76,7 @@ def parse_body(input, id):
         style_conv = re.sub( r"\[/link]", '">'+link_string+'</a>', style_conv, 1 )
 
     img_count = len(re.split(r'\[img([0-9]+)', style_conv))
-    for i in range(0, img_count):
+    for i in range(1, img_count):
         img_search = re.search( r'\[img([0-9]+)]', style_conv)
         if img_search is not None:
             img_start = img_search.span()[0]+4

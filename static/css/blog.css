@@ -47,6 +47,10 @@ article h2:hover>a {
     text-decoration: underline;
 }
 
+.parse_list {
+	list-style: none;
+}
+
 .img_text_span {
     font-size: 12px;
 	text-align: right;
