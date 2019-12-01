@@ -22,7 +22,8 @@ def page_not_found(e):
     current_url = request.url
     if current_url[-1] == '/':
         return redirect(current_url[0:-1])
-    elif current_url.find('blog'):
+    elif current_url.find('blog')>=0:
+        print(current_url.find('blog'))
         return redirect( url_for('blog') )
     return render_template("404.html", title="404")
 
@@ -43,9 +44,8 @@ def parse_body(input, id):
     style_conv = re.sub( r"\[bold]", '<span class="fat_span">', style_conv )
     style_conv = re.sub( r"\[italic]", '<span class="italic_span">', style_conv )
     style_conv = re.sub( r"\[underline]", '<span class="underlined_span">', style_conv )
-    style_conv = re.sub( r"\[img_text]", '<span class="img_text_span">',  style_conv )
 
-    style_conv = re.sub(  r"(\[/bold])|(\[/italic])|(\[/underline])|(\[/img_text])", '</span>', style_conv )
+    style_conv = re.sub(  r"(\[/bold])|(\[/italic])|(\[/underline])", '</span>', style_conv )
 
     style_conv = re.sub( r"\[head]", '</p><h3>', style_conv )
     style_conv = re.sub( r"\[/head]", '</h3><p>', style_conv )
@@ -65,7 +65,8 @@ def parse_body(input, id):
             img_start = img_search.span()[0]+4
             img_end = img_search.span()[1]-1
             img_link = '/static/blog_images/'+str(parse_images(id)[int(style_conv[img_start:img_end])-1])
-            style_conv = re.sub( r'\[img(\d+)]', '</p><a href="'+img_link+'"><img src="'+img_link+'" alt="img"></a><p>', style_conv, 1 )
+            style_conv = re.sub( r'\[img(\d+)]', '</p><a href="'+img_link+'"><img src="'+img_link+'" alt="img"></a><span class="img_text_span">', style_conv, 1 )
+            style_conv = re.sub( r'\[/img]', '</span><p>', style_conv, 1 )
     return style_conv
 
 def parse_images(id):
@@ -337,4 +338,9 @@ def change_username():
                 next_page = url_for('user_page')
             return jsonify({"text": next_page, "redirect": True})
 # endregion
-        
+
+#region contact etc
+@app.route("/kontakt")
+def contact():
+    return render_template('contact.html', title="Kontakt")  
+# endregion     

@@ -35,7 +35,7 @@
 				<ul>
 					<li><a href="{{ url_for('index') }}#begin">Startseite</a></li>
 					<li><a href="{{ url_for('blog') }}">Blog</a></li>
-					<li><a href="#">Kontakt</a></li>
+					<li><a href="{{ url_for('contact') }}">Kontakt</a></li>
 					{% if current_user.is_authenticated %}
 					<li><a href="{{ url_for('user_page') }}">Account</a></li>
 					<li><a href="{{ url_for('logout') }}">Logout</a></li>
