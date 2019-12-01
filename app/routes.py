@@ -9,6 +9,8 @@ from datetime import datetime
 from sqlalchemy import extract
 import os
 from werkzeug.utils import secure_filename
+import json
+import re
 # endregion
 
 # @app.context_processor
@@ -30,6 +32,40 @@ def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def parse_body(input, id):
+    style_conv = re.sub( r'\\n', '<br/>', input )
+    style_conv = re.sub( r"\[bold]", '<span class="fat_span">', style_conv )
+    style_conv = re.sub( r"\[italic]", '<span class="italic_span">', style_conv )
+    style_conv = re.sub( r"\[underline]", '<span class="underlined_span">', style_conv )
+
+    style_conv = re.sub(  r"(\[/bold])|(\[/italic])|(\[/underline])", '</span>', style_conv )
+
+    link_count = len(style_conv.split("[link]"))
+    for i in range(0, link_count):
+        link_start = style_conv.find( "[link]" )+6
+        link_end = style_conv.find( "[/link]" )
+        link_string = style_conv[link_start: link_end]
+        style_conv = re.sub( r"\[link]", '<a class="link_span" href="', style_conv, 1 )
+        style_conv = re.sub( r"\[/link]", '">'+link_string+'</a>', style_conv, 1 )
+
+    img_count = len(re.split(r'\[img([0-9]+)', style_conv))
+    for i in range(0, img_count):
+        img_search = re.search( r'\[img([0-9]+)]', style_conv)
+        if img_search is not None:
+            img_start = img_search.span()[0]+4
+            img_end = img_search.span()[1]-1
+            style_conv = re.sub( r'\[img(\d+)]', '<img src="/static/blog_images/'+str(parse_images(id)[int(style_conv[img_start:img_end])-1])+'" alt="img">', style_conv, 1 )
+    return style_conv
+
+def parse_images(id):
+    try:
+        post = Blog_Post.query.get_or_404(id)
+        image_list = post.images.split(" ; ")
+        image_list.pop()
+        return image_list
+    except:
+        return []
+
 # region blog_queries
 @app.route("/blog", methods=['POST', 'GET'])
 def blog():
@@ -43,7 +79,7 @@ def blog():
                 user = User.query.get_or_404(post.posted_by).username
             except Exception:
                 user = "[deleted]"
-            return jsonify({"article": True, "id": request.form['blog_id'], "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            return jsonify({"article": True, "id": post.id, "caption": post.caption, "images": parse_images(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
             return jsonify({"article": False})
 
@@ -65,7 +101,8 @@ def blog_user_query(username):
                     post = posts[int(request.form['blog_id'])-1]
                 except Exception:
                     return jsonify({"article": False})
-                return jsonify({"article": True, "id": request.form['blog_id'], "caption": post.caption, "posted_by": user.username, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+                image_list = parse_images(post.id)
+                return jsonify({"article": True, "id": post.id, "caption": post.caption, "images": parse_images(post.id), "posted_by": user.username, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         return jsonify({"article": False})
 
 @app.route("/blog/date/<int:day>-<int:month>-<int:year>", methods=['POST', 'GET'])
@@ -82,7 +119,8 @@ def blog_date_query(day, month, year):
                     user = User.query.get_or_404(post.posted_by).username
                 except Exception:
                     user = "[deleted]"
-                return jsonify({"article": True, "id": request.form['blog_id'], "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+                image_list = parse_images(post.id)
+                return jsonify({"article": True, "id": post.id, "caption": post.caption, "images": parse_images(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
             except Exception:
                 return jsonify({"article": False})
         return jsonify({"article": False})
@@ -102,7 +140,8 @@ def blog_post(id):
                 user = User.query.get_or_404(post.posted_by).username
             except Exception:
                 user = "[deleted]"
-            return jsonify({"article": True, "id": id, "is_main_page": True, "caption": post.caption, "posted_by": user, "body": post.body, "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            image_list = parse_images(id)
+            return jsonify({"article": True, "id": id, "is_main_page": True, "caption": post.caption, "images": parse_images(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
             return jsonify({"article": False})
 # endregion
