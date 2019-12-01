@@ -1,0 +1,22 @@
+
+#footer {
+	width: 100%;
+	background: #121212;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+#footer p {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 24px;
+	color: #888888;
+	box-sizing: border-box;
+}
+
+#footer a {
+	color: #FFFFFF;
+}
+

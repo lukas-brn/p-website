@@ -1,4 +1,11 @@
 
+:root {
+	--nav-link-color: #DEDEDE;
+	--nav-link-color-hover: #FFFFFF;
+	
+	--link-color: #0054bf;
+}
+
 * {
 	margin: 0;
 	padding: 0;
@@ -17,39 +24,6 @@ body {
 	overflow-y: scroll;
 }
 
-hr {
-	width: 100%;
-	border: none;
-	height: 1px;
-	background: #CCC;
-	margin: 16px 0;
-}
-
-span.button {
-	padding: 8px 12px;
-	cursor: pointer;
-	background: #2654C8;
-	color: #FFFFFF;
-	border: none;
-	transition: background 200ms;
-	box-sizing: border-box;
-	display: inline-block;
-	border-radius: 4px;
-	margin: 16px 4px 16px 0;
-}
-
-span.button, span.button a {
-	color: #FFFFFF !important;
-}
-
-span.button:hover {
-	background: #173A94;
-}
-
-span.button:hover a {
-	text-decoration: none !important;
-}
-
 .spacer {
 	width: 100vw;
 }
@@ -61,71 +35,6 @@ span.button:hover a {
 .spacer.footer {
 	height: 105px;
 }
-
-#content article *, #content article {
-	padding-bottom: 18px;
-	display: block;
-}
-
-#content a, b {
-	display: inline;
-	padding: 0;
-}
-
-#content * a {
-	color: #006699;
-}
-
-/* @semmel */
-#content>article>a {
-	color: #000;
-}
-/* @semmel end */
-
-#content * a:hover {
-	text-decoration: underline;
-}
-
-#content h1, #content h2 {
-	font-size: 24px;
-	font-weight: 900;
-	padding-bottom: 4px;
-}
-
-/* orginal
-#content article span, #content article span>a {
-	font-size: 14px;
-	color: #666666;
-}*/
-
-/* @semmel */
-#content>article>span, #content>article>span>a {
-	font-size: 14px;
-	color: #666666;
-}
-/* @semmel end */
-
-#content img {
-	width: 100%;
-}
-
-
-/* orginal
-#content article p {
-	font-family: 'Roboto Slab', serif;
-}/*
-
-/* @semmel */
-#content>article>p, #content>article>p>span {
-	font-family: 'Roboto Slab', serif;
-}
-
-#content>article>p span {
-	padding: 0;
-	width: auto;
-}
-/* @semmel end */
-
 
 #container {
 	display: block;
@@ -141,24 +50,31 @@ span.button:hover a {
 	box-sizing: border-box;
 }
 
-#footer {
-	width: 100%;
-	background: #121212;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
+
+/* GENERAL TEXT AND IMAGE STYLES */
+
+h1, h2 {
+	font-weight: 900;
 }
 
-#footer p {
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 24px;
-	color: #888888;
-	box-sizing: border-box;
+h1 {
+	font-size: 28px;
 }
 
-#footer a {
-	text-decoration: none;
-	color: #FFFFFF;
+h2 {
+	font-size: 24px;
 }
+
+a {
+	color: var(--link-color);
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+img {
+	max-width: 100%;
+}
+
+

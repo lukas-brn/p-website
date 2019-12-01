@@ -13,6 +13,7 @@
 		
 		<link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 		<link href="{{ url_for('static', filename='css/nav.css') }}" rel="stylesheet">
+		<link href="{{ url_for('static', filename='css/footer.css') }}" rel="stylesheet">
 		
 		<script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
 		<script>let title = "{{ title }}";</script>
@@ -50,7 +51,11 @@
 			{% block content_header %}  {% endblock %}
 			
 			<section id="content">
+			
+				<h1>{{ title }}</h1>
+			
 				{% block content %}  {% endblock %}
+				
 			</section>
 			
 			<div class="spacer footer"></div>

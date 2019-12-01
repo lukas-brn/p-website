@@ -36,12 +36,12 @@ function headerActions() {
 	if($(window).scrollTop() == 0)
 	{
 		$("#nav").removeAttr("bg");
-		$("#scrollDownButton").fadeIn();
+		$("#scrollDownButton").attr("visible", "visible");
 	}
 	else
 	{
 		$("#nav").attr("bg", "bg");
-		$("#scrollDownButton").fadeOut();
+		$("#scrollDownButton").removeAttr("visible");
 	}
 			
 	$("#header").css("background-position", "center "+$(window).scrollTop()*-0.3+"px");

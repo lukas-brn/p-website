@@ -66,19 +66,42 @@
 	animation-duration: 3s;
 }
 
-#header div {
+@keyframes button-appear {
+	0% {
+		bottom: 24px; 
+		opacity: 0;
+	}
+	90% {
+		bottom: 24px; 
+		opacity: 0;
+	}
+	100% {
+		bottom: 48px;
+		opacity: 1;
+	}
+}
+
+#scrollDownButton {
 	position: absolute;
 	left: 50%;
 	bottom: 48px;
+	animation-name: button-appear;
+	animation-duration: 3s;
+	transition: opacity 200ms;
+	opacity: 0;
 }
 
-#header a {
+#scrollDownButton[visible] {
+	opacity: 1;
+}
+
+#scrollDownButton a {
 	position: relative;
 	display: block;
 	left: -50%;
 }
 
-#header div a {
+#scrollDownButton a {
 	height: 40px;
 	width: 40px;
 	padding: 8px;
@@ -87,11 +110,11 @@
 	transition: background 300ms;
 }
 
-#header div a:hover {
+#scrollDownButton a:hover {
 	background: rgba(0,0,0,0.6);
 }
 
-#header div a svg {
+#scrollDownButton a svg {
 	height: 40px;
 	width: 40px;
 }

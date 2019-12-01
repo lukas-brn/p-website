@@ -1,7 +1,4 @@
 
-:root {
-	--link-color: #DEDEDE;
-}
 
 #nav {
 	width: 100%;
@@ -28,7 +25,7 @@
 }
 
 #nav a {
-	color: var(--link-color);
+	color: var(--nav-link-color);
 	text-transform: uppercase;
 	font-size: 14px;
 	line-height: 48px;
@@ -47,7 +44,8 @@
 }
 
 #nav a:hover {
-	color: #99CCFF;
+	color: var(--nav-link-color-hover);
+	text-decoration: none;
 }
 
 #nav button {
@@ -60,7 +58,7 @@
 }
 
 #nav svg .line {
-	fill: var(--link-color);
+	fill: var(--nav-link-color);
 	transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out, fill 100ms;
 }
 
@@ -89,6 +87,7 @@
 		height: calc(100% - 72px);
 		overflow-y: scroll;
 		overflow-x: hidden;
+		scrollbar-width: none;
 	}
 	
 	#nav button {
@@ -98,7 +97,7 @@
 	}
 	
 	#nav button:hover svg .line {
-		fill: #99CCFF;
+		fill: var(--nav-link-color-hover);
 	}
 	
 	#nav[open] {
