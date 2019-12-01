@@ -37,8 +37,9 @@ def parse_body(input, id):
     style_conv = re.sub( r"\[bold]", '<span class="fat_span">', style_conv )
     style_conv = re.sub( r"\[italic]", '<span class="italic_span">', style_conv )
     style_conv = re.sub( r"\[underline]", '<span class="underlined_span">', style_conv )
+    style_conv = re.sub( r"\[img_text]", '<span class="img_text_span">',  style_conv )
 
-    style_conv = re.sub(  r"(\[/bold])|(\[/italic])|(\[/underline])", '</span>', style_conv )
+    style_conv = re.sub(  r"(\[/bold])|(\[/italic])|(\[/underline])|(\[/img_text])", '</span>', style_conv )
 
     link_count = len(style_conv.split("[link]"))
     for i in range(0, link_count):
