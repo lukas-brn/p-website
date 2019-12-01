@@ -1,0 +1,54 @@
+
+article {
+	margin-top: 24px;
+}
+
+article p, article img {
+	margin-top: 16px;
+}
+
+article img {
+	box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+}
+
+article h2>a {
+	font-size: 24px;
+	font-weight: 900;
+	color: #000000;
+}
+
+article h2:hover>a {
+	text-decoration: none;
+}
+
+.subTitle, .subTitle * {
+	font-size: 14px;
+	color: #444444;
+}
+
+
+
+
+
+.fat_span, .italic_span, .underlined_span, .link_span, .img_text_span {
+    display: inline-block;
+}
+
+.fat_span {
+    font-weight: bold;
+}
+
+.italic_span {
+    font-style: italic;
+}
+
+.underlined_span {
+    text-decoration: underline;
+}
+
+.img_text_span {
+    font-size: 12px;
+	text-align: right;
+	width: 100%;
+	font-style: italic;
+}

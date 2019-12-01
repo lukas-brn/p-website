@@ -53,7 +53,7 @@ body {
 
 /* GENERAL TEXT AND IMAGE STYLES */
 
-h1, h2 {
+h1, h2, h3 {
 	font-weight: 900;
 }
 
@@ -63,6 +63,10 @@ h1 {
 
 h2 {
 	font-size: 24px;
+}
+
+h3 {
+	font-size: 20px;
 }
 
 a {
