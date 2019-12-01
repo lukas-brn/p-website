@@ -47,6 +47,9 @@ def parse_body(input, id):
 
     style_conv = re.sub(  r"(\[/bold])|(\[/italic])|(\[/underline])|(\[/img_text])", '</span>', style_conv )
 
+    style_conv = re.sub( r"\[head]", '</p><h3>', style_conv )
+    style_conv = re.sub( r"\[/head]", '</h3><p>', style_conv )
+
     link_count = len(style_conv.split("[link]"))
     for i in range(0, link_count):
         link_start = style_conv.find( "[link]" )+6
@@ -61,7 +64,8 @@ def parse_body(input, id):
         if img_search is not None:
             img_start = img_search.span()[0]+4
             img_end = img_search.span()[1]-1
-            style_conv = re.sub( r'\[img(\d+)]', '<img src="/static/blog_images/'+str(parse_images(id)[int(style_conv[img_start:img_end])-1])+'" alt="img">', style_conv, 1 )
+            img_link = '/static/blog_images/'+str(parse_images(id)[int(style_conv[img_start:img_end])-1])
+            style_conv = re.sub( r'\[img(\d+)]', '</p><a href="'+img_link+'"><img src="'+img_link+'" alt="img"></a><p>', style_conv, 1 )
     return style_conv
 
 def parse_images(id):
@@ -140,7 +144,7 @@ def blog_post(id):
     if request.method == 'GET':
         post = Blog_Post.query.get_or_404(id)
         if post is not None:
-            return render_template("blog.html", title=post.caption, post_count=1, route="/blog/post/"+str(id), id=str(id))
+            return render_template("blog.html", title="Beitrag", post_count=1, route="/blog/post/"+str(id), id=str(id))
     elif request.method == 'POST':
         try:
             post = Blog_Post.query.get_or_404(id)

@@ -56,10 +56,7 @@
                             )
                             currentHeight += $(`#article_${ blog_id }`).height()
                             blog_id++;
-                            if (response.is_main_page) {
-                                $("#blog_post_head").remove();
-                                stopAjax();
-                            }
+                            if (response.is_main_page) stopAjax();
                             ajax_request();
                         } else stopAjax();
                     }).fail(() => console.log('Error: Could not contact server.'));
@@ -79,9 +76,10 @@
 {% endblock %}
 
 {% block content %} 
-	<article id="blog_post_head">
-    
-
+	<article>
+    {% if request.path != "/blog" %}
+    <a href="{{ url_for('blog') }}">Zurück zum Blog</a>
+    {% endif %}
     {% if post_count == 0 %}
         <p>There are no Blogposts available!</p>
     {% endif %}

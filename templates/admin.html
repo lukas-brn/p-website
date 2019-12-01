@@ -6,7 +6,7 @@
     <form action="/admin" method="POST" enctype=multipart/form-data id="blog_post_form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="text" name="caption">
-        <input type="text" name="body">
+        <textarea type="text" name="body"></textarea>
         <input type=file name="file1" id="file_input_1" onchange="set_file_input()">
         <!-- replace position for new file-inputs -->
         <input type="submit" value="Post Blog">
