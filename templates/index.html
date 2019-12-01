@@ -3,35 +3,18 @@
 {% block head%} 
 	<link href="{{ url_for('static', filename='css/header.css') }}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:900&display=swap" rel="stylesheet"> 
-
-	<script>
-		$(window).scroll(headerActions);
-
-		function headerActions() {
-			if($(window).scrollTop() == 0)
-			{
-				$("#nav").removeAttr("bg");
-			}
-			else
-			{
-				$("#nav").attr("bg", "bg");
-			}
-			
-			$("#header").css("background-position", "center "+$(window).scrollTop()*-0.3+"px");
-		}
-
-		headerActions();
-	</script>
 {% endblock %}
 
 {% block content_header %} 
+	<div id="headerContainer">
 	<header id="header"> 
 		
 		<h1>Der Weg ins All</h1>
 		
-		<div><a href="#begin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg></a></div>
+		<div id="scrollDownButton"><a href="#begin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg></a></div>
 		
 	</header>
+	</div>
 
 	<div id="begin"></div>
 {% endblock %}

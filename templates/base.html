@@ -15,6 +15,7 @@
 		<link href="{{ url_for('static', filename='css/nav.css') }}" rel="stylesheet">
 		
 		<script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+		<script>let title = "{{ title }}";</script>
 		
 		{% block head %}  {% endblock %}
 		
@@ -31,7 +32,7 @@
 				<button onclick="toggleMenu();"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0 h24v24H0z" fill="none"/><path class="line line-1" d="M3 8h18v-2H3v2z"/><path class="line line-2" d="M3 13h18v-2H3v2z"/><path class="line line-3" d="M3 13h18v-2H3v2z"/><path class="line line-4" d="M3 18h18v-2H3v2z"/></svg></button>
 					
 				<ul>
-					<li><a href="{{ url_for('index') }}">Startseite</a></li>
+					<li><a href="{{ url_for('index') }}#begin">Startseite</a></li>
 					<li><a href="{{ url_for('blog') }}">Blog</a></li>
 					<li><a href="#">Kontakt</a></li>
 					{% if current_user.is_authenticated %}

@@ -1,15 +1,49 @@
 
+@keyframes bg-appear {
+	0% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+#headerContainer {
+	background-color: #000000;
+}
+
 #header {
 	width: 100%;
 	height: 100vh;
 	margin-top: -96px;
 	position: relative;
 	background-color: #000000;
-	background-image: url("https://www.mint-netzwerk-essen.de/wp-content/uploads/2019/06/FOM_MINT-Feriencamp-Stratosphaerenflug-2.jpg");
+	background-image: url("../img/bg.jpg");
 	background-repeat: no-repeat;
     background-size: cover;
 	background-attachment: fixed;
 	background-position: center 0px; 
+	
+	animation-name: bg-appear;
+	animation-duration: 3s;
+}
+
+@keyframes h1-appear {
+	0% {
+		top: 55%; 
+		opacity: 0;
+	}
+	30% {
+		top: 55%; 
+		opacity: 0;
+	}
+	100% {
+		top: 50%; 
+		opacity: 1;
+	}
 }
 
 #header h1 {
@@ -27,12 +61,15 @@
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
+	
+	animation-name: h1-appear;
+	animation-duration: 3s;
 }
 
 #header div {
 	position: absolute;
 	left: 50%;
-	bottom: 24px;
+	bottom: 48px;
 }
 
 #header a {
@@ -46,12 +83,12 @@
 	width: 40px;
 	padding: 8px;
 	border-radius: 50%;
-	background: transparent;
+	background: rgba(0,0,0,0.3);
 	transition: background 300ms;
 }
 
 #header div a:hover {
-	background: rgba(0,0,0,0.3);
+	background: rgba(0,0,0,0.6);
 }
 
 #header div a svg {
