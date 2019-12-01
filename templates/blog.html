@@ -39,7 +39,7 @@
                     await $.post(route, "blog_id="+blog_id).done(response => {
                         if (response.article) {
                             let url_author = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by)
-                            let url_date = "{{ url_for('blog_date_query', day=0, month=0, year=0) }}".replace("0", response.day).replace("0", response.month).replace("0", response.year)
+                            let url_date = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year)
                             let url_post_main = "{{ url_for('blog_post', id=0) }}".replace("0", response.id)
                             $("#content").html( 
                                 $("#content").html().replace( 
@@ -47,7 +47,8 @@
                                         <article id='article_${ blog_id }'>
                                             <a href="${ url_post_main }"><h2>${ response.caption }</h2></a>
                                             <span>Veröffentlicht am <a href="${ url_date }">${ response.date_created }</a> von <a href="${ url_author }">${ response.posted_by }</a></span>
-                                            <p>${ compile(response.body) }</p>
+                                            
+                                            <p>${ response.body }</p>
                                         </article>
                                         \n
                                         \n
@@ -70,22 +71,6 @@
         stopAjax = () => {
             $("#blog_loading_article").remove();
             max_article_reached = true;
-        }
-
-        compile = input => {
-            let style_conv = input
-                            .replace( /\[fat]/g, '<span class="fat_span">' ).replace(  /\[\/fat]/g, '</span>' )
-                            .replace( /\[italic]/g, '<span class="italic_span">' ).replace(  /\[\/italic]/g, '</span>' )
-                            .replace( /\[underline]/g, '<span class="underlined_span">' ).replace(  /\[\/underline]/g, '</span>' )
-                            .replace( /\\n/g, '<br>' )
-            let link_count = style_conv.split("[link]").length
-            for (i=0; i<=link_count; i++) {
-                link_start = style_conv.search(/\[link]/)+6;
-                link_end = style_conv.search(/\[\/link]/);
-                link_string = style_conv.substring(link_start, link_end);
-                style_conv = style_conv.replace(/\[link]/, '<a class="link_span" href="').replace(/\[\/link]/, '">'+link_string+'</a>')
-            }
-            return style_conv;                                                   
         }
 
         ajax_request();
