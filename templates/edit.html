@@ -3,10 +3,22 @@
 {% block content %} 
     <p>Edit Blog Post:</p>
 
+    {% autoescape false %}
+    {{ images }}
+    {% endautoescape %}
+
     <form action="/edit/{{ post.id }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="text" name="caption" value="{{ post.caption }}">
         <textarea type="text" name="body">{{ post.body }}</textarea>
         <input type="submit" value="Edit Blog">
     </form>
+{% endblock %}
+
+{% block script_footer %}
+    <script>
+        delete_img = (id) => {
+            $(`#image_delete_${ id }`).remove();
+        }
+    </script>
 {% endblock %}

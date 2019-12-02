@@ -23,7 +23,7 @@ login.login_view = 'login'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-from app.routes import *
+from app.routes_main import *
 from app.models import *
 
 if __name__ == "__main__":
