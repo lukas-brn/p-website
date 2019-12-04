@@ -78,6 +78,7 @@ def blog():
                 user = "[deleted]"
             return jsonify({"article": True, "id": post.id, "caption": post.caption, "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
+            print("Not a post: "+str(request.form['blog_id']))
             return jsonify({"article": False})
 
 @app.route("/blog/user/<string:username>", methods=['POST', 'GET'])

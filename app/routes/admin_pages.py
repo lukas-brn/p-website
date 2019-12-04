@@ -23,7 +23,8 @@ def admin():
         if request.method == 'POST':
             images = []
             try_image = 0
-            is_image = True
+            print(request.files)
+            print(request.form)
             while True:
                 try:
                     try_image+=1
@@ -36,6 +37,8 @@ def admin():
                                 os.makedirs(path)
                             file.save(path+'/'+filename)
                             images.append(filename)
+                    else:
+                        print("couldn't find file "+str(try_image))
                 except:
                     break
             result_string = ""
@@ -44,7 +47,7 @@ def admin():
             try: 
                 db.session.add(Blog_Post(caption=request.form['caption'], posted_by=current_user.id, body=request.form['body'], images=result_string))
                 db.session.commit()
-                return redirect(url_for('admin'))
+                return jsonify({"redirect": True, "url": url_for('admin')})
             except Exception as e: 
                 return render_template("error.html", title="Error", error=e)      
         else:
@@ -59,7 +62,13 @@ def admin():
 def delete(id):
     if current_user.admin_acc == True:
         try: 
-            shutil.move('static/blog_images/'+str(id), 'static/img_waste/'+str(id))
+            path_to = 'static/img_waste/'+str(id)
+            if os.path.exists(path_to):
+                shutil.rmtree(path_to)
+                os.makedirs(path_to)
+            path_from = 'static/blog_images/'+str(id)
+            if os.path.exists(path_from):
+                shutil.move(path_from, path_to)
             db.session.delete(Blog_Post.query.get_or_404(id))
             db.session.commit()
             return redirect(url_for('admin'))

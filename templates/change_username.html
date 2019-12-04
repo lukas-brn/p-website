@@ -18,11 +18,6 @@
 
 {% block script_footer %}
     <script>
-        $.ajaxSetup({ 
-            beforeSend: (xhr, settings) => {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}"); 
-            } 
-        });
 
         let destElem = $("#username_popup_main")
         let destWrapper = $("#username_popup_wrapper")
