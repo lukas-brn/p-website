@@ -6,6 +6,9 @@ from app.models import Blog_Post, User
 from blog import app
 # endregion
 
+def max_post_id():
+    return Blog_Post.query.order_by(-Blog_Post.id).first().id
+
 def parse_body(input, id):
     style_conv = re.sub( r'\r\n', '<br/>', input )
     style_conv = re.sub( r"\[bold]", '<span class="fat_span">', style_conv )
@@ -71,7 +74,7 @@ def blog():
         return render_template("blog.html", title="Blog", post_count=post_count, route="/blog")
     elif request.method == 'POST':
         try:
-            post = Blog_Post.query.get_or_404(request.form['blog_id'])
+            post = Blog_Post.query.get_or_404(max_post_id()-int(request.form['blog_id'])+1)
             try:
                 user = User.query.get_or_404(post.posted_by).username
             except Exception:
@@ -82,12 +85,12 @@ def blog():
 
 @app.route("/blog/user/<string:username>", methods=['POST', 'GET'])
 def blog_user_query(username):
+    user = User.query.filter_by(username=username).first()
+    if user is not None:
+        post_count = Blog_Post.query.filter_by(posted_by=user.id).count()
+    else: 
+        post_count = 0
     if request.method == 'GET':
-        user = User.query.filter_by(username=username).first()
-        if user is not None:
-            post_count = Blog_Post.query.filter_by(posted_by=user.id).count()
-        else: 
-            post_count = 0
         return render_template("blog.html", title="Blog / "+username, post_count=post_count, route="/blog/user/"+username)
     elif request.method == 'POST':
         user = User.query.filter_by(username=username).first()
@@ -95,7 +98,11 @@ def blog_user_query(username):
             posts = Blog_Post.query.filter_by(posted_by=user.id).all()
             if posts is not None:
                 try:
-                    post = posts[int(request.form['blog_id'])-1]
+                    requested_post = post_count-int(request.form['blog_id'])
+                    if requested_post>=0:
+                        post = posts[requested_post]
+                    else:
+                        return jsonify({"article": False})
                 except Exception:
                     return jsonify({"article": False})
                 image_list = parse_images(post.id)
@@ -104,14 +111,18 @@ def blog_user_query(username):
 
 @app.route("/blog/date/<int:day>-<int:month>-<int:year>", methods=['POST', 'GET'])
 def blog_date_query(day, month, year):
+    post_count = Blog_Post.query.filter(extract('year', Blog_Post.time_created) == year, extract('month', Blog_Post.time_created) == month, extract('day', Blog_Post.time_created) == day).count()
     if request.method == 'GET':
-        post_count = Blog_Post.query.filter(extract('year', Blog_Post.time_created) == year, extract('month', Blog_Post.time_created) == month, extract('day', Blog_Post.time_created) == day).count()
         return render_template("blog.html", title="Blog / "+str(day)+"."+str(month)+"."+str(year), post_count=post_count, route="/blog/date/"+str(day)+"-"+str(month)+"-"+str(year))
     elif request.method == 'POST':
         posts = Blog_Post.query.filter(extract('year', Blog_Post.time_created) == year, extract('month', Blog_Post.time_created) == month, extract('day', Blog_Post.time_created) == day).all()
         if posts is not None:
             try:
-                post = posts[int(request.form['blog_id'])-1]
+                requested_post = post_count-int(request.form['blog_id'])
+                if requested_post>=0:
+                    post = posts[requested_post]
+                else:
+                    return jsonify({"article": False})
                 try:
                     user = User.query.get_or_404(post.posted_by).username
                 except Exception:
