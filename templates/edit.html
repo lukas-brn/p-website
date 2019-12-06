@@ -1,46 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %} 
-    <p>Edit Blog Post:</p>
+<p>Edit Blog Post:</p>
 
-    {% autoescape false %}
-    {{ images }}
-    {% endautoescape %}
+{% autoescape false %}
+{{ images }}
+{% endautoescape %}
 
-    <form action="javascript:edit()" method="post" enctype=multipart/form-data id="blog_post_form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <input type="text" id="caption_input" value="{{ post.caption }}">
-        <textarea type="text" id="body_input">{{ post.body }}</textarea>
-        <input type=file id="file_input" onchange="set_file_input()" style="display: none;">
-        <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
-        <input type="submit" value="Edit Blog">
-    </form>
+<form action="javascript:edit()" method="post" enctype=multipart/form-data id="blog_post_form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="text" id="caption_input" value="{{ post.caption }}">
+    <textarea type="text" id="body_input">{{ post.body }}</textarea>
+    <input type=file id="file_input" onchange="set_file_input()" style="display: none;">
+    <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
+    <input type="submit" value="Edit Blog">
+</form>
 
-    <div id="current_file_div"></div>
+<div id="current_file_div"></div>
 {% endblock %}
 
 {% block script_footer %}
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
 
 <script>
-    image_list = "{{ image_sql }}".split(' ; ');
-    image_list.pop();
+    const imageList = "{{ image_sql }}".split(' ; ');
+    imageList.pop();
     
-
-    for (let i=0; i<image_list.length; i++) {
-        fetch('/static/blog_images/'+image_list[i])
+    for (let i=0; i<imageList.length; i++) {
+        fetch(`/static/blog_images/${ imageList[i] }`)
         .then( res => res.blob() )
         .then ( blob => {
-            file = new File([blob], image_list[i].split('/')[image_list[i].split('/').length-1], blob);
-            data.append(`file${ i+1 }`, file);
-            next_file_num++;
-            build_html()
+            data.append(`file${ i+1 }`, new File([blob], imageList[i].split('/').pop(), blob) );
+            nextFileNum++;
+            build_html();
         })
     }
 
     function edit() {
-        data.append('caption', $("#caption_input").prop('value'));
-        data.append('body', $("#body_input").prop('value'));
+        data.append('caption', captionInput);
+        data.append('body', bodyInput);
 
         $.ajax({
             type: 'POST',
@@ -55,7 +53,8 @@
             },
         })
         data = new FormData();
-        next_file_num = 1;
+        nextFileNum = 1;
     }
 </script>
+<link href="{{ url_for('static', filename='css/drag_and_drop.css') }}" rel="stylesheet">
 {% endblock %}

@@ -1,33 +1,26 @@
 {% extends 'base.html' %}
 
 {% block head%} 
-	<link href="{{ url_for('static', filename='css/header.css') }}" rel="stylesheet">
-	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:900&display=swap" rel="stylesheet"> 
+<link href="{{ url_for('static', filename='css/header.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Montserrat:900&display=swap" rel="stylesheet"> 
 {% endblock %}
 
 {% block content_header %} 
-	<div id="headerContainer">
-	<header id="header"> 
-		
-		<h1>Der Weg ins All</h1>
-		
-		<div id="scrollDownButton" visible><a href="#begin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg></a></div>
-		
-	</header>
-	</div>
+<div id="headerContainer">
+<header id="header"> 
+	<h1>Der Weg ins All</h1>
+	<div id="scrollDownButton" visible><a href="#begin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg></a></div>
+</header>
+</div>
 
-	<div id="begin"></div>
+<div id="begin"></div>
 {% endblock %}
 
 {% block content %} 
-	<article>
-
-		<h2>Hi, wir sind das P-Seminar Project Jumbo!</h2>
-
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-		
-		<img src="{{ url_for('static', filename='img/index-stock1.jpg') }}" />
-		
-	</article>
+<article>
+	<h2>Hi, wir sind das P-Seminar Project Jumbo!</h2>
+	<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+	<img src="{{ url_for('static', filename='img/index-stock1.jpg') }}" />
+</article>
 {% endblock %}

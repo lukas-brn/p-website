@@ -6,4 +6,8 @@
     /* Required to make elements draggable in old WebKit */
     -khtml-user-drag: element;
     -webkit-user-drag: element;
-  }
+}
+
+.file_outer_div.over {
+  border: 2px dashed #000;
+}

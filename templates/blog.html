@@ -1,87 +1,86 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <script>
-        $(window).on('scroll', () => ajax_request())
+<script>
+    $(window).on('scroll', () => ajax_request())
 
-        let lowestScrollPos = 0;
-        let currentHeight = 0;
-        let blog_id = 1;
-        let max_article_reached = false;
-        let posts_in_queue = 0
-        let ajax_is_processing = false;
-        let route = "{{ route }}";
+    let lowestScrollPos = 0;
+    let currentHeight = 0;
+    let blogId = 1;
+    let maxArticleReached = false;
+    let postsInQueue = 0
+    let ajaxIsProcessing = false;
+    const route = "{{ route }}";
 
-        ajax_request = () => {
-            posts_in_queue++;
-            if (!ajax_is_processing) ajax_manager();
+    function ajax_request() {
+        postsInQueue++;
+        if (!ajaxIsProcessing) ajax_manager();
+    }
+    
+    async function ajax_manager() {
+        ajaxIsProcessing = true;
+        while (postsInQueue>0) {
+            await check_ajax_height();
+            postsInQueue--;
         }
-        
-        ajax_manager = async () => {
-            ajax_is_processing = true;
-            while (posts_in_queue>0) {
-                await check_ajax_height();
-                posts_in_queue--;
-            }
-            ajax_is_processing = false;
-        }
+        ajaxIsProcessing = false;
+    }
 
-        check_ajax_height = async () => {
-            if (!max_article_reached) {
-                lowestScrollPos = document.documentElement.scrollTop>lowestScrollPos?document.documentElement.scrollTop:lowestScrollPos;
-                if (lowestScrollPos+(2*$(window).height())>currentHeight) {
-                    await $.post(route, "blog_id="+blog_id).done(response => {
-                        if (response.article) {
-                            let url_author = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by)
-                            let url_date = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year)
-                            let url_post_main = "{{ url_for('blog_post', id=0) }}".replace("0", response.id)
-                            $("#content").html( 
-                                $("#content").html().replace( 
-                                    /<!-- replace position for new blogs -->/g, `
-                                        <article id='article_${ blog_id }'>
-                                            <h2><a href="${ url_post_main }">${ response.caption }</a></h2>
-                                            <span class="subTitle">Veröffentlicht am <a href="${ url_date }">${ response.date_created }</a> von <a href="${ url_author }">${ response.posted_by }</a></span>
-                                            <p>${ response.body }</p>
-                                        </article>
-                                        \n
-                                        \n
-                                        <!-- replace position for new blogs -->\n` 
-                                )
+    async function check_ajax_height() {
+        if (!maxArticleReached) {
+            lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
+            if (lowestScrollPos+(2*$(window).height())>currentHeight) {
+                await $.post(route, "blog_id="+blogId).done(response => {
+                    if (response.article) {
+                        const url_author = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by)
+                        const url_date = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year)
+                        const url_post_main = "{{ url_for('blog_post', id=0) }}".replace("0", response.id)
+                        $("#content").html( 
+                            $("#content").html().replace( 
+                                /<!-- replace position for new blogs -->/g, `
+                                    <article id='article_${ blogId }'>
+                                        <h2><a href="${ url_post_main }">${ response.caption }</a></h2>
+                                        <span class="subTitle">Veröffentlicht am <a href="${ url_date }">${ response.date_created }</a> von <a href="${ url_author }">${ response.posted_by }</a></span>
+                                        <p>${ response.body }</p>
+                                    </article>
+                                    \n
+                                    \n
+                                    <!-- replace position for new blogs -->\n` 
                             )
-                            currentHeight += $(`#article_${ blog_id }`).height()
-                            blog_id++;
-                            if (response.is_main_page) stopAjax();
-                            ajax_request();
-                        } else stopAjax();
-                    }).fail(() => console.log('Error: Could not contact server.'));
-                }
+                        )
+                        currentHeight += $(`#article_${ blogId }`).height();
+                        blogId++;
+                        if (response.is_main_page) stopAjax();
+                        else ajax_request();
+                    } else stopAjax();
+                }).fail(() => console.log('Error: Could not contact server.'));
             }
         }
+    }
 
-        stopAjax = () => {
-            $("#blog_loading_article").remove();
-            max_article_reached = true;
-        }
+    function stopAjax() {
+        $("#blog_loading_article").remove();
+        maxArticleReached = true;
+    }
 
-        ajax_request();
-    </script>
-	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
+    ajax_request();
+</script>
+<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
-	<article>
+<article>
     {% if request.path != "/blog" %}
     <a href="{{ url_for('blog') }}">Zurück zum Blog</a>
     {% endif %}
     {% if post_count == 0 %}
         <p>There are no Blogposts available!</p>
     {% endif %}
-    </article>
-    
-    <!-- replace position for new blogs -->
+</article>
 
-    <article id="blog_loading_article">
-        <h2>loading...</h2>
-    </article>
-	
+<!-- replace position for new blogs -->
+
+<article id="blog_loading_article">
+    <h2>loading...</h2>
+</article>
 {% endblock %}
