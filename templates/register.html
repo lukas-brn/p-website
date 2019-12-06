@@ -2,46 +2,46 @@
 {% extends "base.html" %}
 
 {% block head%}
-<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
-    <div class="inner">
-    
-        {{ form.hidden_tag() }}
-        {{ form.username(size=32) }}
-        {{ form.email(size=64) }}
-        {{ form.password(size=32) }}
-        {{ form.password2(size=32) }}
-        {{ form.submit() }}
-    </div>
-</form>
+    <form action="javascript:registerPopup()" id="register_form" class="register" autocomplete="off" method="post">
+        <div class="inner">
+        
+            {{ form.hidden_tag() }}
+            {{ form.username(size=32) }}
+            {{ form.email(size=64) }}
+            {{ form.password(size=32) }}
+            {{ form.password2(size=32) }}
+            {{ form.submit() }}
+        </div>
+    </form>
 
-<div id="register_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-    <div id="register_popup_inner" style="height: 400px;">
-        <div id="register_popup_main"></div>
-        <button type="submit" onclick="closeRegisterPopup()">Submit</button>
+    <div id="register_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
+        <div id="register_popup_inner" style="height: 400px;">
+            <div id="register_popup_main"></div>
+            <button type="submit" onclick="closeRegisterPopup()">Submit</button>
+        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script_footer %}
-<script>
-    const destElem = $("#register_popup_main")
-    const destWrapper = $("#register_popup_wrapper")
+    <script>
 
-    function registerPopup() {
-        $.post('/register', $('#register_form').serialize()).done(response => {
-            if (response.text != "") 
-                if (response.redirect == true) window.location.href = response.text;
-                else {
-                    destElem.html(response.text);
-                    destWrapper.css("display", "flex")
-                }
-        }).fail(() => console.log('Error: Could not contact server.'));
-    }
+        registerPopup = () => {
+            destElem = $("#register_popup_main")
+            destWrapper = $("#register_popup_wrapper")
+            
+            $.post('/register', $('#register_form').serialize()).done(response => {
+                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
+                                        else {
+                                            destElem.html(response.text);
+                                            destWrapper.css("display", "flex")
+                                        }
+            }).fail(() => console.log('Error: Could not contact server.'));
+        }
 
-    closeRegisterPopup = () => destWrapper.css({"display": "none"});
-</script>
+        closeRegisterPopup = () => destWrapper.css({"display": "none"});
+    </script>
 {% endblock %}

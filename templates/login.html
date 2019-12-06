@@ -1,53 +1,49 @@
 {% extends 'base.html' %}
 
 {% block head%}
-<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
-<form action="javascript:loginPopup()" id="login_form" class="login" autocomplete="off" novalidate>
-	<div class="inner">
-		{{ form.hidden_tag() }}
-		{{ form.username(size=32) }}
-		{{ form.password(size=32) }}	
-		{{ form.submit() }}
-			
-		<div>
-			<div>{{ form.remember_me() }} <p id="keepLoggedInP">Angemeldet bleiben</p></div>
+	<form action="javascript:loginPopup()" id="login_form" class="login" autocomplete="off" novalidate>
+			{{ form.hidden_tag() }}
+			{{ form.username(size=32) }}
+			{{ form.password(size=32) }}
+			{{ form.submit() }}
+				
+		<div id="containerA">
+			<div id="containerB">{{ form.remember_me() }} Angemeldet bleiben</div>
 			<a href="#">Passwort vergessen?</a>
 		</div>
 		
-	</div>
-	
-	<hr />
-	
-	<p>Noch kein Konto? <a href="{{ url_for('register') }}">Hier registrieren!</a></p>
-</form>
+		<hr />
+		
+		<p id="registerText">Noch kein Konto? <a href="{{ url_for('register') }}">Hier registrieren!</a></p>
+	</form>
 
-<div id="login_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-	<div id="login_popup_inner" style="height: 400px;">
-		<div id="login_popup_main"></div>
-		<button type="submit" onclick="closeLoginPopup()">Submit</button>
+	<div id="login_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
+		<div id="login_popup_inner" style="height: 400px;">
+			<div id="login_popup_main"></div>
+			<button type="submit" onclick="closeLoginPopup()">Submit</button>
+		</div>
 	</div>
-</div>
 {% endblock %}
 
 {% block script_footer %}
-<script>
-	const destElem = $("#login_popup_main")
-	const destWrapper = $("#login_popup_wrapper")
+	<script>
+		let destElem = $("#login_popup_main")
+		let destWrapper = $("#login_popup_wrapper")
 
-	loginPopup = () => {
-		$.post('/login', $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked")).done(response => {
-			if (response.text != '') 
-				if (response.redirect) window.location.href = response.text;
-				else {
-					destElem.html(response.text);
-					destWrapper.css("display", "flex")
-				}
-		}).fail(() => console.log('Error: Could not contact server.'));
-	}
+		loginPopup = () => {
+			$.post('/login', $('#login_form').serialize() + '&remember_me=' + $("#remember_me").is(":checked")).done(response => {
+				if (response.text!=="") if (response.redirect) window.location.href = response.text;
+										else {
+											destElem.html(response.text);
+											destWrapper.css("display", "flex")
+										}
+			}).fail(() => console.log('Error: Could not contact server.'));
+		}
 
-	closeLoginPopup = () => destWrapper.css({"display": "none"});
-</script>
+		closeLoginPopup = () => destWrapper.css({"display": "none"});
+	</script>
 {% endblock %}

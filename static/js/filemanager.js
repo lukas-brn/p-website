@@ -1,39 +1,28 @@
 let data = new FormData();
-let nextFileNum = 1;
-let counter = [];
-counter[0] = 0;
-const captionInput = $("#caption_input").prop('value');
-const bodyInput = $("#body_input").prop('value');
+let files;
+let next_file_num = 1;
 
 function set_file_input() {
-    data.append(`file${ nextFileNum }`, $("#file_input").prop('files')[0]);
-    add_to_manager(nextFileNum);
+    data.append(`file${ next_file_num }`, $("#file_input").prop('files')[0]);
+    add_to_manager(next_file_num);
     $("#file_input").val("");
-    nextFileNum++;
+    next_file_num++;
 }
 
 function add_to_manager(id) {
     $("#current_file_div").append(`
-        <div id="file_outer_div_${ id }" class="file_outer_div">
-            <div id="file_div_spacer_${ id }" class="file_div_spacer">
-                <p>Drop here</p>  
-            </div>
-
             <div id="file_div_${ id }" class="file_div" draggable="true">
                 <p id="file_p_${ id }" class="file_p">
                     ID: ${ id }: Name: ${ data.get('file'+id).name }: Type: ${ data.get('file'+id).type }
                     <a onclick="delete_file(${ id })" style="cursor: pointer;">Delete</a>
                 </p>
             </div>
-        </div>
-    `);
-    $(`#file_div_spacer_${ id }`).hide();
-    counter[id]=0;
-    setup_drag_listeners(id);
+        `);
+    setup_drag_listeners();
 }
 
 function delete_file(id) {
-    let data_tmp = new FormData();
+    data_tmp = new FormData();
     let i = 1;
     let count = 1;
     for (let pair of data.entries()) {
@@ -48,7 +37,7 @@ function delete_file(id) {
 }
 
 function switch_files(id1, id2) {
-    let data_tmp = new FormData();
+    data_tmp = new FormData();
     let i = 1;
     let tmp_data_var;
     for (let pair of data.entries()) {
@@ -65,23 +54,6 @@ function switch_files(id1, id2) {
             } else data_tmp.append('file' + i, tmp_data_var);
         }
         i++;
-    }
-    data = data_tmp;
-    build_html();
-}
-
-function push_file(srcId, destId) {
-    let toPush = data.get(`file${ srcId }`);
-    if (destId>srcId) destId--;
-    delete_file(srcId);
-    let data_tmp = new FormData();
-    let write= 1;
-    for ( let value of data.values() ) {
-        if (write == destId) {
-            data_tmp.append(`file${ write }`, toPush);
-            data_tmp.append(`file${ ++write }`, value);
-        } else data_tmp.append(`file${ write }`, value);
-        write++;
     }
     data = data_tmp;
     build_html();
@@ -110,64 +82,38 @@ function handleDragOver(e) {
 }
 
 function handleDragEnter(e) {
-    const srcID = dragSrcEl.id.slice(9);
-    const thisId = this.id.slice(15);
-
     this.classList.add('over');
-    counter[thisId]++;
-    if (srcID != thisId) $(`#file_div_spacer_${ thisId }`).show();
 }
 
 function handleDragLeave(e) {
-    const thisId = this.id.slice(15)
-
-    counter[thisId]--;
-    if (counter[thisId] == 0) {
-        this.classList.remove('over');
-        $(`#file_div_spacer_${ thisId }`).hide();
-    }
+    this.classList.remove('over');
 }
 
 function handleDrop(e) {
-    const destId = parseInt(this.id.slice(9));
-    const srcId = parseInt(dragSrcEl.id.slice(9));
-
     if (e.stopPropagation) e.stopPropagation();
-    this.parentElement.classList.remove('over');
-    counter[destId] = 0;
-    if (dragSrcEl != this) switch_files(srcId, destId);
-    return false;
-}
-
-function handleSpacerDrop(e) {
-    const srcId = parseInt(dragSrcEl.id.slice(9));
-    const destId = parseInt(this.id.slice(16));
-
-    if (e.stopPropagation) e.stopPropagation();
-    this.parentElement.classList.remove('over');
-    counter[destId] = 0;
-    push_file(srcId, destId);
-    $(".file_div_spacer").hide();
+    if (dragSrcEl != this) {
+        let src_id = parseInt(dragSrcEl.id.slice(9));
+        let dest_id = parseInt(this.id.slice(9));
+        switch_files(src_id, dest_id);
+    }
     return false;
 }
 
 function handleDragEnd(e) {
-    this.classList.remove('over');
-    this.style.opacity = 1;
+    [].forEach.call(files, function (file) {
+        file.classList.remove('over');
+        file.style.opacity = 1;
+    });
 }
 
-function setup_drag_listeners(id) {
-    const parent = $(`#file_outer_div_${ id }`)[0];
-    const spacer = parent.children[0];
-    const file = parent.children[1];
-
-    parent.addEventListener('dragenter', handleDragEnter, false);
-    parent.addEventListener('dragover', handleDragOver, false);
-    parent.addEventListener('dragleave', handleDragLeave, false);
-    file.addEventListener('dragend', handleDragEnd, false);
-
-    file.addEventListener('dragstart', handleDragStart, false);
-    file.addEventListener('drop', handleDrop, false);
-
-    spacer.addEventListener('drop', handleSpacerDrop, false);
+function setup_drag_listeners() {
+    files = document.querySelectorAll(".file_div");
+    [].forEach.call(files, function (file) {
+        file.addEventListener('dragstart', handleDragStart, false);
+        file.addEventListener('dragenter', handleDragEnter, false);
+        file.addEventListener('dragover', handleDragOver, false);
+        file.addEventListener('dragleave', handleDragLeave, false);
+        file.addEventListener('drop', handleDrop, false);
+        file.addEventListener('dragend', handleDragEnd, false);
+    });
 }

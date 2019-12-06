@@ -75,12 +75,13 @@
 
 {% block script_footer %}
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
+
 <script>
     data.delete('file1');
     
     function post() {
-        data.append('caption', captionInput);
-        data.append('body', bodyInput);
+        data.append('caption', $("#caption_input").prop('value'));
+        data.append('body', $("#body_input").prop('value'));
 
         $.ajax({
             type: 'POST',
@@ -95,8 +96,13 @@
             },
         })
         data = new FormData();
-        nextFileNum = 1;
+        next_file_num = 1;
     }
 </script>
-<link href="{{ url_for('static', filename='css/drag_and_drop.css') }}" rel="stylesheet">
+
+<style>
+    .file_div.over {
+        border: 2px dashed #000;
+    }
+</style>
 {% endblock %}
