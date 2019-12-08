@@ -23,16 +23,18 @@
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
 
 <script>
-    const imageList = "{{ image_sql }}".split(' ; ');
-    imageList.pop();
+    image_list = "{{ image_sql }}".split(' ; ');
+    image_list.pop();
     
-    for (let i=0; i<imageList.length; i++) {
-        fetch(`/static/blog_images/${ imageList[i] }`)
+
+    for (let i=0; i<image_list.length; i++) {
+        fetch('/static/blog_images/'+image_list[i])
         .then( res => res.blob() )
         .then ( blob => {
-            data.append(`file${ i+1 }`, new File([blob], imageList[i].split('/').pop(), blob) );
-            nextFileNum++;
-            build_html();
+            file = new File([blob], image_list[i].split('/')[image_list[i].split('/').length-1], blob);
+            data.append(`file${ i+1 }`, file);
+            next_file_num++;
+            build_html()
         })
     }
 
@@ -55,8 +57,7 @@
             },
         })
         data = new FormData();
-        nextFileNum = 1;
+        next_file_num = 1;
     }
 </script>
-<link href="{{ url_for('static', filename='css/drag_and_drop.css') }}" rel="stylesheet">
 {% endblock %}

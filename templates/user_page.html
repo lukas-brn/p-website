@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %} 
-<h1>Account</h1>
+	<h1>Account</h1>
+	
+    <p>ID: {{ current_user.id }}</p>
+    <p>Benutzername: {{ current_user.username }}</p>
+    <p>Email: {{ current_user.email }}</p>
+    <p>Admin: {{ current_user.admin_acc }}</p>
 
-<p>ID: {{ current_user.id }}</p>
-<p>Benutzername: {{ current_user.username }}</p>
-<p>Email: {{ current_user.email }}</p>
-<p>Admin: {{ current_user.admin_acc }}</p>
-
-<span class="button"><a href="{{ url_for('change_password') }}">Passwort ändern</a></span>
-<span class="button"><a href="{{ url_for('change_username') }}">Benutzername ändern</a></span>
-
-{% if current_user.admin_acc == true %}
-<span class="button"><a href="{{ url_for('admin') }}">Konsole</a></span>
-{% endif %}
+    <span class="button"><a href="{{ url_for('change_password') }}">Passwort ändern</a></span>
+    <span class="button"><a href="{{ url_for('change_username') }}">Benutzername ändern</a></span>
+    
+    {% if current_user.admin_acc == true %}
+    <span class="button"><a href="{{ url_for('admin') }}">Konsole</a></span>
+    {% endif %}
 {% endblock %}

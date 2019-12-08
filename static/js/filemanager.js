@@ -104,9 +104,6 @@ function handleDragOver(e) {
 }
 
 function handleDragEnter(e) {
-    const srcID = dragSrcEl.id.slice(9);
-    const thisId = this.id.slice(15);
-
     this.classList.add('over');
     counter[thisId]++;
     if (srcID !== thisId) $(`#file_div_spacer_${ thisId }`).show();
@@ -146,8 +143,10 @@ function handleSpacerDrop(e) {
 }
 
 function handleDragEnd(e) {
-    this.classList.remove('over');
-    this.style.opacity = 1;
+    [].forEach.call(files, function (file) {
+        file.classList.remove('over');
+        file.style.opacity = 1;
+    });
 }
 
 function setupDragListeners(id) {

@@ -1,0 +1,33 @@
+
+
+#content {
+	max-width: 400px;
+}
+
+#submit {
+	width: 100%;
+}
+
+#remember_me {
+	margin: 0;
+	width: auto;
+	margin-right: 8px;
+}
+
+#containerA, #containerB {
+	display: flex;
+}
+
+#containerA {
+	margin-top: 12px;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+#containerB {
+	margin-right: 8px;
+}
+
+#registerText {
+	margin-top: 12px;
+}
