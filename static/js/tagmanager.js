@@ -3,7 +3,8 @@ const tagCounter = [];
 let dragSrcElTag;
 
 function addTag() { 
-    const tag = $('#tag_input').prop('value');
+    const tag = $('#tag_input').val();
+    $('#tag_input').val('')
     tags.push(tag);
     addTagManager(tags.length-1);
 }

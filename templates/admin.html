@@ -11,15 +11,13 @@
     <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
     <input type="submit" value="Post Blog">
 </form>
+<div id="current_file_div"></div>
 
 <form action="javascript:addTag()">
     <input type="text" id="tag_input">
     <input type="submit" value="Add Tag">
 </form>
-
 <div id="current_tag_div"></div>
-
-<div id="current_file_div"></div>
 
 {% if posts|length < 1 %}
 <p>There are no Blogposts available!</p>
@@ -92,9 +90,7 @@
         data.append('body', bodyInput);
         
         let tagString = '';
-        tags.forEach( tag => {
-            tagString += ' ; '+tag;
-        });
+        tags.forEach( tag => tagString += ' ; '+tag);
         tagString = tagString.replace(/ ; /, '');
         data.append('tags', tagString);
 
@@ -111,7 +107,7 @@
             },
         });
         data = new FormData();
-        next_file_num = 1;
+        nextFileNum = 1;
     }
 </script>
 

@@ -40,7 +40,7 @@ function deleteFile(id) {
         i++;
     }
     data = dataTmp;
-    build_html();
+    buildHtml();
 }
 
 function switchFiles(id1, id2) {

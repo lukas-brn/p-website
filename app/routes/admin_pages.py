@@ -114,11 +114,16 @@ def edit(id):
             try:
                 image_sql = post.images
             except:
-                image_sql = ""
+                image_sql = ''
+            try:
+                tag_sql = post.tags
+            except:
+                tag_sql = ''
             return render_template("edit.html",
                                    title="Edit",
                                    post=post,
-                                   image_sql=image_sql)
+                                   image_sql=image_sql,
+                                   tag_sql=tag_sql)
     else:
         return render_template("error.html",
                                title="Error",

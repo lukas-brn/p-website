@@ -2,7 +2,7 @@
 
 {% block head %}
     <script>
-        $(window).on('scroll', () => ajax_request())
+        $(window).on('scroll', () => ajaxRequest())
 
         let lowestScrollPos = 0;
         let currentHeight = 0;
@@ -12,21 +12,21 @@
         let ajaxIsProcessing = false;
         let route = "{{ route }}";
 
-        ajax_request = () => {
+        ajaxRequest = () => {
             postsInQueue++;
-            if (!ajaxIsProcessing) ajax_manager();
+            if (!ajaxIsProcessing) ajaxManager();
         }
         
-        ajax_manager = async () => {
+        ajaxManager = async () => {
             ajaxIsProcessing = true;
             while (postsInQueue>0) {
-                await check_ajax_height();
+                await checkAjaxHeight();
                 postsInQueue--;
             }
             ajaxIsProcessing = false;
         }
 
-        async function check_ajax_height() {
+        async function checkAjaxHeight() {
             if (!maxArticleReached) {
                 lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
                 if (lowestScrollPos+(2*$(window).height())>currentHeight) {
@@ -52,7 +52,7 @@
                             currentHeight += $(`#article_${ blogId }`).height();
                             blogId++;
                             if (response.is_main_page) stopAjax();
-                            ajax_request();
+                            ajaxRequest();
                         } else stopAjax();
                     }).fail(() => console.log('Error: Could not contact server.'));
                 }
@@ -64,7 +64,7 @@
             maxArticleReached = true;
         }
 
-        ajax_request();
+        ajaxRequest();
     </script>
 	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 {% endblock %}
