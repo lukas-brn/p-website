@@ -1,5 +1,5 @@
 # region imports
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, url_for
 from sqlalchemy import extract
 import re
 from app.models import Blog_Post, User
@@ -58,10 +58,24 @@ def parse_images(id):
     try:
         post = Blog_Post.query.get_or_404(id)
         image_list = post.images.split(" ; ")
-        image_list.pop()
-        return image_list
     except:
-        return []
+        image_list = []
+    return image_list
+
+def parse_tags(id):
+    tagReturn = ''
+    try:
+        post = Blog_Post.query.get_or_404(id)
+        tags = post.tags
+        if tags != '':
+            tagList = tags.split(' ; ')
+            i = 1
+            for tag in tagList:
+                tagReturn += '<span class="tag_span"><a href="'+url_for('blog_tag_query', tag=tag)+'">#'+tag+'</a></span>'
+                i += 1
+    except:
+        pass
+    return tagReturn
 
 def remove_empty_p_tags(input):
     input = re.sub( r'<p></p>', '', input)
@@ -73,13 +87,14 @@ def blog():
         post_count = Blog_Post.query.count()
         return render_template("blog.html", title="Blog", post_count=post_count, route="/blog")
     elif request.method == 'POST':
+        id = int(request.form['blog_id'])
         try:
-            post = Blog_Post.query.get_or_404(max_post_id()-int(request.form['blog_id'])+1)
+            post = Blog_Post.query.get_or_404(max_post_id()-id+1)
             try:
                 user = User.query.get_or_404(post.posted_by).username
             except Exception:
                 user = "[deleted]"
-            return jsonify({"article": True, "id": post.id, "caption": post.caption, "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            return jsonify({"article": True, "id": post.id, "caption": post.caption, "tags": parse_tags(id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
             return jsonify({"article": False})
 
@@ -106,7 +121,7 @@ def blog_user_query(username):
                 except Exception:
                     return jsonify({"article": False})
                 image_list = parse_images(post.id)
-                return jsonify({"article": True, "id": post.id, "caption": post.caption, "posted_by": user.username, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+                return jsonify({"article": True, "id": post.id, "caption": post.caption, "tags": parse_tags(post.id), "posted_by": user.username, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         return jsonify({"article": False})
 
 @app.route("/blog/date/<int:day>-<int:month>-<int:year>", methods=['POST', 'GET'])
@@ -125,14 +140,35 @@ def blog_date_query(day, month, year):
                     return jsonify({"article": False})
                 try:
                     user = User.query.get_or_404(post.posted_by).username
-                except Exception:
+                except:
                     user = "[deleted]"
                 image_list = parse_images(post.id)
-                return jsonify({"article": True, "id": post.id, "caption": post.caption, "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
-            except Exception:
+                return jsonify({"article": True, "id": post.id, "caption": post.caption, "tags": parse_tags(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            except:
                 return jsonify({"article": False})
         return jsonify({"article": False})
 
+@app.route('/blog/tag/<string:tag>', methods=['POST', 'GET'])
+def blog_tag_query(tag):
+    posts = Blog_Post.query.filter(Blog_Post.tags.like('%{}%'.format(tag)))
+    post_count = posts.count()
+    if request.method == 'GET':
+        return render_template("blog.html", title="Blog / #"+str(tag), post_count=post_count, route="/blog/tag/"+str(tag))
+    elif request.method == 'POST':
+        try:
+            requested_post = post_count-int(request.form['blog_id'])
+            if requested_post>=0:
+                post = posts.all()[requested_post]
+            else:
+                return jsonify({"article": False})
+            try:
+                user = User.query.get_or_404(post.posted_by).username
+            except:
+                user = "[deleted]"
+            image_list = parse_images(post.id)
+            return jsonify({"article": True, "id": post.id, "caption": post.caption, "tags": parse_tags(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+        except:
+            return jsonify({"article": False})
 @app.route('/blog/post/<int:id>', methods=['POST', 'GET'])
 def blog_post(id):
     if request.method == 'GET':
@@ -147,6 +183,6 @@ def blog_post(id):
             except Exception:
                 user = "[deleted]"
             image_list = parse_images(id)
-            return jsonify({"article": True, "id": id, "is_main_page": True, "caption": post.caption, "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            return jsonify({"article": True, "id": id, "is_main_page": True, "caption": post.caption, "tags": parse_tags(id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
             return jsonify({"article": False})

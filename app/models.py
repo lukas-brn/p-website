@@ -5,11 +5,16 @@ from datetime import datetime
 # endregion
 
 class Blog_Post(db.Model):
+    __tablename__ = 'blog_post'
     id = db.Column(db.Integer, primary_key=True)
     caption = db.Column(db.String, nullable=False)
+
     posted_by = db.Column(db.Integer, db.ForeignKey("user.id"))
-    body = db.Column(db.String, nullable=False)
     time_created = db.Column(db.DateTime, default=datetime.now() )
+    tags = db.Column(db.String)
+    comments = db.relationship('Comment')
+
+    body = db.Column(db.String, nullable=False)
     images = db.Column(db.String)
 
     def __repr__(self):
@@ -42,3 +47,8 @@ class User(db.Model):
 
     def set_admin(self, is_admin):
         self.admin_acc = is_admin
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey("blog_post.id"))
+    posted_by = db.Column(db.Integer, db.ForeignKey('user.id'))

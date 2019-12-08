@@ -11,7 +11,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <input type="text" id="caption_input" value="{{ post.caption }}">
     <textarea type="text" id="body_input">{{ post.body }}</textarea>
-    <input type=file id="file_input" onchange="set_file_input()" style="display: none;">
+    <input type=file id="file_input" onchange="setFileInput()" style="display: none;">
     <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
     <input type="submit" value="Edit Blog">
 </form>
@@ -37,6 +37,8 @@
     }
 
     function edit() {
+        const captionInput = $('#caption_input').prop('value');
+        const bodyInput = $('#body_input').prop('value');
         data.append('caption', captionInput);
         data.append('body', bodyInput);
 

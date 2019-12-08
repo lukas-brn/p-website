@@ -36,8 +36,8 @@ def manage_posted_images(request):
             break
     result_string = ""
     for image in images:
-        result_string += str(max_post_id() + 1) + '/' + image + ' ; '
-    return result_string
+        result_string += ' ; ' + str(max_post_id() + 1) + '/' + image
+    return result_string.replace(' ; ', '', 1)
 
 @app.route("/admin", methods=['POST', 'GET'])
 @login_required
@@ -47,10 +47,12 @@ def admin():
             result_string = manage_posted_images(request)
             try:
                 db.session.add(
-                    Blog_Post(caption=request.form['caption'],
-                              posted_by=current_user.id,
-                              body=request.form['body'],
-                              images=result_string))
+                    Blog_Post(
+                        caption=request.form['caption'],
+                        tags=request.form['tags'],
+                        posted_by=current_user.id,
+                        body=request.form['body'],
+                        images=result_string))
                 db.session.commit()
                 return jsonify({"redirect": True, "url": url_for('admin')})
             except Exception as e:

@@ -1,19 +1,18 @@
 let data = new FormData();
 let nextFileNum = 1;
-let counter = [];
+const counter = [];
 counter[0] = 0;
-const captionInput = $("#caption_input").prop('value');
-const bodyInput = $("#body_input").prop('value');
+let dragSrcEl;
 
-function set_file_input() {
-    data.append(`file${ nextFileNum }`, $("#file_input").prop('files')[0]);
-    add_to_manager(nextFileNum);
-    $("#file_input").val("");
+function setFileInput() {
+    data.append(`file${ nextFileNum }`, $('#file_input').prop('files')[0]);
+    addToManager(nextFileNum);
+    $('#file_input').val('');
     nextFileNum++;
 }
 
-function add_to_manager(id) {
-    $("#current_file_div").append(`
+function addToManager(id) {
+    $('#current_file_div').append(`
         <div id="file_outer_div_${ id }" class="file_outer_div">
             <div id="file_div_spacer_${ id }" class="file_div_spacer">
                 <p>Drop here</p>  
@@ -21,79 +20,74 @@ function add_to_manager(id) {
 
             <div id="file_div_${ id }" class="file_div" draggable="true">
                 <p id="file_p_${ id }" class="file_p">
-                    ID: ${ id }: Name: ${ data.get('file'+id).name }: Type: ${ data.get('file'+id).type }
-                    <a onclick="delete_file(${ id })" style="cursor: pointer;">Delete</a>
+                    ID: ${ id }: Name: ${ data.get(`file${ id }`).name }: Type: ${ data.get(`file${ id }`).type }
+                    <a onclick="deleteFile(${ id })" style="cursor: pointer;">Delete</a>
                 </p>
             </div>
         </div>
     `);
     $(`#file_div_spacer_${ id }`).hide();
     counter[id]=0;
-    setup_drag_listeners(id);
+    setupDragListeners(id);
 }
 
-function delete_file(id) {
-    let data_tmp = new FormData();
+function deleteFile(id) {
+    const dataTmp = new FormData();
     let i = 1;
-    let count = 1;
-    for (let pair of data.entries()) {
-        if (i < id || i > id) {
-            data_tmp.append('file' + count, pair[1]);
-            count++;
-        }
+    let count = 0;
+    for( let value of data.values() ) {
+        if (i < id || i > id) dataTmp.append(`file${ ++count }`, value);
         i++;
     }
-    data = data_tmp;
+    data = dataTmp;
     build_html();
 }
 
-function switch_files(id1, id2) {
-    let data_tmp = new FormData();
+function switchFiles(id1, id2) {
+    const dataTmp = new FormData();
     let i = 1;
-    let tmp_data_var;
-    for (let pair of data.entries()) {
-        if (i != id1 && i != id2) data_tmp.append(pair[0], pair[1]);
-        else if (i == id1) {
-            if (!tmp_data_var) {
-                tmp_data_var = pair[1];
-                data_tmp.append('file' + i, data.get('file' + id2));
-            } else data_tmp.append('file' + i, tmp_data_var);
-        } else if (i == id2) {
-            if (!tmp_data_var) {
-                tmp_data_var = pair[1];
-                data_tmp.append('file' + i, data.get('file' + id1));
-            } else data_tmp.append('file' + i, tmp_data_var);
+    let tmpDataVar;
+    for( [key, value] of data.entries()) {
+        if (i !== id1 && i !== id2) dataTmp.append(key, value);
+        else if (i === id1) {
+            if (!tmpDataVar) {
+                tmpDataVar = value;
+                dataTmp.append(`file${ i }`, data.get(`file${ id2 }`));
+            } else dataTmp.append(`file${ i }`, tmpDataVar);
+        } else if (i === id2) {
+            if (!tmpDataVar) {
+                tmpDataVar = value;
+                dataTmp.append(`file${ i }`, data.get(`file${ id1 }`));
+            } else dataTmp.append(`file${ i }`, tmpDataVar);
         }
         i++;
     }
-    data = data_tmp;
-    build_html();
+    data = dataTmp;
+    buildHtml();
 }
 
-function push_file(srcId, destId) {
-    let toPush = data.get(`file${ srcId }`);
-    if (destId>srcId) destId--;
-    delete_file(srcId);
-    let data_tmp = new FormData();
-    let write= 1;
-    for ( let value of data.values() ) {
-        if (write == destId) {
-            data_tmp.append(`file${ write }`, toPush);
-            data_tmp.append(`file${ ++write }`, value);
-        } else data_tmp.append(`file${ write }`, value);
+function pushFile(srcId, destId) {
+    const dataTmp = new FormData();
+    const toPush = data.get(`file${ srcId }`);
+
+    if (destId > srcId) destId--;
+    deleteFile(srcId);
+    let write = 1;
+    for( let value of data.values() ) {
+        if (write === destId) {
+            dataTmp.append(`file${ write }`, toPush);
+            dataTmp.append(`file${ ++write }`, value);
+        } else dataTmp.append(`file${ write }`, value);
         write++;
     }
-    data = data_tmp;
-    build_html();
+    data = dataTmp;
+    buildHtml();
 }
 
-function build_html() {
-    let i = 1;
-    $("#current_file_div").html("");
-    for (let key of data.keys()) {
-        add_to_manager(i);
-        i++;
-    }
+function buildHtml() {
+    let i = 0;
+    $('#current_file_div').html('');
+    for( let key of data.keys() ) addToManager(++i);
 }
 
 function handleDragStart(e) {
@@ -115,14 +109,14 @@ function handleDragEnter(e) {
 
     this.classList.add('over');
     counter[thisId]++;
-    if (srcID != thisId) $(`#file_div_spacer_${ thisId }`).show();
+    if (srcID !== thisId) $(`#file_div_spacer_${ thisId }`).show();
 }
 
 function handleDragLeave(e) {
-    const thisId = this.id.slice(15)
+    const thisId = this.id.slice(15);
 
     counter[thisId]--;
-    if (counter[thisId] == 0) {
+    if (counter[thisId] === 0) {
         this.classList.remove('over');
         $(`#file_div_spacer_${ thisId }`).hide();
     }
@@ -135,7 +129,7 @@ function handleDrop(e) {
     if (e.stopPropagation) e.stopPropagation();
     this.parentElement.classList.remove('over');
     counter[destId] = 0;
-    if (dragSrcEl != this) switch_files(srcId, destId);
+    if (dragSrcEl !== this) switchFiles(srcId, destId);
     return false;
 }
 
@@ -146,8 +140,8 @@ function handleSpacerDrop(e) {
     if (e.stopPropagation) e.stopPropagation();
     this.parentElement.classList.remove('over');
     counter[destId] = 0;
-    push_file(srcId, destId);
-    $(".file_div_spacer").hide();
+    pushFile(srcId, destId);
+    $('.file_div_spacer').hide();
     return false;
 }
 
@@ -156,7 +150,7 @@ function handleDragEnd(e) {
     this.style.opacity = 1;
 }
 
-function setup_drag_listeners(id) {
+function setupDragListeners(id) {
     const parent = $(`#file_outer_div_${ id }`)[0];
     const spacer = parent.children[0];
     const file = parent.children[1];

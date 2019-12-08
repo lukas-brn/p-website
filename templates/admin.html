@@ -6,11 +6,18 @@
 <form action="javascript:post()" method="post" enctype=multipart/form-data id="blog_post_form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <input type="text" id="caption_input">
-    <textarea type="text" id="body_input"></textarea>
-    <input type=file id="file_input" onchange="set_file_input()" style="display: none;">
+    <textarea id="body_input"></textarea>
+    <input type=file id="file_input" onchange="setFileInput()" style="display: none;">
     <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
     <input type="submit" value="Post Blog">
 </form>
+
+<form action="javascript:addTag()">
+    <input type="text" id="tag_input">
+    <input type="submit" value="Add Tag">
+</form>
+
+<div id="current_tag_div"></div>
 
 <div id="current_file_div"></div>
 
@@ -74,13 +81,21 @@
 {% endblock %}
 
 {% block script_footer %}
+<script src="{{ url_for('static', filename='js/tagmanager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
 <script>
-    data.delete('file1');
-    
     function post() {
+        const captionInput = $('#caption_input').prop('value');
+        const bodyInput = $('#body_input').prop('value');
         data.append('caption', captionInput);
         data.append('body', bodyInput);
+        
+        let tagString = '';
+        tags.forEach( tag => {
+            tagString += ' ; '+tag;
+        });
+        tagString = tagString.replace(/ ; /, '');
+        data.append('tags', tagString);
 
         $.ajax({
             type: 'POST',
@@ -93,7 +108,7 @@
             success: response => {
                 if (response.redirect) window.location.href = response.url
             },
-        })
+        });
         data = new FormData();
         nextFileNum = 1;
     }
