@@ -6,24 +6,24 @@
 
         let lowestScrollPos = 0;
         let currentHeight = 0;
-        let blog_id = 1;
-        let max_article_reached = false;
-        let posts_in_queue = 0
-        let ajax_is_processing = false;
+        let blogId = 1;
+        let maxArticleReached = false;
+        let postsInQueue = 0
+        let ajaxIsProcessing = false;
         let route = "{{ route }}";
 
         ajax_request = () => {
-            posts_in_queue++;
-            if (!ajax_is_processing) ajax_manager();
+            postsInQueue++;
+            if (!ajaxIsProcessing) ajax_manager();
         }
         
         ajax_manager = async () => {
-            ajax_is_processing = true;
-            while (posts_in_queue>0) {
+            ajaxIsProcessing = true;
+            while (postsInQueue>0) {
                 await check_ajax_height();
-                posts_in_queue--;
+                postsInQueue--;
             }
-            ajax_is_processing = false;
+            ajaxIsProcessing = false;
         }
 
         async function check_ajax_height() {
@@ -32,16 +32,16 @@
                 if (lowestScrollPos+(2*$(window).height())>currentHeight) {
                     await $.post(route, "blog_id="+blogId).done(response => {
                         if (response.article) {
-                            const url_author = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
-                            const url_date = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
-                            const url_post_main = "{{ url_for('blog_post', id=0) }}".replace("0", response.id);
+                            const urlAuthor = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
+                            const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
+                            const urlPostMain = "{{ url_for('blog_post', id=0) }}".replace("0", response.id);
                             $("#content").html( 
                                 $("#content").html().replace( 
                                     /<!-- replace position for new blogs -->/g, `
                                     <article id='article_${ blogId }'>
-                                        <h2><a href="${ url_post_main }">${ response.caption }</a></h2>
+                                        <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>
                                         <p>${ response.tags }</p>
-                                        <span class="subTitle">Veröffentlicht am <a href="${ url_date }">${ response.date_created }</a> von <a href="${ url_author }">${ response.posted_by }</a></span>
+                                        <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span>
                                         <p>${ response.body }</p>
                                     </article>
                                     \n
@@ -49,8 +49,8 @@
                                     <!-- replace position for new blogs -->\n` 
                                 )
                             );
-                            currentHeight += $(`#article_${ blog_id }`).height();
-                            blog_id++;
+                            currentHeight += $(`#article_${ blogId }`).height();
+                            blogId++;
                             if (response.is_main_page) stopAjax();
                             ajax_request();
                         } else stopAjax();
@@ -61,7 +61,7 @@
 
         stopAjax = () => {
             $("#blog_loading_article").remove();
-            max_article_reached = true;
+            maxArticleReached = true;
         }
 
         ajax_request();
