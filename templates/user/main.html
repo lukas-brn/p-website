@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+	<nav>
+        <ul>
+            <li><a href="{{ url_for('user_page') }}">Übersicht</a></li>
+            <li><a href="{{ url_for('user_settings') }}">Einstellungen</a></li>
+            {% if current_user.admin_acc == true %}
+            <span>ADMIN EINSTELLUNGEN</span>
+            <li><a href="{{ url_for('admin_users') }}">Nutzerliste</a></li>
+            <li><a href="{{ url_for('admin_posts') }}">Beitragsliste</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% block user_content %}  {% endblock %}
+{% endblock %}

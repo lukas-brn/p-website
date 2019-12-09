@@ -1,0 +1,8 @@
+{% extends 'user/main.html' %}
+
+{% block user_content %}
+<p>ID: {{ current_user.id }}</p>
+<p>Benutzername: {{ current_user.username }}</p>
+<p>Email: {{ current_user.email }}</p>
+<p>Admin: {{ current_user.admin_acc }}</p>
+{% endblock %}

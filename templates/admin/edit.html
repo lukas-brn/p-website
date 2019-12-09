@@ -44,7 +44,7 @@
         })
     }
 
-    tags = '{{ tag_sql }}'.split(' ; ');
+    if ('{{ tag_sql }}' != "") tags = '{{ tag_sql }}'.split(' ; ');
     buildTagHtml();
 
     function edit() {
@@ -55,7 +55,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/edit/'+'{{ post.id }}',
+            url: '/admin/edit/'+'{{ post.id }}',
             data: data,
             // required to tell jquery that no further porcessing of the data is needed
             contentType: false,

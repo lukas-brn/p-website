@@ -1,0 +1,30 @@
+{% extends 'user/main.html' %}
+
+{% block user_content %}
+
+<a href="{{ url_for('admin_create_post') }}">Neuer Beitrag</a>
+
+{% if posts|length < 1 %}
+<p>There are no Blogposts available!</p>
+{% else %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Erstelldatum</th>
+        <th>Titel</th>
+        <th>Aktionen</th>
+    </tr>
+    {% for post in posts %}
+    <tr>
+        <td>{{ post.id }}</td>
+        <td>{{ post.time_created.__format__("%d.%m.%Y") }}</tds>
+        <td><a href="{{ url_for( 'blog_post', id=post.id ) }}">{{ post.caption }}</a></td>
+        <td>
+            <a href="{{ url_for( 'delete', id=post.id ) }}">Delete</a>
+            <a href="{{ url_for( 'edit', id=post.id ) }}">Edit</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

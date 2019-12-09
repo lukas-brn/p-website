@@ -39,11 +39,31 @@ def manage_posted_images(request):
         result_string += ' ; ' + str(max_post_id() + 1) + '/' + image
     return result_string.replace(' ; ', '', 1)
 
-@app.route("/admin", methods=['POST', 'GET'])
+@app.route('/admin/posts', methods=['GET'])
 @login_required
-def admin():
+def admin_posts():
     if current_user.admin_acc == True:
-        if request.method == 'POST':
+        posts = Blog_Post.query.order_by(-Blog_Post.id).all()
+        return render_template("admin/posts.html", title="Admin", posts=posts)
+    else:
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+
+@app.route('/admin/users', methods=['GET'])
+@login_required
+def admin_users():
+    if current_user.admin_acc == True:
+        users = User.query.order_by(User.id).all()
+        return render_template("admin/users.html", title="Admin", users=users)
+    else:
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+
+@app.route('/admin/create_post', methods=['POST', 'GET'])
+@login_required
+def admin_create_post():
+    if current_user.admin_acc == True:
+        if request.method == 'GET':
+            return render_template('admin/create_post.html', title='Beitrag erstellen')
+        elif request.method == 'POST':
             result_string = manage_posted_images(request)
             try:
                 db.session.add(
@@ -54,22 +74,13 @@ def admin():
                         body=request.form['body'],
                         images=result_string))
                 db.session.commit()
-                return jsonify({"redirect": True, "url": url_for('admin')})
+                return jsonify({"redirect": True, "url": url_for('admin_posts')})
             except Exception as e:
-                return render_template("error.html", title="Error", error=e)
-        else:
-            posts = Blog_Post.query.order_by(-Blog_Post.id).all()
-            users = User.query.order_by(User.id).all()
-            return render_template("admin.html",
-                                   title="Admin",
-                                   posts=posts,
-                                   users=users)
+                return render_template("errors/error.html", title="Error", error=e)
     else:
-        return render_template("error.html",
-                               title="Error",
-                               error="You're not allowed to use that page!")
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
-@app.route("/delete/<int:id>")
+@app.route("/admin/delete/<int:id>")
 @login_required
 def delete(id):
     if current_user.admin_acc == True:
@@ -86,15 +97,15 @@ def delete(id):
             for post in Blog_Post.query.filter(Blog_Post.id > id).all():
                 post.id = post.id - 1
                 db.session.commit()
-            return redirect(url_for('admin'))
+            return redirect(url_for('admin_posts'))
         except Exception as e:
-            return render_template("error.html", title="Error", error=e)
+            return render_template("errors/error.html", title="Error", error=e)
     else:
-        return render_template("error.html",
+        return render_template("errors/error.html",
                                title="Error",
                                error="You're not allowed to use that page!")
 
-@app.route("/edit/<int:id>", methods=['POST', 'GET'])
+@app.route("/admin/edit/<int:id>", methods=['POST', 'GET'])
 @login_required
 def edit(id):
     if current_user.admin_acc == True:
@@ -107,9 +118,9 @@ def edit(id):
                 post.body=request.form['body']
                 post.images=result_string
                 db.session.commit()
-                return jsonify({"redirect": True, "url": url_for('admin')})
+                return jsonify({"redirect": True, "url": url_for('admin_posts')})
             except Exception as e:
-                return render_template("error.html", title="Error", error=e)
+                return render_template("errors/error.html", title="Error", error=e)
         else:
             try:
                 image_sql = post.images
@@ -119,17 +130,11 @@ def edit(id):
                 tag_sql = post.tags
             except:
                 tag_sql = ''
-            return render_template("edit.html",
-                                   title="Edit",
-                                   post=post,
-                                   image_sql=image_sql,
-                                   tag_sql=tag_sql)
+            return render_template("admin/edit.html", title="Edit", post=post, image_sql=image_sql, tag_sql=tag_sql)
     else:
-        return render_template("error.html",
-                               title="Error",
-                               error="You're not allowed to use that page!")
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
-@app.route("/manage_admins/<int:id>")
+@app.route("/admin/manage_admins/<int:id>")
 @login_required
 def manage_admin(id):
     if current_user.admin_acc == True:
@@ -139,7 +144,7 @@ def manage_admin(id):
                 if user.id != 1:
                     user.set_admin(not user.admin_acc)
                     db.session.commit()
-                    return redirect(url_for('admin'))
+                    return redirect(url_for('admin_users'))
                 else:
                     raise Exception(
                         "Sie können den Admin-Status des Hauptadmins nicht verandern"
@@ -148,8 +153,6 @@ def manage_admin(id):
                 raise Exception(
                     "Sie können ihren eigenen Admin-Status nicht verändern")
         except Exception as e:
-            return render_template("error.html", title="Error", error=e)
+            return render_template("errors/error.html", title="Error", error=e)
     else:
-        return render_template("error.html",
-                               title="Error",
-                               error="You're not allowed to use that page!")
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")

@@ -7,17 +7,22 @@ from werkzeug.urls import url_parse
 from blog import db, app
 #endregion
 
-@app.route('/user', methods=['GET'])
+@app.route('/user/overview', methods=['GET'])
 @login_required
 def user_page():
-    return render_template('user_page.html', title='User')
+    return render_template('user/overview.html', title='Nutzer')
 
-@app.route('/change_password', methods=['GET', 'POST'])
+@app.route('/user/settings', methods=['GET'])
+@login_required
+def user_settings():
+    return render_template('user/settings.html', title='Einstellungen')
+
+@app.route('/user/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     if request.method == 'GET':
         form = ChangePasswordForm()
-        return render_template('change_password.html', title='Passwort ändern', form=form)
+        return render_template('user/change_password.html', title='Passwort ändern', form=form)
     else:
         form = request.form
         if current_user.check_password(form['password']):
@@ -30,12 +35,12 @@ def change_password():
         else: 
             return jsonify({"text": "Das ursprüngliche Passwort passt nicht.", "redirect": False})
 
-@app.route('/change_username', methods=['GET', 'POST'])
+@app.route('/user/change_username', methods=['GET', 'POST'])
 @login_required
 def change_username():
     if request.method == 'GET':
         form = ChangeUsernameForm()
-        return render_template('change_username.html', title='Benutzernamen ändern', username=current_user.username, form=form)
+        return render_template('user/change_username.html', title='Benutzernamen ändern', username=current_user.username, form=form)
     elif request.method == 'POST':
         if User.query.filter(User.username == request.form['username']).first() is not None:
             return jsonify({"text":"Bitte wählen Sie einen anderen Benutzernamen.", "redirect": False})
@@ -44,5 +49,5 @@ def change_username():
             db.session.commit()
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
-                next_page = url_for('user_page')
+                next_page = url_for('user_settings')
             return jsonify({"text": next_page, "redirect": True})

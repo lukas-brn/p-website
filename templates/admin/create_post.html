@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block content %} 
 <p>Create new Blog Post:</p>
 
 <form action="javascript:post()" method="post" enctype=multipart/form-data id="blog_post_form">
@@ -18,64 +18,6 @@
     <input type="submit" value="Add Tag">
 </form>
 <div id="current_tag_div"></div>
-
-{% if posts|length < 1 %}
-<p>There are no Blogposts available!</p>
-{% else %}
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Time-created</th>
-        <th>Caption</th>
-        <th>Body</th>
-    </tr>
-    {% for post in posts %}
-    <tr>
-        <td>{{ post.id }}</td>
-        <td>{{ post.time_created.__format__("%d.%m.%Y %H:%M") }}</tds>
-        <td>{{ post.caption }}</td>
-        <td>{{ post.body }}</td>
-        <td>
-            <a href="{{ url_for( 'delete', id=post.id ) }}">Delete</a>
-            <br>
-            <a href="{{ url_for( 'edit', id=post.id ) }}">Edit</a>
-            <br>
-            <a href="{{ url_for( 'blog_post', id=post.id ) }}">Go To</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% endif %}
-
-{% if users|length < 1 %}
-<p>There are no Users available!</p>
-{% else %}
-<table>
-    <tr>
-        <th>User_ID</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Admin</th>
-    </tr>
-    {% for user in users %}
-    <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.username }}</tds>
-        <td>{{ user.email }}</td>
-        <td>{{ user.admin_acc }}</td>
-        <td>
-            <a href="{{ url_for( 'manage_admin', id=user.id ) }}">
-                {% if user.admin_acc==true %}
-                Remove Admin
-                {% else %}
-                Make Admin
-                {% endif %}
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% endif %}
 {% endblock %}
 
 {% block script_footer %}
@@ -96,7 +38,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/admin',
+            url: '/admin/create_post',
             data: data,
             // required to tell jquery that no further porcessing of the data is needed
             contentType: false,

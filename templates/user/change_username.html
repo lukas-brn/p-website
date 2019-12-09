@@ -23,7 +23,7 @@
         let destWrapper = $("#username_popup_wrapper")
 
         changeUsernamePopup = () => {
-            $.post('/change_username', $("#change_username_form").serialize()).done(response => {
+            $.post('/user/change_username', $("#change_username_form").serialize()).done(response => {
                 if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
                                         else {
                                             destElem.html(response.text);
