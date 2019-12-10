@@ -13,7 +13,7 @@ def login():
         form = LoginForm()
         if current_user.is_authenticated:
             return redirect(url_for('index'))
-        return render_template('login/login.html', title='Login', form=form)
+        return render_template('login/login.html', title='Anmelden', form=form)
     elif request.method == 'POST':
         form = request.form
         user = User.query.filter_by(username=form['username'].strip()).first()
