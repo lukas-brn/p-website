@@ -21,8 +21,12 @@
 {% endblock %}
 
 {% block script_footer %}
+<script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>
+
 <script src="{{ url_for('static', filename='js/tagmanager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
+
+<script src="jquery.ui.touch-punch.min.js"></script>
 
 <script>
     function post() {

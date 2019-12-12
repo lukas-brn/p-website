@@ -2,6 +2,6 @@
 
 {% block user_content %}
 
-<span class="button"><a href="{{ url_for('change_password') }}">Passwort ändern</a></span>
-<span class="button"><a href="{{ url_for('change_username') }}">Benutzername ändern</a></span>
+<a href="{{ url_for('change_password') }}" class="button">Passwort ändern</a>
+<a href="{{ url_for('change_username') }}" class="button">Benutzername ändern</a>
 {% endblock %}

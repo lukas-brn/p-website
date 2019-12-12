@@ -41,7 +41,7 @@
 											destElem.html(response.text);
 											destWrapper.css("display", "flex")
 										}
-			}).fail(() => console.log('Error: Could not contact server.'));
+			}).fail(() => console.error('Error: Could not contact server.'));
 		}
 
 		closeLoginPopup = () => destWrapper.css({"display": "none"});
