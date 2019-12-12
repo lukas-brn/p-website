@@ -11,8 +11,7 @@ app = Flask(__name__)
 app.config.update(
     SQLALCHEMY_DATABASE_URI='sqlite:///blog_posts.db',
     DEBUG=True,
-    SECRET_KEY=
-    '/x83j/xe7/x97/x9e///xf1/x17/xca/xd2/xde/x8f/xa9S/xca/xce/xad/x7f}/x03/x9d{/x14/xfe/x9b/xb1$/x143/xd5n~',
+    SECRET_KEY='/x83j/xe7/x97/x9e///xf1/x17/xca/xd2/xde/x8f/xa9S/xca/xce/xad/x7f}/x03/x9d{/x14/xfe/x9b/xb1$/x143/xd5n~',
     SQLALCHEMY_TRACK_MODIFICATIONS=False)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
