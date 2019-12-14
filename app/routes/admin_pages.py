@@ -1,12 +1,13 @@
 # region imports
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from app.models import Blog_Post, User
+from app.models import Blog_Post, User, BME, MPU
 from app.routes.blog_pages import parse_images
 from blog import ALLOWED_EXTENSIONS, db, app
 from werkzeug.utils import secure_filename
 import os
 import shutil
+from datetime import datetime
 # endregion
 
 def max_post_id():
@@ -72,7 +73,9 @@ def admin_create_post():
                         tags=request.form['tags'],
                         posted_by=current_user.id,
                         body=request.form['body'],
-                        images=result_string))
+                        images=result_string
+                    )
+                )
                 db.session.commit()
                 return jsonify({"redirect": True, "url": url_for('admin_posts')})
             except Exception as e:
@@ -153,6 +156,66 @@ def manage_admin(id):
                 raise Exception(
                     "Sie können ihren eigenen Admin-Status nicht verändern")
         except Exception as e:
+            return render_template("errors/error.html", title="Error", error=e)
+    else:
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+
+
+@app.route('/admin/measurements', methods=['GET'])
+@login_required
+def measurements():
+    if current_user.admin_acc:
+        bme_vals = BME.query.order_by(-BME.id).all()
+        mpu_vals = MPU.query.order_by(-MPU.id).all()
+        return render_template("admin/measurements.html", title="Messungen", bme_vals=bme_vals, mpu_vals=mpu_vals)
+    else:
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+
+@app.route('/admin/post_bme', methods=['POST'])
+@login_required
+def post_bme():
+    if current_user.admin_acc:
+        try:
+            db.session.add(
+                BME(
+                    time = datetime.strptime(request.form['time'], '%Y-%m-%d %H:%M:%S'),
+                    temperature = request.form['temperature'],
+                    humidity = request.form['humidity'],
+                    pressure = request.form['pressure']
+                )
+            )
+            db.session.commit()
+            return jsonify({'time': request.form['time'], 'temperature': request.form['temperature'], 'humidity': request.form['humidity'], 'pressure': request.form['pressure']})
+        except Exception as e:
+            print(e)
+            return render_template("errors/error.html", title="Error", error=e)
+    else:
+        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+
+@app.route('/admin/post_mpu', methods=['POST'])
+@login_required
+def post_mpu():
+    if current_user.admin_acc:
+        try:
+            db.session.add(
+                MPU(
+                    time = datetime.strptime(request.form['time'], '%Y-%m-%d %H:%M:%S'),
+                    gyroscope_x = request.form['gyroscope_x'],
+                    gyroscope_y = request.form['gyroscope_y'],
+                    gyroscope_z = request.form['gyroscope_z'],
+
+                    acceleration_x = request.form['acceleration_x'],
+                    acceleration_y = request.form['acceleration_y'],
+                    acceleration_z = request.form['acceleration_z'],
+
+                    rot_x = request.form['rot_x'],
+                    rot_y = request.form['rot_y']
+                )
+            )
+            db.session.commit()
+            return jsonify({'time': request.form['time'], 'temperature': request.form['temperature'], 'humidity': request.form['humidity'], 'pressure': request.form['pressure']})
+        except Exception as e:
+            print(e)
             return render_template("errors/error.html", title="Error", error=e)
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")

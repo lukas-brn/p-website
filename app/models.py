@@ -52,3 +52,26 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey("blog_post.id"))
     posted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class BME(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime)
+
+    temperature = db.Column(db.Integer)
+    humidity = db.Column(db.Integer)
+    pressure = db.Column(db.Integer)
+
+class MPU(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime)
+
+    gyroscope_x = db.Column(db.Integer)
+    gyroscope_y = db.Column(db.Integer)
+    gyroscope_z = db.Column(db.Integer)
+
+    acceleration_x = db.Column(db.Integer)
+    acceleration_y = db.Column(db.Integer)
+    acceleration_z = db.Column(db.Integer)
+
+    rot_x = db.Column(db.Integer)
+    rot_y = db.Column(db.Integer)

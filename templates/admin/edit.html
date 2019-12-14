@@ -27,12 +27,12 @@
 
 {% block script_footer %}
 
-<script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>
+<!-- <script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script> -->
 
 <script src="{{ url_for('static', filename='js/tagmanager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
 
-<script src="jquery.ui.touch-punch.min.js"></script>
+<!-- <script src="jquery.ui.touch-punch.min.js"></script> -->
 
 <script>
     imageList = []
@@ -45,10 +45,9 @@
             file = new File([blob], imageList[i].split('/')[imageList[i].split('/').length-1], blob);
             data.append(`file${ i+1 }`, file);
             nextFileNum++;
-            
+            buildHtml();
         })
     }
-    buildHtml();
 
     if ('{{ tag_sql }}' != "") tags = '{{ tag_sql }}'.split(' ; ');
     buildTagHtml();

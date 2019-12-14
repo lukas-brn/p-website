@@ -1,0 +1,46 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<p>hello</p>
+<p>hi</p>
+
+<script>
+function postValues() {
+    postData = new FormData();
+    postData.append('time', '{{ now }}'.slice(0, 19));
+    postData.append('temperature', 1);
+    postData.append('humidity', 2);
+    postData.append('pressure', 3);
+
+    $.ajax({
+        url: 'http://127.0.0.1:5000/get_csrf_token',
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function (data) {
+            $.ajax({
+                type: 'POST',
+                url: 'http://127.0.0.1:5000/admin/post_bme',
+                crossDomain: true,
+                data: postData,
+                headers: { 'X-CSRFToken': data.csrf_token },
+                xhrFields: { withCredentials: true },
+                // required to tell jquery that no further porcessing of the data is needed
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: resp => console.log(resp),
+                error: resp => {
+                    console.log('post failed');
+                    for (let key of postData.keys()) {
+                        console.log(key);
+                    }
+                    // TODO: edit success and error messages
+                }
+            });
+        },
+        error: error => console.log(error)
+    });
+}
+postValues();
+
+</script>
