@@ -32,22 +32,6 @@ def index():
 def contact():
     return render_template('contact.html', title="Kontakt")
 
-white_list = ['http://127.0.0.1:5001/post_bme', 'http://127.0.0.1:5001/post_mpu']
-
-@app.after_request
-def add_cors(rv):
-    r = request.referrer[:-1]
-    if rv in white_list:
-        rv.headers.add('Access-Control-Allow-Origin', r)
-        rv.headers.add('Access-Control-Allow-Headers', 'X-CSRFToken')
-        rv.headers.add('Access-Control-Allow-Credentials', 'true')
-    return rv
-
-@app.route('/get_csrf_token', methods=['GET', 'POST'])
-def get_csrf_token():
-    csrf_token = generate_csrf()
-    return jsonify(csrf_token=csrf_token)
-
 from app.routes.admin_pages import *
 from app.routes.blog_pages import *
 from app.routes.input_registration import *

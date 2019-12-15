@@ -160,7 +160,6 @@ def manage_admin(id):
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
-
 @app.route('/admin/measurements', methods=['GET'])
 @login_required
 def measurements():
@@ -171,51 +170,57 @@ def measurements():
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
-@app.route('/admin/post_bme', methods=['POST'])
-@login_required
+@app.route('/admin/post_bme', methods=['GET'])
 def post_bme():
-    if current_user.admin_acc:
-        try:
-            db.session.add(
-                BME(
-                    time = datetime.strptime(request.form['time'], '%Y-%m-%d %H:%M:%S'),
-                    temperature = request.form['temperature'],
-                    humidity = request.form['humidity'],
-                    pressure = request.form['pressure']
+    try:
+        user = User.query.filter(User.username == request.args['user']).first()
+        if user is not None and user.check_password(request.args['password']):
+            try:
+                addTime = datetime.strptime(request.args['time'], '%Y-%m-%d %H:%M:%S')
+                db.session.add(
+                    BME(
+                        time = addTime,
+                        temperature = request.args['temperature'],
+                        humidity = request.args['humidity'],
+                        pressure = request.args['pressure']
+                    )
                 )
-            )
-            db.session.commit()
-            return jsonify({'time': request.form['time'], 'temperature': request.form['temperature'], 'humidity': request.form['humidity'], 'pressure': request.form['pressure']})
-        except Exception as e:
-            print(e)
-            return render_template("errors/error.html", title="Error", error=e)
-    else:
-        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+                db.session.commit()
+                return jsonify({'time': addTime, 'temperature': request.args['temperature'], 'humidity': request.args['humidity'], 'pressure': request.args['pressure']})
+            except:
+                return jsonify({'error': 'wasn´t able to push the data'})
+        else:
+            return jsonify({'error': 'the given login credentials were incorrect'})
+    except:
+        return jsonify({'error': 'the given login credentials were incorrect'})
 
-@app.route('/admin/post_mpu', methods=['POST'])
-@login_required
+@app.route('/admin/post_mpu', methods=['GET'])
 def post_mpu():
-    if current_user.admin_acc:
-        try:
-            db.session.add(
-                MPU(
-                    time = datetime.strptime(request.form['time'], '%Y-%m-%d %H:%M:%S'),
-                    gyroscope_x = request.form['gyroscope_x'],
-                    gyroscope_y = request.form['gyroscope_y'],
-                    gyroscope_z = request.form['gyroscope_z'],
+    try:
+        user = User.query.filter(User.username == request.args['user']).first()
+        if user is not None and user.check_password(request.args['password']):
+            try:
+                addTime = datetime.strptime(request.args['time'], '%Y-%m-%d %H:%M:%S')
+                db.session.add(
+                    MPU(
+                        time = addTime,
+                        gyroscope_x = request.args['gyroscope_x'],
+                        gyroscope_y = request.args['gyroscope_y'],
+                        gyroscope_z = request.args['gyroscope_z'],
 
-                    acceleration_x = request.form['acceleration_x'],
-                    acceleration_y = request.form['acceleration_y'],
-                    acceleration_z = request.form['acceleration_z'],
+                        acceleration_x = request.args['acceleration_x'],
+                        acceleration_y = request.args['acceleration_y'],
+                        acceleration_z = request.args['acceleration_z'],
 
-                    rot_x = request.form['rot_x'],
-                    rot_y = request.form['rot_y']
+                        rot_x = request.args['rot_x'],
+                        rot_y = request.args['rot_y']
+                    )
                 )
-            )
-            db.session.commit()
-            return jsonify({'time': request.form['time'], 'temperature': request.form['temperature'], 'humidity': request.form['humidity'], 'pressure': request.form['pressure']})
-        except Exception as e:
-            print(e)
-            return render_template("errors/error.html", title="Error", error=e)
-    else:
-        return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
+                db.session.commit()
+                return jsonify({'time': addTime, 'gyroscope_x': request.args['gyroscope_x'], 'gyroscope_y': request.args['gyroscope_y'], 'gyroscope_z': request.args['gyroscope_z'], 'acceleration_x': request.args['acceleration_x'], 'acceleration_y': request.args['acceleration_y'], 'acceleration_z': request.args['acceleration_z'], 'rot_x': request.args['rot_x'], 'rot_y': request.args['rot_y']})
+            except:
+                return jsonify({'error': 'wasn´t able to push the data'})
+        else:
+            return jsonify({'error': 'the given login credentials were incorrect p'})
+    except:
+        return jsonify({'error': 'the given login credentials were incorrect u'})
