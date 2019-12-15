@@ -4,12 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
-from flask_cors import CORS
 import os
 # endregion
 
 app = Flask(__name__)
-CORS(app, methods=['GET', 'POST'], supports_credentials=True)
 app.config.update(
     SQLALCHEMY_DATABASE_URI='sqlite:///blog_posts.db',
     DEBUG=True,

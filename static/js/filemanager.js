@@ -22,6 +22,7 @@ function addToManager(id) {
                 <p id="file_p_${ id }" class="file_p">
                     ID: ${ id }: Name: ${ data.get(`file${ id }`).name }: Type: ${ data.get(`file${ id }`).type }
                     <a onclick="deleteFile(${ id })" style="cursor: pointer;">Delete</a>
+                    <a onclick="postFilePopup(${ id })" style="cursor: pointer;">Change Postiton</a>
                 </p>
             </div>
         </div>
@@ -69,7 +70,7 @@ function switchFiles(id1, id2) {
 function pushFile(srcId, destId) {
     const dataTmp = new FormData();
     const toPush = data.get(`file${ srcId }`);
-
+    
     if (destId > srcId) destId--;
     deleteFile(srcId);
     let write = 1;

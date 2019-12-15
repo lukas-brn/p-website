@@ -25,6 +25,7 @@ function addTagManager(id) {
                 <p id="tag_p_${ id }" class="tag_p">
                     ID: ${ id+1 }: ${ tags[id] }
                     <a onclick="removeTag(${ id })" style="cursor: pointer;">Delete</a>
+                    <a onclick="postTagPopup(${ id })" style="cursor: pointer;">Change Postiton</a>
                 </p>
             </div>
         </div>
