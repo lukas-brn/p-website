@@ -22,9 +22,13 @@ article h2:hover>a {
 	text-decoration: none;
 }
 
-.subTitle, .subTitle * {
+.subTitle, .subTitle *, .tags {
 	font-size: 14px;
 	color: #444444;
+}
+
+.tags * {
+	font-size: 14px;
 }
 
 
