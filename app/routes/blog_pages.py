@@ -71,6 +71,8 @@ def parse_tags(id):
             tagList = tags.split(' ; ')
             i = 1
             for tag in tagList:
+                if i != 1: 
+                    tagReturn += ', '
                 tagReturn += '<span class="tag_span"><a href="'+url_for('blog_tag_query', tag=tag)+'">#'+tag+'</a></span>'
                 i += 1
     except:

@@ -41,7 +41,7 @@
                                     <article id='article_${ blogId }'>
                                         <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>
                                         <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span><br />
-										<span class="tags">Tags: ${ response.tags }</span>
+										${ response.tags!=''?`<span class="tags">Tags: ${ response.tags }</span>`:'' }
                                         <p>${ response.body }</p>
                                     </article>
                                     \n
