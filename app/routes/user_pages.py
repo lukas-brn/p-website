@@ -7,15 +7,28 @@ from werkzeug.urls import url_parse
 from blog import db, app
 #endregion
 
-@app.route('/user/overview', methods=['GET'])
+@app.route('/user', methods=['GET', 'POST'])
 @login_required
 def user_page():
-    return render_template('user/overview.html', title='Nutzer')
+    if request.method == 'GET':
+        return render_template('user/user.html', title='Nutzer')
+    elif request.method == 'POST':
+        content = f'''
+        <p>ID: { current_user.id }</p>
+        <p>Benutzername: { current_user.username }</p>
+        <p>Email: { current_user.email }</p>
+        <p>Admin: { current_user.admin_acc }</p>
+        '''
+        return jsonify({'body': content})
 
-@app.route('/user/settings', methods=['GET'])
+@app.route('/user/settings', methods=['POST'])
 @login_required
 def user_settings():
-    return render_template('user/settings.html', title='Einstellungen')
+    content = f'''
+    <a href="{ url_for('change_password') }" class="button">Passwort ändern</a>
+    <a href="{ url_for('change_username') }" class="button">Benutzername ändern</a>
+    '''
+    return jsonify({'body': content})
 
 @app.route('/user/change_password', methods=['GET', 'POST'])
 @login_required
