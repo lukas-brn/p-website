@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 
+{% block head %} 
+<link href="{{ url_for('static', filename='css/sideNav.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/user.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %} 
-	<nav>
+	<nav class="sideNav">
         <ul>
-            <li><a href="{{ url_for('user_page') }}">Übersicht</a></li>
-            <li><a href="{{ url_for('user_settings') }}">Einstellungen</a></li>
+            <li ><a href="{{ url_for('user_page') }}">Übersicht</a></li>
+            <li class="active"><a href="{{ url_for('user_settings') }}">Einstellungen</a></li>
             {% if current_user.admin_acc == true %}
-            <span>ADMIN EINSTELLUNGEN</span>
+            <span>Admin-Einstellungen</span>
             <li><a href="{{ url_for('admin_users') }}">Nutzerliste</a></li>
             <li><a href="{{ url_for('admin_posts') }}">Beitragsliste</a></li>
             <li><a href="{{ url_for('measurements') }}">Messungsliste</a></li>
@@ -14,5 +19,5 @@
         </ul>
     </nav>
 
-    {% block user_content %}  {% endblock %}
+    <div id="gridContainer">{% block user_content %}  {% endblock %}</div>
 {% endblock %}
