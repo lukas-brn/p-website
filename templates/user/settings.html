@@ -1,7 +1,9 @@
 {% extends 'user/main.html' %}
 
 {% block user_content %}
-
+<script>
+    $('#settings_link').addClass('active')
+</script>
 <a href="{{ url_for('change_password') }}" class="button">Passwort ändern</a>
 <a href="{{ url_for('change_username') }}" class="button">Benutzername ändern</a>
 {% endblock %}

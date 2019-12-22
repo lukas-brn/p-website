@@ -8,13 +8,13 @@
 {% block content %} 
 	<nav class="sideNav">
         <ul>
-            <li ><a href="{{ url_for('user_page') }}">Übersicht</a></li>
-            <li class="active"><a href="{{ url_for('user_settings') }}">Einstellungen</a></li>
+            <li id="overview_link"><a href="{{ url_for('user_page') }}">Übersicht</a></li id="overview_link">
+            <li id="settings_link"><a href="{{ url_for('user_settings') }}">Einstellungen</a></li>
             {% if current_user.admin_acc == true %}
             <span>Admin-Einstellungen</span>
-            <li><a href="{{ url_for('admin_users') }}">Nutzerliste</a></li>
-            <li><a href="{{ url_for('admin_posts') }}">Beitragsliste</a></li>
-            <li><a href="{{ url_for('measurements') }}">Messungsliste</a></li>
+            <li id="user_link"><a href="{{ url_for('admin_users') }}">Nutzerliste</a></li id="user_link">
+            <li id="posts_link"><a href="{{ url_for('admin_posts') }}">Beitragsliste</a></li id="posts_link">
+            <li id="measurements_link"><a href="{{ url_for('measurements') }}">Messungsliste</a></li id="measurements_link">
             {% endif %}
         </ul>
     </nav>

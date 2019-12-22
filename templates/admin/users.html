@@ -1,6 +1,9 @@
 {% extends 'user/main.html' %}
 
 {% block user_content %}
+<script>
+    $('#user_link').addClass('active')
+</script>
 {% if users|length < 1 %}
 <p>Es sind keine Nutzer verfügbar.</p>
 {% else %}

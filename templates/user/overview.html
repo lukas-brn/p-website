@@ -1,6 +1,9 @@
 {% extends 'user/main.html' %}
 
 {% block user_content %}
+<script>
+    $('#overview_link').addClass('active')
+</script>
 <p>ID: {{ current_user.id }}</p>
 <p>Benutzername: {{ current_user.username }}</p>
 <p>Email: {{ current_user.email }}</p>

@@ -1,6 +1,9 @@
 {% extends 'user/main.html' %}
 
 {% block user_content %}
+<script>
+    $('#posts_link').addClass('active')
+</script>
 
 <a href="{{ url_for('admin_create_post') }}" class="button" style="border-radius: 50%; display: block; padding: 8px; width: 24px; height: 24px"><img src="{{ url_for('static', filename='img/add-24px.svg') }}" style="fill: white"/></a>
 

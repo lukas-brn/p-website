@@ -1,6 +1,9 @@
 {% extends 'user/main.html' %}
 
 {% block user_content %}
+<script>
+    $('#measurements_link').addClass('active')
+</script>
 
 {% if bme_vals|length < 1 %}
 <p>Es sind keine BME-Messungen verfügbar.</p>
