@@ -138,7 +138,7 @@ def admin_create_post():
                     )
                 )
                 db.session.commit()
-                return jsonify({"redirect": True, "url": url_for('admin_posts')})
+                return jsonify({"redirect": True, "url": url_for('blog')})
             except Exception as e:
                 return render_template("errors/error.html", title="Error", error=e)
     else:
@@ -161,7 +161,7 @@ def delete(id):
             for post in Blog_Post.query.filter(Blog_Post.id > id).all():
                 post.id = post.id - 1
                 db.session.commit()
-            return redirect(url_for('admin_posts'))
+            return redirect(url_for('user_page'))
         except Exception as e:
             return render_template("errors/error.html", title="Error", error=e)
     else:
@@ -182,7 +182,7 @@ def edit(id):
                 post.body=request.form['body']
                 post.images=result_string
                 db.session.commit()
-                return jsonify({"redirect": True, "url": url_for('admin_posts')})
+                return jsonify({"redirect": True, "url": url_for('user_page')})
             except Exception as e:
                 return render_template("errors/error.html", title="Error", error=e)
         else:
@@ -208,7 +208,7 @@ def manage_admin(id):
                 if user.id != 1:
                     user.set_admin(not user.admin_acc)
                     db.session.commit()
-                    return redirect(url_for('admin_users'))
+                    return redirect(url_for('user_page'))
                 else:
                     raise Exception(
                         "Sie können den Admin-Status des Hauptadmins nicht verandern"

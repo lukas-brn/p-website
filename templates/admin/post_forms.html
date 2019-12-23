@@ -1,0 +1,66 @@
+<form action="javascript:addTag()">
+    <input type="text" id="tag_input">
+    <input type="submit" value="Add Tag">
+</form>
+<div id="current_tag_div"></div>
+
+{% macro pushPopup(name, fName) %}
+<div id="post_{{ name }}_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
+    <div id="post_{{ name }}_popup_inner" style="height: 400px;">
+        <div id="post_{{ name }}_popup_main"></div>
+        <form action="javascript:close{{ fName }}Popup()">
+            <input type="number" id="post_{{ name }}_number_input">
+            <input type="submit" value="Push {{ fName }}">
+        </form>
+    </div>
+</div>
+{% endmacro %}
+
+{{ pushPopup('tag', 'Tag') }}
+{{ pushPopup('file', 'File') }}
+
+<script>
+    let destTagElem = $('#post_tag_popup_main');
+    let destTagWrapper = $('#post_tag_popup_wrapper');
+    let destTagInput = $('#post_tag_number_input');
+    let tagSrcId;
+
+    tagPopup = (id1) => {
+        tagSrcId = id1;
+        destTagWrapper.css("display", "flex");
+    }
+
+    closeTagPopup = () => {
+        targetId = parseInt(destTagInput.val());
+        if (targetId !== NaN) {
+            targetId--;
+            if (tagSrcId < targetId) targetId++;
+            if (tags[targetId-1] !== undefined) pushTag(tagSrcId, targetId);
+            else openPopup('Die angegebene ID ist nicht möglich!', '', '');
+        }
+        destTagInput.val('');
+        destTagWrapper.css({"display": "none"});
+    }
+    
+    let destFileElem = $('#post_file_popup_main');
+    let destFileWrapper = $('#post_file_popup_wrapper');
+    let destFileInput = $('#post_file_number_input');
+    let fileSrcId;
+    
+    filePopup = (id1) => {
+        fileSrcId = id1;
+        destFileWrapper.css("display", "flex");
+    }
+
+    closeFilePopup = () => {
+        targetId = parseInt(destFileInput.val());
+        if (targetId !== NaN) {
+            targetId--;
+            if (fileSrcId < targetId) targetId++;
+            if (files[targetId-1] !== undefined) pushFile(fileSrcId, targetId);
+            else openPopup('Die angegebene ID ist nicht möglich!', '', '');
+        }
+        destFileInput.val('');
+        destFileWrapper.css({"display": "none"});
+    }
+</script>

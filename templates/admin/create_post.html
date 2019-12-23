@@ -7,49 +7,34 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <input type="text" id="caption_input">
     <textarea id="body_input"></textarea>
-    <input type=file id="file_input" onchange="setFileInput()" style="display: none;">
+    <input type=file id="file_input" onchange="addFile()" style="display: none;">
     <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
     <input type="submit" value="Post Blog">
 </form>
 <div id="current_file_div"></div>
 
-<form action="javascript:addTag()">
-    <input type="text" id="tag_input">
-    <input type="submit" value="Add Tag">
-</form>
-<div id="current_tag_div"></div>
+{% include 'admin/post_forms.html'%}
 
-<div id="post_tag_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-    <div id="post_tag_popup_inner" style="height: 400px;">
-        <div id="post_tag_popup_main"></div>
-        <form action="javascript:closePostTagPopup()">
-            <input type="number" id="post_tag_number_input">
-            <input type="submit" value="Push Tag">
-        </form>
-    </div>
-</div>
-
-<div id="post_file_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-    <div id="post_file_popup_inner" style="height: 400px;">
-        <div id="post_file_popup_main"></div>
-        <form action="javascript:closePostFilePopup()">
-            <input type="number" id="post_file_number_input">
-            <input type="submit" value="Push File">
-        </form>
-    </div>
-</div>
 {% endblock %}
 
 {% block script_footer %}
+<script src="{{ url_for('static', filename='js/manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tagmanager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
 
 <script>
+    let data = new FormData();
     function post() {
         const captionInput = $('#caption_input').prop('value');
         const bodyInput = $('#body_input').prop('value');
         data.append('caption', captionInput);
         data.append('body', bodyInput);
+
+        let nextFileNum = 1;
+        files.forEach( file => {
+            data.append(`file${ nextFileNum }`, files[nextFileNum-1])
+            nextFileNum++;
+        })
         
         let tagString = '';
         tags.forEach( tag => tagString += ' ; '+tag);
@@ -70,47 +55,6 @@
         });
         data = new FormData();
         nextFileNum = 1;
-    }
-
-    let destTagElem = $('#post_tag_popup_main');
-    let destTagWrapper = $('#post_tag_popup_wrapper');
-    let destTagInput = $('#post_tag_number_input');
-    let tagSrcId;
-
-    postTagPopup = (id1) => {
-        tagSrcId = id1;
-        destTagWrapper.css("display", "flex");
-    }
-
-    closePostTagPopup = () => {
-        targetId = parseInt(destTagInput.val());
-        if (targetId !== NaN) {
-            targetId--;
-            if (tags[targetId] !== undefined) pushTag(tagSrcId, targetId);
-            else openPopup('Die angegebene ID ist nicht möglich!', '', '');
-        }
-        destTagInput.val('');
-        destTagWrapper.css({"display": "none"});
-    }
-
-    let destFileElem = $('#post_file_popup_main');
-    let destFileWrapper = $('#post_file_popup_wrapper');
-    let destFileInput = $('#post_file_number_input');
-    let fileSrcId;
-
-    postFilePopup = (id1) => {
-        fileSrcId = id1;
-        destFileWrapper.css("display", "flex");
-    }
-
-    closePostFilePopup = () => {
-        targetId = parseInt(destFileInput.val());
-        if (targetId !== NaN) {
-            if (data.get(`file${ targetId }`) !== null) pushFile(fileSrcId, targetId);
-            else openPopup('Die angegebene ID ist nicht möglich!', '', '');
-        }
-        destFileInput.val('');
-        destFileWrapper.css({"display": "none"});
     }
 </script>
 

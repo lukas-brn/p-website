@@ -2,10 +2,9 @@ let tags = [];
 const tagCounter = [];
 let dragSrcElTag;
 
-function addTag() { 
-    const tag = $('#tag_input').val();
-    $('#tag_input').val('')
-    tags.push(tag);
+function addTag() {
+    tags.push($('#tag_input').val());
+    $('#tag_input').val('');
     addTagManager(tags.length-1);
 }
 
@@ -16,19 +15,11 @@ function removeTag(id) {
 
 function addTagManager(id) {
     $('#current_tag_div').append(`
-        <div id="tag_outer_div_${ id }" class="tag_outer_div">
-            <div id="tag_div_spacer_${ id }" class="tag_div_spacer">
-                <p>Drop here</p>  
-            </div>
-
-            <div id="tag_div_${ id }" class="tag_div" draggable="true">
-                <p id="tag_p_${ id }" class="tag_p">
-                    ID: ${ id+1 }: ${ tags[id] }
-                    <a onclick="removeTag(${ id })" style="cursor: pointer;">Delete</a>
-                    <a onclick="postTagPopup(${ id })" style="cursor: pointer;">Change Postiton</a>
-                </p>
-            </div>
-        </div>
+        ${ addElement('tag', id) }
+        ID: ${ id+1 }: ${ tags[id] }
+        <a onclick="removeTag(${ id })" style="cursor: pointer;">Delete</a>
+        <a onclick="tagPopup(${ id })" style="cursor: pointer;">Change Postiton</a>
+    </p></div></div>
     `);
     $(`#tag_div_spacer_${ id }`).hide();
     tagCounter[id]=0;
@@ -36,38 +27,23 @@ function addTagManager(id) {
 }
 
 function buildTagHtml() {
-    let i = 0;
     $('#current_tag_div').html('');
-    tags.forEach(() => addTagManager(i++));
+    tags.forEach((e, i) => addTagManager(i));
 }
 
 function switchTags(id1, id2) {
-    const el = tags[id1];
-
-    tags[id1] = tags[id2];
-    tags[id2] = el;
+    tags = switchElements(tags, id1, id2);
     buildTagHtml();
 }
 
 function pushTag(srcId, destId) {
-    const src = tags[srcId]
-    tags = tags.filter((src, i) => i!==srcId)
-    if (destId > srcId) destId--;
-
-    tags = tags.slice(0, destId).concat(src).concat(tags.slice(destId));
+    tags = pushElements(tags, srcId, destId);
     buildTagHtml();
 }
 
 function handleDragStartTag(e) {
-    this.style.opacity = '0.4';
     dragSrcElTag = this;
-    e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragOverTag(e) {
-    if (e.preventDefault) e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    return false;
+    handleDragStart(this, e);
 }
 
 function handleDragEnterTag(e) {
@@ -112,20 +88,15 @@ function handleSpacerDropTag(e) {
     return false;
 }
 
-function handleDragEndTag(e) {
-    this.classList.remove('over');
-    this.style.opacity = 1;
-}
-
 function setupDragListenersTag(id) {
     const parent = $(`#tag_outer_div_${ id }`)[0];
     const spacer = parent.children[0];
     const file = parent.children[1];
 
     parent.addEventListener('dragenter', handleDragEnterTag, false);
-    parent.addEventListener('dragover', handleDragOverTag, false);
+    parent.addEventListener('dragover', handleDragOver, false);
     parent.addEventListener('dragleave', handleDragLeaveTag, false);
-    file.addEventListener('dragend', handleDragEndTag, false);
+    file.addEventListener('dragend', handleDragEnd, false);
 
     file.addEventListener('dragstart', handleDragStartTag, false);
     file.addEventListener('drop', handleDropTag, false);

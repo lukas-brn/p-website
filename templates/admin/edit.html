@@ -3,29 +3,22 @@
 {% block content %} 
 <p>Edit Blog Post:</p>
 
-{% autoescape false %}
-{{ images }}
-{% endautoescape %}
-
 <form action="javascript:edit()" method="post" enctype=multipart/form-data id="blog_post_form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <input type="text" id="caption_input" value="{{ post.caption }}">
     <textarea type="text" id="body_input">{{ post.body }}</textarea>
-    <input type=file id="file_input" onchange="setFileInput()" style="display: none;">
+    <input type=file id="file_input" onchange="addFile()" style="display: none;">
     <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
     <input type="submit" value="Edit Blog">
 </form>
 <div id="current_file_div"></div>
 
-<form action="javascript:addTag()">
-    <input type="text" id="tag_input">
-    <input type="submit" value="Add Tag">
-</form>
-<div id="current_tag_div"></div>
+{% include 'admin/post_forms.html'%}
 
 {% endblock %}
 
 {% block script_footer %}
+<script src="{{ url_for('static', filename='js/manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tagmanager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/filemanager.js') }}"></script>
 
@@ -38,9 +31,8 @@
         .then( res => res.blob() )
         .then ( blob => {
             file = new File([blob], imageList[i].split('/')[imageList[i].split('/').length-1], blob);
-            data.append(`file${ i+1 }`, file);
-            nextFileNum++;
-            buildHtml();
+            files.push(file);
+            buildFileHtml();
         })
     }
 
@@ -48,10 +40,17 @@
     buildTagHtml();
 
     function edit() {
+        let data = new FormData();
         const captionInput = $('#caption_input').prop('value');
         const bodyInput = $('#body_input').prop('value');
         data.append('caption', captionInput);
         data.append('body', bodyInput);
+
+        let nextFileNum = 1;
+        files.forEach( file => {
+            data.append(`file${ nextFileNum }`, files[nextFileNum-1])
+            nextFileNum++;
+        })
 
         $.ajax({
             type: 'POST',

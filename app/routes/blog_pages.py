@@ -51,7 +51,7 @@ def parse_body(input, id):
             img_link = '/static/blog_images/'+str(parse_images(id)[int(style_conv[img_start:img_end])-1])
             style_conv = re.sub( r'\[img(\d+)]', '</p><a href="'+img_link+'"><img src="'+img_link+'" alt="img"></a><span class="img_text_span">', style_conv, 1 )
             style_conv = re.sub( r'\[/img]', '</span><p>', style_conv, 1 )
-    style_conv = remove_empty_p_tags(style_conv)
+    style_conv = remove_empty_tags(style_conv)
     return style_conv
 
 def parse_images(id):
@@ -79,8 +79,9 @@ def parse_tags(id):
         pass
     return tagReturn
 
-def remove_empty_p_tags(input):
+def remove_empty_tags(input):
     input = re.sub( r'<p></p>', '', input)
+    input = re.sub( r'<span class="img_text_span"></span>', '', input)
     return input
 
 @app.route("/blog", methods=['POST', 'GET'])
