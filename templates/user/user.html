@@ -33,8 +33,9 @@
         function requestHtml(route) {
             $.post(route, ajaxContinue?requestID:'').done(response => {
                 if (ajaxContinue) requestID++;
-                $("#gridContainer").html(response.body)
-            }).fail(() => console.error('Error: Could not contact server.'))
+                $('#gridContainer').html(response.body);
+                $('#title').html(response.title);
+            }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
         }
         requestHtml();
     </script>

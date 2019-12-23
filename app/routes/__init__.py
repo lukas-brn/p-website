@@ -24,9 +24,10 @@ def page_not_found(e):
         return redirect( url_for('blog') )
     return render_template("errors/404.html", title="404")
 
-@app.route("/")
-def index():
-    return render_template("index.html", title="Startseite")
+@app.route('/', defaults={'msg': ''})
+@app.route("/<string:msg>")
+def index(msg=''):
+    return render_template("index.html", title="Startseite", msg=msg)
 
 @app.route("/kontakt")
 def contact():

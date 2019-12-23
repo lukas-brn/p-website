@@ -17,31 +17,10 @@
             {{ form.submit() }}
         </div>
     </form>
-
-    <div id="register_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-        <div id="register_popup_inner" style="height: 400px;">
-            <div id="register_popup_main"></div>
-            <button type="submit" onclick="closeRegisterPopup()">Submit</button>
-        </div>
-    </div>
 {% endblock %}
 
 {% block script_footer %}
     <script>
-
-        registerPopup = () => {
-            destElem = $("#register_popup_main")
-            destWrapper = $("#register_popup_wrapper")
-            
-            $.post('/register', $('#register_form').serialize()).done(response => {
-                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
-                                        else {
-                                            destElem.html(response.text);
-                                            destWrapper.css("display", "flex")
-                                        }
-            }).fail(() => console.error('Error: Could not contact server.'));
-        }
-
-        closeRegisterPopup = () => destWrapper.css({"display": "none"});
+        registerPopup = () => openPopup('', '/register', $('#register_form').serialize());
     </script>
 {% endblock %}

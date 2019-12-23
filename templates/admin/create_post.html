@@ -87,7 +87,7 @@
         if (targetId !== NaN) {
             targetId--;
             if (tags[targetId] !== undefined) pushTag(tagSrcId, targetId);
-            else console.error('The id is not available');
+            else openPopup('Die angegebene ID ist nicht möglich!', '', '');
         }
         destTagInput.val('');
         destTagWrapper.css({"display": "none"});
@@ -107,7 +107,7 @@
         targetId = parseInt(destFileInput.val());
         if (targetId !== NaN) {
             if (data.get(`file${ targetId }`) !== null) pushFile(fileSrcId, targetId);
-            else console.error('The id is not available');
+            else openPopup('Die angegebene ID ist nicht möglich!', '', '');
         }
         destFileInput.val('');
         destFileWrapper.css({"display": "none"});

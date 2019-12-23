@@ -37,3 +37,10 @@
 		
 	</article>
 {% endblock %}
+
+{% block script_footer %}
+<script>
+	msg = '{{ msg }}';
+	if (msg != '') openPopup(msg, '', '');
+</script>
+{% endblock %}

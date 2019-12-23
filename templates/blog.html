@@ -54,7 +54,7 @@
                             if (response.is_main_page) stopAjax();
                             ajaxRequest();
                         } else stopAjax();
-                    }).fail(() => console.error('Error: Could not contact server.'));
+                    }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
                 }
             }
         }

@@ -73,7 +73,7 @@ def admin_posts():
                 </tr>
                 '''
             content += '</table>'
-        return jsonify({'body': content})
+        return jsonify({'body': content, 'title': 'Beiträge'})
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
@@ -115,7 +115,7 @@ def admin_users():
                 </tr>
                 '''
             content += '</table>'
-        return jsonify({'body': content})
+        return jsonify({'body': content, 'title': 'Nutzer'})
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
@@ -291,7 +291,7 @@ def measurements():
                 </tr>
                 '''
             content += '</table>'
-        return jsonify({'body': content})
+        return jsonify({'body': content, 'title': 'Messungen'})
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 

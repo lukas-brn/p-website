@@ -11,7 +11,7 @@ from blog import db, app
 @login_required
 def user_page():
     if request.method == 'GET':
-        return render_template('user/user.html', title='Nutzer')
+        return render_template('user/user.html', title='Übersicht')
     elif request.method == 'POST':
         content = f'''
         <p>ID: { current_user.id }</p>
@@ -19,7 +19,7 @@ def user_page():
         <p>Email: { current_user.email }</p>
         <p>Admin: { current_user.admin_acc }</p>
         '''
-        return jsonify({'body': content})
+        return jsonify({'body': content, 'title': 'Übersicht'})
 
 @app.route('/user/settings', methods=['POST'])
 @login_required
@@ -28,7 +28,7 @@ def user_settings():
     <a href="{ url_for('change_password') }" class="button">Passwort ändern</a>
     <a href="{ url_for('change_username') }" class="button">Benutzername ändern</a>
     '''
-    return jsonify({'body': content})
+    return jsonify({'body': content, 'title': 'Einstellungen'})
 
 @app.route('/user/change_password', methods=['GET', 'POST'])
 @login_required
@@ -46,7 +46,7 @@ def change_password():
             else:
                 return jsonify({"text": "Die 2 neuen Passwörter stimmen nicht überein.", "redirect": False})
         else: 
-            return jsonify({"text": "Das ursprüngliche Passwort passt nicht.", "redirect": False})
+            return jsonify({"text": "Das ursprüngliche Passwort ist nicht korrekt.", "redirect": False})
 
 @app.route('/user/change_username', methods=['GET', 'POST'])
 @login_required
@@ -62,5 +62,5 @@ def change_username():
             db.session.commit()
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
-                next_page = url_for('user_settings')
+                next_page = url_for('user_page')
             return jsonify({"text": next_page, "redirect": True})

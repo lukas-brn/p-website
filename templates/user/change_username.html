@@ -7,31 +7,10 @@
             {{ form.submit() }}
         </div>
     </form>
-
-    <div id="username_popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-            <div id="username_popup_inner" style="height: 400px;">
-                <div id="username_popup_main"></div>
-                <button type="submit" onclick="closeUsernamePopup()">Submit</button>
-            </div>
-        </div>
 {% endblock %}
 
 {% block script_footer %}
     <script>
-
-        let destElem = $("#username_popup_main")
-        let destWrapper = $("#username_popup_wrapper")
-
-        changeUsernamePopup = () => {
-            $.post('/user/change_username', $("#change_username_form").serialize()).done(response => {
-                if (response.text!=="") if (response.redirect == true) window.location.href = response.text;
-                                        else {
-                                            destElem.html(response.text);
-                                            destWrapper.css("display", "flex")
-                                        }
-            }).fail(() => console.error('Error: Could not contact server.'));
-        }
-
-        closeUsernamePopup = () => destWrapper.css({"display": "none"});
+        changeUsernamePopup = () => openPopup('', '/user/change_username', $("#change_username_form").serialize());
     </script>
 {% endblock %}
