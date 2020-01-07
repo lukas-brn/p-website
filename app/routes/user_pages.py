@@ -10,8 +10,10 @@ from blog import db, app
 @app.route('/user', methods=['GET', 'POST'])
 @login_required
 def user_page():
+    title = 'Übersicht'
+    link = 'overview_link'
     if request.method == 'GET':
-        return render_template('user/user.html', title='Übersicht')
+        return render_template('user/user.html', start_link=link, title=title)
     elif request.method == 'POST':
         content = f'''
         <p>ID: { current_user.id }</p>
@@ -19,16 +21,21 @@ def user_page():
         <p>Email: { current_user.email }</p>
         <p>Admin: { current_user.admin_acc }</p>
         '''
-        return jsonify({'body': content, 'title': 'Übersicht'})
+        return jsonify({'body': content, 'title': title, 'url': '/user', 'link': link})
 
-@app.route('/user/settings', methods=['POST'])
+@app.route('/user/settings', methods=['GET', 'POST'])
 @login_required
 def user_settings():
-    content = f'''
-    <a href="{ url_for('change_password') }" class="button">Passwort ändern</a>
-    <a href="{ url_for('change_username') }" class="button">Benutzername ändern</a>
-    '''
-    return jsonify({'body': content, 'title': 'Einstellungen'})
+    title = 'Einstellungen'
+    link = 'settings_link'
+    if request.method == 'GET':
+        return render_template('user/user.html', start_link=link, title=title)
+    elif request.method == 'POST':
+        content = f'''
+        <a href="{ url_for('change_password') }" class="button">Passwort ändern</a>
+        <a href="{ url_for('change_username') }" class="button">Benutzername ändern</a>
+        '''
+        return jsonify({'body': content, 'title': title, 'url': '/user/settings', 'link': link})
 
 @app.route('/user/change_password', methods=['GET', 'POST'])
 @login_required

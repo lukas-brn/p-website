@@ -1,17 +1,14 @@
 {% extends 'base.html' %}
 
-{% block content %} 
-<p>Create new Blog Post:</p>
-
+{% block content %}
 <form action="javascript:post()" method="post" enctype=multipart/form-data id="blog_post_tag_form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <input type="text" id="caption_input" placeholder="Titel">
     <textarea id="body_input" placeholder="Inhalt"></textarea>
     <input type=file id="file_input" onchange="addFile()" style="display: none;">
-    <input type="button" value="Upload File" onclick="$(`#file_input`).click();" />
-    <input type="submit" value="Post Blog">
+    <input type="button" value="Bild hochladen" onclick="$(`#file_input`).click();" />
+    <input type="submit" value="Post veröffentlichen">
 </form>
-<div id="current_file_div"></div>
 
 {% include 'admin/post_forms.html'%}
 

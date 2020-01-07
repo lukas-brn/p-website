@@ -195,22 +195,24 @@ def blog_post(id):
 @app.route('/blog/post_comment/<int:id>', methods=['POST'])
 @login_required
 def post_comment(id):
-    post = Blog_Post.query.get(id)
-    print(request.form['body'])
-    if post is not None:
+    try:
+        post = Blog_Post.query.get_or_404(id)
+        print(post)
+        print(request.form['body'])
         # try:
-            db.session.add(
-                Comment(
-                    post = post,
-                    posted_by = current_user,
-                    body = request.form['body']
-                )
+        db.session.add(
+            Comment(
+                post = post,
+                posted_by = current_user.id,
+                body = request.form['body']
             )
-            db.session.commit()
-            print(url_for('blog_post', id=id))
-            return jsonify({'redirect': True, 'url': '/'})
-        # except:
-        #     return jsonify({'redirect': False, 'text': 'An error accured'})
-    else:
+        )
+        db.session.commit()
+        print(url_for('blog_post', id=id))
+        return jsonify({'redirect': True, 'url': '/'})
+    except:
         return jsonify({'redirect': False, 'text': 'Post was not found'})
-        
+
+@app.route('/blog/get_comments/<int:id>')
+def get_comments(id):
+    pass
