@@ -10,9 +10,9 @@ class Blog_Post(db.Model):
     caption = db.Column(db.String, nullable=False)
 
     posted_by = db.Column(db.Integer, db.ForeignKey("user.id"))
-    time_created = db.Column(db.DateTime, default=datetime.now() )
+    time_created = db.Column(db.DateTime, default=datetime.now())
     tags = db.Column(db.String)
-    comments = db.relationship('Comment')
+    comments = db.relationship('Comment', backref='post')
 
     body = db.Column(db.String, nullable=False)
     images = db.Column(db.String)
@@ -50,8 +50,11 @@ class User(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey("blog_post.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey('blog_post.id'))
+    time_created = db.Column(db.DateTime, default=datetime.now())
     posted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    body = db.Column(db.String)
 
 class BME(db.Model):
     id = db.Column(db.Integer, primary_key=True)

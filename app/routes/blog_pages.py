@@ -1,9 +1,10 @@
 # region imports
-from flask import render_template, request, jsonify, url_for
+from flask import render_template, request, jsonify, url_for, redirect
+from flask_login import login_required, current_user
 from sqlalchemy import extract
 import re
-from app.models import Blog_Post, User
-from blog import app
+from app.models import Blog_Post, User, Comment
+from blog import app, db
 # endregion
 
 def max_post_id():
@@ -178,7 +179,7 @@ def blog_post(id):
     if request.method == 'GET':
         post = Blog_Post.query.get_or_404(id)
         if post is not None:
-            return render_template("blog.html", title="Beitrag", post_count=1, route="/blog/post/"+str(id), id=str(id))
+            return render_template("blog.html", title="Beitrag", post_count=1, route="/blog/post/"+str(id))
     elif request.method == 'POST':
         try:
             post = Blog_Post.query.get_or_404(id)
@@ -190,3 +191,26 @@ def blog_post(id):
             return jsonify({"article": True, "id": id, "is_main_page": True, "caption": post.caption, "tags": parse_tags(id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except Exception:
             return jsonify({"article": False})
+
+@app.route('/blog/post_comment/<int:id>', methods=['POST'])
+@login_required
+def post_comment(id):
+    post = Blog_Post.query.get(id)
+    print(request.form['body'])
+    if post is not None:
+        # try:
+            db.session.add(
+                Comment(
+                    post = post,
+                    posted_by = current_user,
+                    body = request.form['body']
+                )
+            )
+            db.session.commit()
+            print(url_for('blog_post', id=id))
+            return jsonify({'redirect': True, 'url': '/'})
+        # except:
+        #     return jsonify({'redirect': False, 'text': 'An error accured'})
+    else:
+        return jsonify({'redirect': False, 'text': 'Post was not found'})
+        

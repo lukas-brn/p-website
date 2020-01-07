@@ -51,7 +51,10 @@
                             );
                             currentHeight += $(`#article_${ blogId }`).height();
                             blogId++;
-                            if (response.is_main_page) stopAjax();
+                            if (response.is_main_page) {
+                                stopAjax();
+                                showComments();
+                            }
                             ajaxRequest();
                         } else stopAjax();
                     }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
@@ -65,6 +68,25 @@
         }
 
         ajaxRequest();
+
+        function showComments() {
+            $('#comment_form').css('display', 'block');
+        }
+
+        function postComment() {
+            console.log($('#comment_form').serialize())
+            $.post(route.replace('post', 'post_comment'), $('#comment_form').serialize()).done(response => {
+                console.log(response.redirect)
+                if (response.redirect) {
+                    window.location.href = response.url;
+                    console.log('hi')
+                }
+                else {
+                    openPopup(response.text, '', '')
+                    console.log(response.text)
+                }
+            })
+        }
     </script>
 	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 {% endblock %}
@@ -85,5 +107,8 @@
         <h2>loading...</h2>
     </article>
 	
-	
+    <form action="javascript:postComment()" method="post" style="display: none;" id="comment_form">
+        <textarea name="body" placeholder="Leave your comment here"></textarea>
+        <button type="submit">Comment</button>
+    </form>
 {% endblock %}

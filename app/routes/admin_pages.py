@@ -11,13 +11,17 @@ from datetime import datetime
 # endregion
 
 def max_post_id():
-    return Blog_Post.query.order_by(-Blog_Post.id).first().id
+    post = Blog_Post.query.order_by(-Blog_Post.id).first()
+    if post is not None:
+        return post
+    else:
+        return 0
 
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def manage_posted_images(request):
+def manage_posted_images(request, blogID):
     images = []
     try_image = 0
     while True:
@@ -27,8 +31,7 @@ def manage_posted_images(request):
             if file.filename != '':
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    path = 'static/blog_images/' + str(max_post_id() +
-                                                        1)
+                    path = 'static/blog_images/' + str(blogID)
                     if not os.path.exists(path):
                         os.makedirs(path)
                     file.save(path + '/' + filename)
@@ -37,7 +40,7 @@ def manage_posted_images(request):
             break
     result_string = ""
     for image in images:
-        result_string += ' ; ' + str(max_post_id() + 1) + '/' + image
+        result_string += ' ; ' + str(blogID) + '/' + image
     return result_string.replace(' ; ', '', 1)
 
 @app.route('/admin/posts', methods=['POST'])
@@ -103,7 +106,7 @@ def admin_users():
                     <td>{ user.email }</td>
                     <td>{ user.admin_acc }</td>
                     <td>
-                        <a href="{{ url_for( 'manage_admin', id=user.id ) }}">
+                        <a href="{ url_for( 'manage_admin', id=user.id ) }">
                 '''
                 if user.admin_acc:
                     content += 'Remove Admin'
@@ -126,7 +129,7 @@ def admin_create_post():
         if request.method == 'GET':
             return render_template('admin/create_post.html', title='Beitrag erstellen')
         elif request.method == 'POST':
-            result_string = manage_posted_images(request)
+            result_string = manage_posted_images(request, max_post_id() + 1)
             try:
                 db.session.add(
                     Blog_Post(
@@ -175,7 +178,7 @@ def edit(id):
     if current_user.admin_acc == True:
         post = Blog_Post.query.get_or_404(id)
         if request.method == 'POST':
-            result_string = manage_posted_images(request)
+            result_string = manage_posted_images(request, id)
             try:
                 post.caption=request.form['caption']
                 post.posted_by=current_user.id
@@ -210,12 +213,9 @@ def manage_admin(id):
                     db.session.commit()
                     return redirect(url_for('user_page'))
                 else:
-                    raise Exception(
-                        "Sie können den Admin-Status des Hauptadmins nicht verandern"
-                    )
+                    raise Exception("Sie können den Admin-Status des Hauptadmins nicht verandern")
             else:
-                raise Exception(
-                    "Sie können ihren eigenen Admin-Status nicht verändern")
+                raise Exception("Sie können ihren eigenen Admin-Status nicht verändern")
         except Exception as e:
             return render_template("errors/error.html", title="Error", error=e)
     else:
