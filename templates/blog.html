@@ -38,11 +38,11 @@
                             $("#content").html( 
                                 $("#content").html().replace( 
                                     /<!-- replace position for new blogs -->/g, `
-                                    <article id='article_${ blogId }'>
-                                        <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>
-                                        <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span><br />
-										${ response.tags!=''?`<span class="tags">Tags: ${ response.tags }</span>`:'' }
-                                        <p>${ response.body }</p>
+                                    <article id='article_${ blogId }'>\n
+                                        <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>\n
+                                        <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span><br />\n
+										${ response.tags!=''?`<span class="tags">Tags: ${ response.tags }</span>`:'' }\n
+                                        <p>${ response.body }</p>\n
                                     </article>
                                     \n
                                     \n
@@ -93,11 +93,17 @@
                     $.post(route.replace('post', 'get_comments'), 'comment_id='+commentId).done(response => {
                         console.log('comment requested')
                         if (response.comment) {
+                            $('#commentSection').append(`
+                                <div class='comment' id='article_${ commentId }'>
+                                    <p>${ response.body }</p>
+                                </div>
+                            `);
                             currentCommentHeight += $(`#comment_${ commentId }`).height();
-                            blogId++;
+                            commentId++;
                             if (response.is_main_page) {
                                 stopAjax();
                                 showComments();
+                                commentRequest();
                             }
                             ajaxRequest();
                         } else stopCommentAjax();
@@ -115,12 +121,10 @@
             ajaxIsProcessing = true;
             while (commentsInQueue>0) {
                 await getComments();
-                commentAommentsInQueue--;
+                commentsInQueue--;
             }
             commentAjaxIsProcessing = false;
         }
-
-        if (is_main_page) commentRequest();
     </script>
 	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 {% endblock %}

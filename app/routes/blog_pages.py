@@ -197,8 +197,6 @@ def blog_post(id):
 def post_comment(id):
     try:
         post = Blog_Post.query.get_or_404(id)
-        print(post)
-        print(request.form['body'])
         # try:
         db.session.add(
             Comment(
@@ -208,11 +206,23 @@ def post_comment(id):
             )
         )
         db.session.commit()
-        print(url_for('blog_post', id=id))
         return jsonify({'redirect': True, 'url': '/'})
     except:
         return jsonify({'redirect': False, 'text': 'Post was not found'})
 
-@app.route('/blog/get_comments/<int:id>')
+@app.route('/blog/get_comments/<int:id>', methods=['POST'])
 def get_comments(id):
-    pass
+    comment_id = int(request.form['comment_id'])
+    try:
+        post = Blog_Post.query.get_or_404(id)
+        try:
+            comment = post.comments[comment_id]
+            try:
+                user = User.query.get_or_404(comment.posted_by).username
+            except Exception:
+                user = "[deleted]"
+            return jsonify({"comment": True, "posted_by": user, "body": comment.body, "date_created": comment.time_created.strftime("%d.%m.%Y")})
+        except Exception:
+            return jsonify({"comment": False})
+    except Exception:
+        return jsonify({"comment": False})
