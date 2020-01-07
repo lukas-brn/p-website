@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
+	
+{% endblock %}
+
+{% block content %} 
+
+	<article>
+		<h2>Impressum</h2>
+		<p>
+<b>Verantwortlich für den Inhalt dieser Seiten:</b><br />
+Tobias Adler<br />
+Schongauer Straße 41<br />
+86971 Peiting<br />
+Telefon: 08861 9093717<br />
+E-mail: tobias.adler.ptg@gmail.com<br />
+<br />
+<b>Haftungshinweis</b><br />
+Trotz sorgfältiger inhaltlicher Kontrolle übernehme ich keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
+</p>
+	</article>
+	
+	<article>
+		<h2>Datenschutz</h2>
+		<p>
+<b>Verwendung von Daten</b><br />
+Wir verwenden folgende Daten zur bereitstellung unserer Login- und Kommentarfunktion:<br />
+- Name<br />
+- E-Mail<br />
+- Und wir verwenden Cookies<br />
+
+</p>
+	</article>
+
+{% endblock %}
