@@ -31,6 +31,15 @@ article h2:hover>a {
 	font-size: 14px;
 }
 
+button {
+	margin-left:auto; margin-right:0;
+	width: auto;
+}
+
+button:hover {
+	cursor: pointer;
+	background: #DFDFDF;
+}
 
 
 

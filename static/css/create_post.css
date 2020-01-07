@@ -1,0 +1,36 @@
+
+form .flex_wrapper {
+	display: flex;
+}
+
+form textarea {
+	width: auto;
+	flex-basis: calc(100% - 238px);
+}
+
+form .files_container {
+	margin-left: 12px;
+	flex-basis: 250px;
+	display: block;
+}
+
+form .files_container input:hover {
+	cursor: pointer;
+	background: #DFDFDF;
+}
+
+form input[type="submit"]
+{
+	width: auto;
+	margin-left:auto; 
+	margin-right:0;
+	display: block;
+}
+
+#tagForm {
+	display: flex;
+}
+
+#tagForm input[type="submit"] {
+	margin-left: 12px;
+}
