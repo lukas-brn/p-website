@@ -8,13 +8,13 @@
 {% block content %} 
 	<nav class="sideNav">
         <ul>
-            <li id="overview_link"><a onclick='setup("#overview_link", false); requestHtml("/user")' style="cursor: pointer;">Übersicht</a></li id="overview_link">
-            <li id="settings_link"><a onclick='setup("#settings_link", false); requestHtml("/user/settings")' style="cursor: pointer;">Einstellungen</a></li>
+            <li id="overview_link"><a onclick='setup("overview_link", false); requestHtml("/user")' style="cursor: pointer;">Übersicht</a></li id="overview_link">
+            <li id="settings_link"><a onclick='setup("settings_link", false); requestHtml("/user/settings")' style="cursor: pointer;">Einstellungen</a></li>
             {% if current_user.admin_acc == true %}
             <span>Admin-Einstellungen</span>
-            <li id="user_link"><a onclick='setup("#user_link", false); requestHtml("/admin/users")' style="cursor: pointer;">Nutzerliste</a></li id="user_link">
-            <li id="posts_link"><a onclick='setup("#posts_link", false); requestHtml("/admin/posts")' style="cursor: pointer;">Beitragsliste</a></li id="posts_link">
-            <li id="measurements_link"><a onclick='setup("#measurements_link", false); requestHtml("/admin/measurements")' style="cursor: pointer;">Messungsliste</a></li id="measurements_link">
+            <li id="user_link"><a onclick='setup("user_link", false); requestHtml("/admin/users")' style="cursor: pointer;">Nutzerliste</a></li id="user_link">
+            <li id="posts_link"><a onclick='setup("posts_link", false); requestHtml("/admin/posts")' style="cursor: pointer;">Beitragsliste</a></li id="posts_link">
+            <li id="measurements_link"><a onclick='setup("measurements_link", false); requestHtml("/admin/measurements")' style="cursor: pointer;">Messungsliste</a></li id="measurements_link">
             {% endif %}
         </ul>
     </nav>
@@ -24,17 +24,29 @@
     <script>
         function setup(active, con) {
             $('.sideNav>ul>li').removeClass('active');
-            $(active).addClass('active');
-            ajaxContinue = con
-            requestID = 1
+            $(`#${ active }`).addClass('active');
+            ajaxContinue = con;
+            requestID = 1;
         }
-        setup("#overview_link", "False");
+        setup('{{ start_link }}', false);
+
+        setTabTitle = src => { $('#tabTitle').html(`${ src } | ${ $('#tabTitle').html().split(' | ')[1] }`); }
 
         function requestHtml(route) {
-            $.post(route, ajaxContinue?requestID:'').done(response => {
+            $.post(route, ajaxContinue ? requestID : '').done(response => {
                 if (ajaxContinue) requestID++;
                 $('#gridContainer').html(response.body);
-                $('#title').html(response.title);
+				$('#title').html(response.title);
+				
+				window.history.pushState({'body': response.body, 'title': response.title, 'link': response.link}, setTabTitle(response.title), response.url);
+				window.onpopstate = e => {
+					if (e.state) {
+						$('#gridContainer').html(e.state.body);
+                        $('#title').html(e.state.title);
+                        setTabTitle(e.state.title);
+                        setup(e.state.link, false);
+					}
+				};
             }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
         }
         requestHtml();

@@ -74,19 +74,53 @@
         }
 
         function postComment() {
-            console.log($('#comment_form').serialize())
             $.post(route.replace('post', 'post_comment'), $('#comment_form').serialize()).done(response => {
-                console.log(response.redirect)
-                if (response.redirect) {
-                    window.location.href = response.url;
-                    console.log('hi')
-                }
-                else {
-                    openPopup(response.text, '', '')
-                    console.log(response.text)
-                }
-            })
+                if (response.redirect) window.location.href = response.url;
+                else openPopup(response.text, '', '');
+            }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
         }
+
+        let commentId = 0;
+        let maxCommentReached = false;
+        let commentsInQueue = 0;
+        let commentAjaxIsProcessing = false;
+        let currentCommentHeight = 0;
+
+        async function getComments() {
+            if (!maxCommentReached) {
+                lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
+                if (lowestScrollPos+(2*$(window).height())>currentHeight) {
+                    $.post(route.replace('post', 'get_comments'), 'comment_id='+commentId).done(response => {
+                        console.log('comment requested')
+                        if (response.comment) {
+                            currentCommentHeight += $(`#comment_${ commentId }`).height();
+                            blogId++;
+                            if (response.is_main_page) {
+                                stopAjax();
+                                showComments();
+                            }
+                            ajaxRequest();
+                        } else stopCommentAjax();
+                    }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+                }
+            }
+        }
+
+        commentRequest = () => {
+            commentsInQueue++;
+            if (!commentAjaxIsProcessing) commentRequestManager();
+        }
+        
+        commentRequestManager = async () => {
+            ajaxIsProcessing = true;
+            while (commentsInQueue>0) {
+                await getComments();
+                commentAommentsInQueue--;
+            }
+            commentAjaxIsProcessing = false;
+        }
+
+        if (is_main_page) commentRequest();
     </script>
 	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 {% endblock %}
@@ -115,4 +149,8 @@
         <textarea name="body" placeholder="Lasse einen Kommentar da"></textarea>
         <button type="submit">Senden</button>
     </form>
+
+    <div id="commentSection">
+        <!-- position for comments-->
+    </div>
 {% endblock %}

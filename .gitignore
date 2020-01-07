@@ -105,3 +105,8 @@ docs/_build/
 # PyBuilder
 target/
 
+node_modules
+.prettierrc
+.eslintrc.json
+package-lock.json
+package.json

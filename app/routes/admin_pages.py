@@ -43,82 +43,92 @@ def manage_posted_images(request, blogID):
         result_string += ' ; ' + str(blogID) + '/' + image
     return result_string.replace(' ; ', '', 1)
 
-@app.route('/admin/posts', methods=['POST'])
+@app.route('/admin/posts', methods=['POST', 'GET'])
 @login_required
 def admin_posts():
     if current_user.admin_acc == True:
-        posts = Blog_Post.query.order_by(-Blog_Post.id).all()
-        content = f'''
-        <a href="{ url_for('admin_create_post') }" class="button" style="border-radius: 50%; display: block; padding: 8px; width: 24px; height: 24px"><img src="{ url_for('static', filename='img/add-24px.svg') }" style="fill: white"/></a>
-        '''
-        if len(posts) == 0:
-            content += '<p>Es sind keine Blogposts verfügbar.</p>'
-        else:
-            content += '''
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Erstelldatum</th>
-                    <th>Titel</th>
-                    <th>Aktionen</th>
-                </tr>
+        title = 'Beiträge'
+        link = 'posts_link'
+        if request.method == 'POST':
+            posts = Blog_Post.query.order_by(-Blog_Post.id).all()
+            content = f'''
+            <a href="{ url_for('admin_create_post') }" class="button" style="border-radius: 50%; display: block; padding: 8px; width: 24px; height: 24px"><img src="{ url_for('static', filename='img/add-24px.svg') }" style="fill: white"/></a>
             '''
-            for post in posts:
-                content += f'''
-                <tr>
-                    <td>{ post.id }</td>
-                    <td>{ post.time_created.__format__("%d.%m.%Y") }</tds>
-                    <td><a href="{ url_for( 'blog_post', id=post.id ) }">{ post.caption }</a></td>
-                    <td>
-                        <a href="{ url_for( 'delete', id=post.id ) }" ><img src="{ url_for('static', filename='img/delete-24px.svg') }" /></a>
-                        <a href="{ url_for( 'edit', id=post.id ) }" ><img src="{ url_for('static', filename='img/edit-24px.svg') }" /></a>
-                    </td>
-                </tr>
+            if len(posts) == 0:
+                content += '<p>Es sind keine Blogposts verfügbar.</p>'
+            else:
+                content += '''
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Erstelldatum</th>
+                        <th>Titel</th>
+                        <th>Aktionen</th>
+                    </tr>
                 '''
-            content += '</table>'
-        return jsonify({'body': content, 'title': 'Beiträge'})
+                for post in posts:
+                    content += f'''
+                    <tr>
+                        <td>{ post.id }</td>
+                        <td>{ post.time_created.__format__("%d.%m.%Y") }</tds>
+                        <td><a href="{ url_for( 'blog_post', id=post.id ) }">{ post.caption }</a></td>
+                        <td>
+                            <a href="{ url_for( 'delete', id=post.id ) }" ><img src="{ url_for('static', filename='img/delete-24px.svg') }" /></a>
+                            <a href="{ url_for( 'edit', id=post.id ) }" ><img src="{ url_for('static', filename='img/edit-24px.svg') }" /></a>
+                        </td>
+                    </tr>
+                    '''
+                content += '</table>'
+            return jsonify({'body': content, 'title': title, 'url': '/admin/posts', 'link': link})
+        elif request.method == 'GET':
+            return render_template('user/user.html', start_link=link, title=title)
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
-@app.route('/admin/users', methods=['POST'])
+@app.route('/admin/users', methods=['GET', 'POST'])
 @login_required
 def admin_users():
     if current_user.admin_acc == True:
-        users = User.query.order_by(User.id).all()
-        content = ''
-        if len(users) == 0:
-            content += '<p>Es sind keine Nutzer verfügbar.</p>'
-        else:
-            content += '''
-            <table>
-                <tr>
-                    <th>User_ID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Admin</th>
-                </tr>
-            '''
-            for user in users:
-                content += f'''
-                <tr>
-                    <td>{ user.id }</td>
-                    <td>{ user.username }</tds>
-                    <td>{ user.email }</td>
-                    <td>{ user.admin_acc }</td>
-                    <td>
-                        <a href="{ url_for( 'manage_admin', id=user.id ) }">
-                '''
-                if user.admin_acc:
-                    content += 'Remove Admin'
-                else:
-                    content += 'Make Admin'
+        title = 'Nutzer'
+        link = 'user_link'
+        if request.method == 'POST':
+            users = User.query.order_by(User.id).all()
+            content = ''
+            if len(users) == 0:
+                content += '<p>Es sind keine Nutzer verfügbar.</p>'
+            else:
                 content += '''
-                        </a>
-                    </td>
-                </tr>
+                <table>
+                    <tr>
+                        <th>User_ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Admin</th>
+                    </tr>
                 '''
-            content += '</table>'
-        return jsonify({'body': content, 'title': 'Nutzer'})
+                for user in users:
+                    content += f'''
+                    <tr>
+                        <td>{ user.id }</td>
+                        <td>{ user.username }</tds>
+                        <td>{ user.email }</td>
+                        <td>{ user.admin_acc }</td>
+                        <td>
+                            <a href="{ url_for( 'manage_admin', id=user.id ) }">
+                    '''
+                    if user.admin_acc:
+                        content += 'Remove Admin'
+                    else:
+                        content += 'Make Admin'
+                    content += '''
+                            </a>
+                        </td>
+                    </tr>
+                    '''
+                content += '</table>'
+            return jsonify({'body': content, 'title': title, 'url': '/admin/users', 'link': link})
+        elif request.method == 'GET':
+        	return render_template('user/user.html', start_link=link, title=title)
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
@@ -197,7 +207,7 @@ def edit(id):
                 tag_sql = post.tags
             except:
                 tag_sql = ''
-            return render_template("admin/edit.html", title="Edit", post=post, image_sql=image_sql, tag_sql=tag_sql)
+            return render_template("admin/edit.html", title="Post editieren", post=post, image_sql=image_sql, tag_sql=tag_sql)
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
@@ -221,77 +231,82 @@ def manage_admin(id):
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
-@app.route('/admin/measurements', methods=['POST'])
+@app.route('/admin/measurements', methods=['GET', 'POST'])
 @login_required
 def measurements():
     if current_user.admin_acc:
-        bme_vals = BME.query.order_by(-BME.id).all()
-        mpu_vals = MPU.query.order_by(-MPU.id).all()
-        content = ''
-        if len(bme_vals) == 0:
-            content += '<p>Es sind keine BME-Messungen verfügbar.</p>'
-        else:
-            content += '''
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Messungszeit</th>
-                    <th>Temperatur</th>
-                    <th>Luftfeuchte</th>
-                    <th>Luftdruck</th>
-                </tr>
-            '''
-            for bme_val in bme_vals:
-                content += f'''
-                <tr>
-                    <td>{ bme_val.id }</td>
-                    <td>{ bme_val.time.__format__('%d.%m.%Y' ' ' '%H:%M:%S') }</td>
-                    <td>{ bme_val.temperature }</td>
-                    <td>{ bme_val.humidity }</td>
-                    <td>{ bme_val.pressure }</td>
-                    <td>
-                    </td>
-                </tr>
+        title = 'Messungen'
+        link = 'measurements_link'
+        if request.method == 'GET':
+            return render_template('user/user.html', start_link=link, title=title)
+        elif request.method == 'POST':
+            bme_vals = BME.query.order_by(-BME.id).all()
+            mpu_vals = MPU.query.order_by(-MPU.id).all()
+            content = ''
+            if len(bme_vals) == 0:
+                content += '<p>Es sind keine BME-Messungen verfügbar.</p>'
+            else:
+                content += '''
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Messungszeit</th>
+                        <th>Temperatur</th>
+                        <th>Luftfeuchte</th>
+                        <th>Luftdruck</th>
+                    </tr>
                 '''
-            content += '</table>'
+                for bme_val in bme_vals:
+                    content += f'''
+                    <tr>
+                        <td>{ bme_val.id }</td>
+                        <td>{ bme_val.time.__format__('%d.%m.%Y' ' ' '%H:%M:%S') }</td>
+                        <td>{ bme_val.temperature }</td>
+                        <td>{ bme_val.humidity }</td>
+                        <td>{ bme_val.pressure }</td>
+                        <td>
+                        </td>
+                    </tr>
+                    '''
+                content += '</table>'
 
-        if len(mpu_vals) == 0:
-            content += '<p>Es sind keine MPU-Messungen verfügbar.</p>'
-        else:
-            content += '''
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Messungsdatum</th>
-                    <th>Gyroskop X</th>
-                    <th>Gyroskop Y</th>
-                    <th>Gyroskop Z</th>
-                    <th>Beschleunigung X</th>
-                    <th>Beschleunigung Y</th>
-                    <th>Beschleunigung Z</th>
-                    <th>Rotation X</th>
-                    <th>Rotation Y</th>
-                </tr>
-            '''
-            for mpu_val in mpu_vals:
-                content += f'''
-                <tr>
-                    <td>{ mpu_val.id }</td>
-                    <td>{ mpu_val.time.__format__('%d.%m.%Y' ' ' '%H:%M:%S') }</td>
-                    <td>{ mpu_val.gyroscope_x }</td>
-                    <td>{ mpu_val.gyroscope_y }</td>
-                    <td>{ mpu_val.gyroscope_z }</td>
-                    <td>{ mpu_val.acceleration_x }</td>
-                    <td>{ mpu_val.acceleration_y }</td>
-                    <td>{ mpu_val.acceleration_z }</td>
-                    <td>{ mpu_val.rot_x }</td>
-                    <td>{ mpu_val.rot_y }</td>
-                    <td>
-                    </td>
-                </tr>
+            if len(mpu_vals) == 0:
+                content += '<p>Es sind keine MPU-Messungen verfügbar.</p>'
+            else:
+                content += '''
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Messungsdatum</th>
+                        <th>Gyroskop X</th>
+                        <th>Gyroskop Y</th>
+                        <th>Gyroskop Z</th>
+                        <th>Beschleunigung X</th>
+                        <th>Beschleunigung Y</th>
+                        <th>Beschleunigung Z</th>
+                        <th>Rotation X</th>
+                        <th>Rotation Y</th>
+                    </tr>
                 '''
-            content += '</table>'
-        return jsonify({'body': content, 'title': 'Messungen'})
+                for mpu_val in mpu_vals:
+                    content += f'''
+                    <tr>
+                        <td>{ mpu_val.id }</td>
+                        <td>{ mpu_val.time.__format__('%d.%m.%Y' ' ' '%H:%M:%S') }</td>
+                        <td>{ mpu_val.gyroscope_x }</td>
+                        <td>{ mpu_val.gyroscope_y }</td>
+                        <td>{ mpu_val.gyroscope_z }</td>
+                        <td>{ mpu_val.acceleration_x }</td>
+                        <td>{ mpu_val.acceleration_y }</td>
+                        <td>{ mpu_val.acceleration_z }</td>
+                        <td>{ mpu_val.rot_x }</td>
+                        <td>{ mpu_val.rot_y }</td>
+                        <td>
+                        </td>
+                    </tr>
+                    '''
+                content += '</table>'
+            return jsonify({'body': content, 'title': title, 'url': '/admin/measurements', 'link': link})
     else:
         return render_template("errors/error.html", title="Error", error="You're not allowed to use that page!")
 
