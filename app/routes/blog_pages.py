@@ -112,7 +112,6 @@ def blog_user_query(username):
     if request.method == 'GET':
         return render_template("blog.html", title="Blog / "+username, post_count=post_count, route="/blog/user/"+username)
     elif request.method == 'POST':
-        user = User.query.filter_by(username=username).first()
         if user is not None:
             posts = Blog_Post.query.filter_by(posted_by=user.id).all()
             if posts is not None:
@@ -122,7 +121,7 @@ def blog_user_query(username):
                         post = posts[requested_post]
                     else:
                         return jsonify({"article": False})
-                except Exception:
+                except:
                     return jsonify({"article": False})
                 image_list = parse_images(post.id)
                 return jsonify({"article": True, "id": post.id, "caption": post.caption, "tags": parse_tags(post.id), "posted_by": user.username, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
@@ -170,7 +169,7 @@ def blog_tag_query(tag):
             except:
                 user = "[deleted]"
             image_list = parse_images(post.id)
-            return jsonify({"article": True, "id": post.id, "caption": post.caption, "tags": parse_tags(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
+            return jsonify({"article": True, "id": post.id, "info": "Aktuell gibt es noch keine Tags für Kommentare.", "caption": post.caption, "tags": parse_tags(post.id), "posted_by": user, "body": parse_body(post.body, post.id), "date_created": post.time_created.strftime("%d.%m.%Y"), "day": post.time_created.day, "month": post.time_created.month, "year": post.time_created.year})
         except:
             return jsonify({"article": False})
 
@@ -178,8 +177,9 @@ def blog_tag_query(tag):
 def blog_post(id):
     if request.method == 'GET':
         post = Blog_Post.query.get_or_404(id)
+        comment_count = Comment.query.filter_by(post=post).count()
         if post is not None:
-            return render_template("blog.html", title="Beitrag", post_count=1, route="/blog/post/"+str(id))
+            return render_template("blog.html", title="Beitrag", post_count=1, comment_count=comment_count, route="/blog/post/"+str(id))
     elif request.method == 'POST':
         try:
             post = Blog_Post.query.get_or_404(id)
@@ -197,7 +197,6 @@ def blog_post(id):
 def post_comment(id):
     try:
         post = Blog_Post.query.get_or_404(id)
-        # try:
         db.session.add(
             Comment(
                 post = post,
@@ -206,23 +205,41 @@ def post_comment(id):
             )
         )
         db.session.commit()
-        return jsonify({'redirect': True, 'url': '/'})
+        return jsonify({'redirect': True, 'url': '/blog/post/'+str(id)})
     except:
         return jsonify({'redirect': False, 'text': 'Post was not found'})
 
 @app.route('/blog/get_comments/<int:id>', methods=['POST'])
 def get_comments(id):
     comment_id = int(request.form['comment_id'])
-    try:
+    try: 
         post = Blog_Post.query.get_or_404(id)
-        try:
+        try: 
             comment = post.comments[comment_id]
             try:
                 user = User.query.get_or_404(comment.posted_by).username
-            except Exception:
+            except:
                 user = "[deleted]"
-            return jsonify({"comment": True, "posted_by": user, "body": comment.body, "date_created": comment.time_created.strftime("%d.%m.%Y")})
-        except Exception:
+            return jsonify({"comment": True, "posted_by": user, "author_id": comment.posted_by, "body": comment.body, "date_created": comment.time_created.strftime("%d.%m.%Y"), "day": comment.time_created.day, "month": comment.time_created.month, "year": comment.time_created.year})
+        except:
             return jsonify({"comment": False})
-    except Exception:
+    except:
+        return jsonify({"comment": False})
+
+@app.route('/blog/delete_comment/<int:id>', methods=['POST'])
+@login_required
+def delete_comment(id):
+    comment_id = int(request.form['comment_id'])
+    try:
+        post = Blog_Post.query.get_or_404(id)
+
+        comment = post.comments[comment_id]
+
+        if current_user.id == comment.posted_by:
+            db.session.delete(comment)
+            db.session.commit()
+            return jsonify({"comment": True})
+        else:
+            raise Exception()
+    except:
         return jsonify({"comment": False})

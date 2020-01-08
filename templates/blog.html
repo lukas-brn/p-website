@@ -38,6 +38,7 @@
                             $("#content").html( 
                                 $("#content").html().replace( 
                                     /<!-- replace position for new blogs -->/g, `
+                                    ${ blogId!=1?'<hr />\n\n':'' }
                                     <article id='article_${ blogId }'>\n
                                         <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>\n
                                         <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span><br />\n
@@ -52,8 +53,13 @@
                             currentHeight += $(`#article_${ blogId }`).height();
                             blogId++;
                             if (response.is_main_page) {
-                                stopAjax();
                                 showComments();
+                                commentRequest();
+                                $(window).on('scroll', () => {
+                                    ajaxRequest();
+                                    commentRequest();
+                                });
+                                stopAjax();
                             }
                             ajaxRequest();
                         } else stopAjax();
@@ -70,14 +76,36 @@
         ajaxRequest();
 
         function showComments() {
-            $('#comment_form').css('display', 'block');
+            $('#comments').css('display', 'block');
         }
 
         function postComment() {
             $.post(route.replace('post', 'post_comment'), $('#comment_form').serialize()).done(response => {
-                if (response.redirect) window.location.href = response.url;
+                if (response.redirect) {
+                    $('#comment_form textarea').val('');
+                    maxCommentReached = false;
+                    commentRequest();
+                }
                 else openPopup(response.text, '', '');
             }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+        }
+
+        function deleteComment(commentIdToDelete) {
+            $.post(route.replace('post', 'delete_comment'), 'comment_id='+commentIdToDelete).done(response => {
+                if (response.comment) removeCommentFromHtml(commentIdToDelete);
+            }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+        }
+
+        function removeCommentFromHtml(id) {
+            $(`#comment_${ id }`).remove();
+            let i = id;
+            while (true) {
+                i++;
+                let section = $('#commentSection');
+                if ($(`#comment_${ i }`).length == 0) break;
+                section.html(section.html().replace(`comment_${ i }`, `comment_${ i-1 }`));
+                section.html(section.html().replace(`deleteComment(${ i })`, `deleteComment(${ i-1 })`))
+            }
         }
 
         let commentId = 0;
@@ -86,44 +114,46 @@
         let commentAjaxIsProcessing = false;
         let currentCommentHeight = 0;
 
-        async function getComments() {
-            if (!maxCommentReached) {
-                lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
-                if (lowestScrollPos+(2*$(window).height())>currentHeight) {
-                    $.post(route.replace('post', 'get_comments'), 'comment_id='+commentId).done(response => {
-                        console.log('comment requested')
-                        if (response.comment) {
-                            $('#commentSection').append(`
-                                <div class='comment' id='article_${ commentId }'>
-                                    <p>${ response.body }</p>
-                                </div>
-                            `);
-                            currentCommentHeight += $(`#comment_${ commentId }`).height();
-                            commentId++;
-                            if (response.is_main_page) {
-                                stopAjax();
-                                showComments();
-                                commentRequest();
-                            }
-                            ajaxRequest();
-                        } else stopCommentAjax();
-                    }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
-                }
-            }
-        }
-
-        commentRequest = () => {
+        function commentRequest() {
             commentsInQueue++;
             if (!commentAjaxIsProcessing) commentRequestManager();
         }
         
-        commentRequestManager = async () => {
+        async function commentRequestManager() {
             ajaxIsProcessing = true;
             while (commentsInQueue>0) {
                 await getComments();
                 commentsInQueue--;
             }
             commentAjaxIsProcessing = false;
+        }
+
+        async function getComments() {
+            if (!maxCommentReached) {
+                lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
+                if (lowestScrollPos+(2*$(window).height())>currentCommentHeight) {
+                    $.post(route.replace('post', 'get_comments'), 'comment_id='+commentId).done(response => {
+                        if (response.comment) {
+                            const urlAuthor = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
+                            const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
+                            $('#commentSection').append(`
+                                <div class='comment' id='comment_${ commentId }'>\n
+                                    <span class="subTitle">Kommentiert am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span>${ '{{ current_user.id }}'==response.author_id ? `<a onclick="deleteComment(${ commentId })">Delete</a>` : '' }<br />\n
+                                    <p>${ response.body }</p>\n
+                                </div>\n
+                            `);
+                            currentCommentHeight += $(`#comment_${ commentId }`).height();
+                            commentId++;
+                            commentRequest();
+                        } else stopCommentAjax();
+                    }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+                }
+            }
+        }
+
+        stopCommentAjax = () => {
+            $("#comment_loading_div").remove();
+            maxCommentReached = true;
         }
     </script>
 	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
@@ -138,23 +168,33 @@
         <p>Es sind keine Blogposts verfügbar.</p>
     {% endif %}
     </article>
-    
+
     <!-- replace position for new blogs -->
 
     <article id="blog_loading_article">
-        <h2>loading...</h2>
+        <h2>Beiträge werden geladen ...</h2>
     </article>
 	
-	<hr />
+    <section id='comments' style="display: none;">
+        <hr />
 	
-	<br /><p>Kommentare</p>
-	
-    <form action="javascript:postComment()" method="post" style="display: none;" id="comment_form">
-        <textarea name="body" placeholder="Lasse einen Kommentar da"></textarea>
-        <button type="submit">Senden</button>
-    </form>
+        <br />
+        <p>Kommentare</p>
+        
+        <form action="javascript:postComment()" method="post" id="comment_form">
+            <textarea name="body" placeholder="Lasse einen Kommentar da"></textarea>
+            <button type="submit">Senden</button>
+        </form>
 
-    <div id="commentSection">
-        <!-- position for comments-->
-    </div>
+        <div id="commentSection">
+            <!-- position for comments // TODO: add comment testing-->
+            {% if comment_count == 0 %} 
+                <p>Es sind keine Kommentare verfügbar.</p>
+            {% endif %}
+        </div>
+
+        <div id='comment_loading_div'>
+            <h2>Kommentare werden geladen ...</h2>
+        </div>
+    </section>
 {% endblock %}

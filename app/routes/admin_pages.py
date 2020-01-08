@@ -13,7 +13,7 @@ from datetime import datetime
 def max_post_id():
     post = Blog_Post.query.order_by(-Blog_Post.id).first()
     if post is not None:
-        return post
+        return post.id
     else:
         return 0
 
