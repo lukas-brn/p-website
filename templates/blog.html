@@ -138,7 +138,7 @@
                             const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
                             $('#commentSection').append(`
                                 <div class='comment' id='comment_${ commentId }'>\n
-                                    <span class="subTitle">Kommentiert am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span>${ '{{ current_user.id }}'==response.author_id ? `<a onclick="deleteComment(${ commentId })">Delete</a>` : '' }<br />\n
+                                    <span class="subTitle">Kommentiert am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a>${'{{ current_user.id }}' == response.author_id ? `<a onclick="deleteComment(${commentId})">Delete</a>` : '' }</span><br />\n
                                     <p>${ response.body }</p>\n
                                 </div>\n
                             `);
