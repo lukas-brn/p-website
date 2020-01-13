@@ -37,3 +37,5 @@ from app.routes.admin_pages import *
 from app.routes.blog_pages import *
 from app.routes.input_registration import *
 from app.routes.user_pages import *
+
+from app.routes.api_routes import *

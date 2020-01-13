@@ -12,7 +12,8 @@ app.config.update(
     SQLALCHEMY_DATABASE_URI='sqlite:///blog.db',
     DEBUG=True,
     SECRET_KEY='/x83j/xe7/x97/x9e///xf1/x17/xca/xd2/xde/x8f/xa9S/xca/xce/xad/x7f}/x03/x9d{/x14/xfe/x9b/xb1$/x143/xd5n~',
-    SQLALCHEMY_TRACK_MODIFICATIONS=False)
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 csrf = CSRFProtect()
@@ -31,6 +32,12 @@ if __name__ == "__main__":
     try:
         # delete a user by id
         # db.session.delete(User.query.get_or_404(1))
+        # db.session.commit()
+
+        # to_delete = BME.query.delete()
+        # db.session.commit()
+
+        # to_delete = MPU.query.delete()
         # db.session.commit()
 
         User.query.get_or_404(1).admin_acc = True

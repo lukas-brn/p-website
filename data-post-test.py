@@ -1,30 +1,22 @@
-import urllib.parse
-import urllib.request
 from datetime import datetime
+import requests
 
 def post_bme():
     time = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-    values = {
-        'user': 'Lukas Brennauer', 
-        'password': 'a',
+    url = 'http://127.0.0.1:5000/api/raspi/bme'
+    data = {
         'time': time,
         'temperature': 1,
         'humidity': 2,
         'pressure': 3
     }
-
-    data = urllib.parse.urlencode(values).replace('+', '%20')
-    url = 'http://127.0.0.1:5000/admin/post_bme?' + data
-    with urllib.request.urlopen(url) as response:
-        print(response.read().decode('utf-8'))
-
-post_bme()
+    r = requests.put(url, params=data, auth=('Lukas Brennauer', 'a'))
+    print('PUT\nurl:', r.url, '\n', r.json())
 
 def post_mpu():
     time = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-    values = {
-        'user': 'Lukas Brennauer', 
-        'password': 'a',
+    url = 'http://127.0.0.1:5000/api/raspi/mpu'
+    data = {
         'time': time,
         'gyroscope_x': 1,
         'gyroscope_y': 2,
@@ -35,14 +27,9 @@ def post_mpu():
         'rot_x': 7,
         'rot_y': 8
     }
+    r = requests.put(url, params=data, auth=('Lukas Brennauer', 'a'))
+    print('PUT\nurl:', r.url, '\n', r.json())
 
-    data = urllib.parse.urlencode(values).replace('+', '%20')
-    url = 'http://127.0.0.1:5000/admin/post_mpu?' + data
-    with urllib.request.urlopen(url) as response:
-        print(response.read().decode('utf-8'))
-
-post_mpu()
-
-
-
-
+if __name__ == '__main__':
+    post_bme()
+    post_mpu()
