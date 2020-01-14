@@ -11,7 +11,7 @@ def post_bme():
         'pressure': 3
     }
     r = requests.put(url, params=data, auth=('Lukas Brennauer', 'a'))
-    print('PUT\nurl:', r.url, '\n', r.json())
+    print('PUT: STATUS:', r.status_code ,'\nURL:', r.url, '\n', r.json())
 
 def post_mpu():
     time = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
@@ -28,7 +28,7 @@ def post_mpu():
         'rot_y': 8
     }
     r = requests.put(url, params=data, auth=('Lukas Brennauer', 'a'))
-    print('PUT\nurl:', r.url, '\n', r.json())
+    print('PUT: STATUS:', r.status_code ,'\nURL:', r.url, '\n', r.json())
 
 if __name__ == '__main__':
     post_bme()

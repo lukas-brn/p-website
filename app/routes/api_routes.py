@@ -14,13 +14,14 @@ api = Api(app, decorators=[csrf.exempt])
 
 # region parser
 bmeParser = reqparse.RequestParser()
-bmeParser.add_argument('time')
-bmeParser.add_argument('temperature')
-bmeParser.add_argument('humidity')
-bmeParser.add_argument('pressure')
+bmeParser.add_argument('time', type=str, required=True)
+bmeParser.add_argument('temperature', type=float, required=True)
+bmeParser.add_argument('humidity', type=float, required=True)
+bmeParser.add_argument('pressure', type=float, required=True)
 #endregion
 
-class BME_put(Resource):
+@api.resource('/api/raspi/bme')
+class BME_all(Resource):
 	
 	def get(self):
 		posts = BME.query.all()
@@ -37,31 +38,29 @@ class BME_put(Resource):
 	def put(self):
 		auth = request.authorization
 		args = bmeParser.parse_args(strict=True)
-		errJson = {'error': 'the given login credentials were incorrect'}
-		try:
-			user = User.query.filter(User.username == auth.username).first()
-			if user is not None and user.check_password(auth.password):
-				addTime = datetime.strptime(args['time'], '%Y-%m-%d %H:%M:%S')
-				db.session.add(
-					BME(
-						time = addTime,
-						temperature = args['temperature'],
-						humidity = args['humidity'],
-						pressure = args['pressure']
-					)
+		user = User.query.filter(User.username == auth.username).first()
+
+		if user is not None and user.check_password(auth.password):
+			addTime = datetime.strptime(args['time'], '%Y-%m-%d %H:%M:%S')
+			db.session.add(
+				BME(
+					time = addTime,
+					temperature = args['temperature'],
+					humidity = args['humidity'],
+					pressure = args['pressure']
 				)
-				db.session.commit()
-				return {'time': args['time'], 'temperature': args['temperature'], 'humidity': args['humidity'], 'pressure': args['pressure']}
-			return errJson
-		except:
-			return errJson
+			)
+			db.session.commit()
+			return {'id': BME.query.order_by(-BME.id).first().id, 'time': args['time'], 'temperature': args['temperature'], 'humidity': args['humidity'], 'pressure': args['pressure']}
+		return {'error': 'the given login credentials were incorrect'}
 
 def abortBmeIf404(id):
 	measurement = BME.query.get_or_404(id)
 	if measurement is None:
 		abort(404, message="BME {} doesn't exist!".format(id))
 
-class BME_get(Resource):
+@api.resource('/api/raspi/bme/<int:id>')
+class BME_single(Resource):
 
 	def get(self, id):
 		abortBmeIf404(id)
@@ -74,27 +73,25 @@ class BME_get(Resource):
 			'pressure': post.pressure
 		})
 
-api.add_resource(BME_put, '/api/raspi/bme')
-api.add_resource(BME_get, '/api/raspi/bme/<int:id>')
-
 
 # --- MPU ---
 
 
 # region parser
 mpuParser = reqparse.RequestParser()
-mpuParser.add_argument('time')
-mpuParser.add_argument('gyroscope_x')
-mpuParser.add_argument('gyroscope_y')
-mpuParser.add_argument('gyroscope_z')
-mpuParser.add_argument('acceleration_x')
-mpuParser.add_argument('acceleration_y')
-mpuParser.add_argument('acceleration_z')
-mpuParser.add_argument('rot_x')
-mpuParser.add_argument('rot_y')
+mpuParser.add_argument('time', type=str, required=True)
+mpuParser.add_argument('gyroscope_x', type=float, required=True)
+mpuParser.add_argument('gyroscope_y', type=float, required=True)
+mpuParser.add_argument('gyroscope_z', type=float, required=True)
+mpuParser.add_argument('acceleration_x', type=float, required=True)
+mpuParser.add_argument('acceleration_y', type=float, required=True)
+mpuParser.add_argument('acceleration_z', type=float, required=True)
+mpuParser.add_argument('rot_x', type=float, required=True)
+mpuParser.add_argument('rot_y', type=float, required=True)
 # endregion
 
-class MPU_put(Resource):
+@api.resource('/api/raspi/mpu')
+class MPU_all(Resource):
 
 	def get(self):
 		posts = MPU.query.all()
@@ -137,7 +134,7 @@ class MPU_put(Resource):
 					)
 				)
 				db.session.commit()
-				return {'time': args['time'], 'gyroscope_x': args['gyroscope_x'], 'gyroscope_y': args['gyroscope_y'], 'gyroscope_z': args['gyroscope_z'], 'acceleration_x': args['acceleration_x'], 'acceleration_y': args['acceleration_y'], 'acceleration_z': args['acceleration_z'], 'rot_x': args['rot_x'], 'rot_y': args['rot_y']}
+				return {'id': MPU.query.order_by(-MPU.id).first().id, 'time': args['time'], 'gyroscope_x': args['gyroscope_x'], 'gyroscope_y': args['gyroscope_y'], 'gyroscope_z': args['gyroscope_z'], 'acceleration_x': args['acceleration_x'], 'acceleration_y': args['acceleration_y'], 'acceleration_z': args['acceleration_z'], 'rot_x': args['rot_x'], 'rot_y': args['rot_y']}
 			return errJson
 		except:
 			return errJson
@@ -147,12 +144,14 @@ def abortMpuIf404(id):
 	if measurement is None:
 		abort(404, message="MPU {} doesn't exist!".format(id))
 
-class MPU_get(Resource):
+@api.resource('/api/raspi/mpu/<int:id>')
+class MPU_single(Resource):
 
 	def get(self, id):
 		abortMpuIf404(id)
 		post = MPU.query.get_or_404(id)
 		return jsonify({
+			'id': id,
 			'time': post.time,
 			'gyroscope_x': post.gyroscope_x,
 			'gyroscope_y': post.gyroscope_y,
@@ -163,6 +162,3 @@ class MPU_get(Resource):
 			'rot_x': post.rot_x,
 			'rot_y': post.rot_y
 		})
-
-api.add_resource(MPU_put, '/api/raspi/mpu')
-api.add_resource(MPU_get,  '/api/raspi/mpu/<int:id>')

@@ -82,9 +82,9 @@
 			<footer id="footer">
 				
 				<p>
-					&copy; <script>let d = new Date(); document.write(d.getFullYear());</script> P-Seminar PROJECT JUMBO<br />
+					&copy; <script>document.write(new Date().getFullYear());</script> P-Seminar PROJECT JUMBO<br />
 					Designed by Samuel Kroiß<br />
-					Backend and Functionality &copy; 2019 by Lukas Brennauer<br />
+					Backend by Lukas Brennauer<br />
 					<a href="#">Impressum</a> - <a href="#">Datenschutz</a><br />
 					{% if current_user.is_authenticated %}
 					<a href="{{ url_for('user_page') }}">Account</a> - <a href="{{ url_for('logout') }}">Logout</a>

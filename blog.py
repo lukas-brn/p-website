@@ -36,7 +36,6 @@ if __name__ == "__main__":
 
         # to_delete = BME.query.delete()
         # db.session.commit()
-
         # to_delete = MPU.query.delete()
         # db.session.commit()
 

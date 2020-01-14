@@ -6,94 +6,96 @@
 
         let lowestScrollPos = 0;
         let currentHeight = 0;
-        let blogId = 1;
-        let maxArticleReached = false;
-        let postsInQueue = 0
-        let ajaxIsProcessing = 0;
         let route = "{{ route }}";
 
-        ajaxRequest = () => {
-            postsInQueue++;
-            if (!ajaxIsProcessing) ajaxManager();
+        let requestId = [1, 0];
+        let maxReached = [false, false];
+        let inQueue = [0, 0];
+        let isProcessing = [0, 0];
+
+        function ajaxRequest(i) {
+            inQueue[i]++;
+            if (isProcessing[i] == 0) ajaxManager(i);
         }
         
-        ajaxManager = async () => {
-            ajaxIsProcessing++;
-            while (postsInQueue>0) {
-                await checkAjaxHeight();
-                postsInQueue--;
+        async function ajaxManager(i) {
+            isProcessing[i]++;
+            while (inQueue[i] > 0) {
+                if (i == 0) await requestPost();
+                else if (i == 1) await requestComment();
+                inQueue[i]--;
             }
-            ajaxIsProcessing--;
-        }
+            isProcessing[i]--;
+        } 
 
-        async function checkAjaxHeight() {
-            if (!maxArticleReached) {
+        async function ajaxPost(i, route, data) {
+            if(!maxReached[i]) {
                 lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
-                if (lowestScrollPos+(2*$(window).height())>currentHeight) {
-                    await $.post(route, "blog_id="+blogId).done(response => {
-                        if (response.article) {
-                            const urlAuthor = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
-                            const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
-                            const urlPostMain = "{{ url_for('blog_post', id=0) }}".replace("0", response.id);
-                            $("#content").html( 
-                                $("#content").html().replace( 
-                                    /<!-- replace position for new blogs -->/g, `
-                                    ${ blogId!=1?'<hr />\n\n':'' }
-                                    <article id='article_${ blogId }'>\n
-                                        <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>\n
-                                        <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span><br />\n
-										${ response.tags!=''?`<span class="tags">Tags: ${ response.tags }</span>`:'' }\n
-                                        <p>${ response.body }</p>\n
-                                    </article>
-                                    \n
-                                    \n
-                                    <!-- replace position for new blogs -->\n` 
-                                )
-                            );
-                            currentHeight += $(`#article_${ blogId }`).height();
-                            blogId++;
-                            if (response.is_main_page) {
-                                showComments();
-                                commentRequest();
-                                $(window).on('scroll', () => {
-                                    ajaxRequest();
-                                    commentRequest();
-                                });
-                                stopAjax();
-                            }
-                            ajaxRequest();
-                        } else stopAjax();
-                    }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+                if (lowestScrollPos + (2*$(window).height()) > currentHeight) {
+                    return await $.post(route, data).done(response => response).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
                 }
             }
         }
 
-        stopAjax = () => {
-            $("#blog_loading_article").remove();
-            maxArticleReached = true;
-        }
-
-        ajaxRequest();
-
-        function showComments() {
-            $('#comments').css('display', 'block');
-        }
-
-        function postComment() {
-            $.post(route.replace('post', 'post_comment'), $('#comment_form').serialize()).done(response => {
-                if (response.redirect) {
-                    $('#comment_form textarea').val('');
-                    maxCommentReached = false;
-                    commentRequest();
+        async function requestPost() {
+            let response = await ajaxPost(0, route, "blog_id="+requestId[0]);
+            if (response && response.article) {
+                const urlAuthor = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
+                const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
+                const urlPostMain = "{{ url_for('blog_post', id=0) }}".replace("0", response.id);
+                $("#content").html( 
+                    $("#content").html().replace( 
+                        /<!-- replace position for new blogs -->/g, `
+                        ${ requestId[0] != 1?'<hr />\n\n':'' }
+                        <article id='article_${ requestId[0] }'>\n
+                            <h2><a href="${ urlPostMain }">${ response.caption }</a></h2>\n
+                            <span class="subTitle">Veröffentlicht am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a></span><br />\n
+                            ${ response.tags!=''?`<span class="tags">Tags: ${ response.tags }</span>`:'' }\n
+                            <p>${ response.body }</p>\n
+                        </article>
+                        \n
+                        \n
+                        <!-- replace position for new blogs -->\n` 
+                    )
+                );
+                currentHeight += $(`#article_${ requestId[0] }`).height();
+                requestId[0]++;
+                if (response.is_main_page) {
+                    showComments();
+                    requestComment();
+                    $(window).on('scroll', () => {
+                        requestPost();
+                        requestComment();
+                    });
+                    stopAjax(0);
                 }
-                else openPopup(response.text, '', '');
-            }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+                requestPost();
+            } else stopAjax(0);
         }
 
-        function deleteComment(commentIdToDelete) {
-            $.post(route.replace('post', 'delete_comment'), 'comment_id='+commentIdToDelete).done(response => {
-                if (response.comment) removeCommentFromHtml(commentIdToDelete);
-            }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
+        requestPost();
+
+        function stopAjax(i) {
+            if (i == 0) $("#blog_loading_article").remove();
+            else if (i == 1) $("#comment_loading_div").remove();
+            maxReached[i] = true;
+        }
+
+        showComments = () => $('#comments').css('display', 'block');
+
+        async function postComment() {
+            let response = await ajaxPost(1, route.replace('post', 'post_comment'), $('#comment_form').serialize());
+            if (response.redirect) {
+                $('#comment_form textarea').val('');
+                maxCommentReached = false;
+                commentRequest();
+            }
+            else openPopup(response.text, '', '');
+        }
+
+        async function deleteComment(commentIdToDelete) {
+            let response = await ajaxPost(1, route.replace('post', 'delete_comment'), 'comment_id='+commentIdToDelete);
+            if (response.comment) removeCommentFromHtml(commentIdToDelete);
         }
 
         function removeCommentFromHtml(id) {
@@ -108,52 +110,21 @@
             }
         }
 
-        let commentId = 0;
-        let maxCommentReached = false;
-        let commentsInQueue = 0;
-        let commentAjaxIsProcessing = 0;
-        let currentCommentHeight = 0;
-
-        function commentRequest() {
-            commentsInQueue++;
-            if (!commentAjaxIsProcessing) commentRequestManager();
-        }
-        
-        async function commentRequestManager() {
-            commentAjaxIsProcessing++;
-            while (commentsInQueue>0) {
-                await getComments();
-                commentsInQueue--;
-            }
-            commentAjaxIsProcessing--;
-        }
-
-        async function getComments() {
-            if (!maxCommentReached) {
-                lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
-                if (lowestScrollPos+(2*$(window).height())>currentCommentHeight) {
-                    $.post(route.replace('post', 'get_comments'), 'comment_id='+commentId).done(response => {
-                        if (response.comment) {
-                            const urlAuthor = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
-                            const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
-                            $('#commentSection').append(`
-                                <div class='comment' id='comment_${ commentId }'>\n
-                                    <span class="subTitle">Kommentiert am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a>${'{{ current_user.id }}' == response.author_id ? `<a onclick="deleteComment(${commentId})">Delete</a>` : '' }</span><br />\n
-                                    <p>${ response.body }</p>\n
-                                </div>\n
-                            `);
-                            currentCommentHeight += $(`#comment_${ commentId }`).height();
-                            commentId++;
-                            commentRequest();
-                        } else stopCommentAjax();
-                    }).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
-                }
-            }
-        }
-
-        stopCommentAjax = () => {
-            $("#comment_loading_div").remove();
-            maxCommentReached = true;
+        async function requestComment() {
+            let response = await ajaxPost(1, route.replace('post', 'get_comments'), 'comment_id='+requestId[1]);
+            if (response && response.comment) {
+                const urlAuthor = "{{ url_for('blog_user_query', username='name1') }}".replace("name1", response.posted_by);
+                const urlDate = "{{ url_for('blog_date_query', day=5000, month=5000, year=5000) }}".replace("5000", response.day).replace("5000", response.month).replace("5000", response.year);
+                $('#commentSection').append(`
+                    <div class='comment' id='comment_${ requestId[1] }'>\n
+                        <span class="subTitle">Kommentiert am <a href="${ urlDate }">${ response.date_created }</a> von <a href="${ urlAuthor }">${ response.posted_by }</a>${'{{ current_user.id }}' == response.author_id || '{{ current_user.admin_acc }}' ? `<a onclick="deleteComment(${ requestId[1] })">Delete</a>` : '' }</span><br />\n
+                        <p>${ response.body }</p>\n
+                    </div>\n
+                `);
+                currentHeight += $(`#comment_${ requestId[1] }`).height();
+                requestId[1]++;
+                requestComment();
+            } else stopAjax(1);
         }
     </script>
 	<link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
