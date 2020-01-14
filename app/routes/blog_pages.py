@@ -221,7 +221,7 @@ def get_comments(id):
                 user = User.query.get_or_404(comment.posted_by).username
             except:
                 user = "[deleted]"
-            return jsonify({"comment": True, "id": comment_id+1, "posted_by": user, "author_id": comment.posted_by, "body": comment.body, "date_created": comment.time_created.strftime("%d.%m.%Y"), "day": comment.time_created.day, "month": comment.time_created.month, "year": comment.time_created.year})
+            return jsonify({"comment": True, "id": comment.id, "posted_by": user, "author_id": comment.posted_by, "body": comment.body, "date_created": comment.time_created.strftime("%d.%m.%Y"), "day": comment.time_created.day, "month": comment.time_created.month, "year": comment.time_created.year})
         except:
             return jsonify({"comment": False})
     except:
@@ -233,7 +233,7 @@ def delete_comment(id):
     try:
         comment = Comment.query.get_or_404(int(request.form['comment_id']))
 
-        if current_user.id == comment.posted_by:
+        if current_user.id == comment.posted_by or User.query.get_or_404(comment.posted_by).admin_acc:
             db.session.delete(comment)
             db.session.commit()
             return jsonify({"comment": True})
