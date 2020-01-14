@@ -29,7 +29,7 @@ function addFileManager(id) {
 }
 
 function buildFileHtml() {
-	$('#current_file_div').html('');
+	$('#current_file_div').html('<b>Bilder</b>');
 	files.forEach((e, i) => addFileManager(i));
 }
 

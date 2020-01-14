@@ -2,15 +2,6 @@
 
 {% block content %}
 
-<form action="javascript:edit()" method="post" enctype=multipart/form-data id="blog_post_form">
-	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <input type="text" id="caption_input" value="{{ post.caption }}" placeholder="Titel">
-    <textarea type="text" id="body_input" placeholder="Inhalt">{{ post.body }}</textarea>
-    <input type=file id="file_input" onchange="addFile()" style="display: none;">
-    <input type="button" value="Bild hochladen" onclick="$(`#file_input`).click();" />
-    <input type="submit" value="Post veröffentlichen">
-</form>
-
 {% include 'admin/post_forms.html'%}
 
 {% endblock %}
@@ -37,7 +28,7 @@
     if ('{{ tag_sql }}' != "") tags = '{{ tag_sql }}'.split(' ; ');
     buildTagHtml();
 
-    function edit() {
+    function confirm() {
         let data = new FormData();
         const captionInput = $('#caption_input').prop('value');
         const bodyInput = $('#body_input').prop('value');

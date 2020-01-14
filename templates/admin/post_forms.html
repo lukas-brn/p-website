@@ -1,3 +1,22 @@
+<link href="{{ url_for('static', filename='css/create_post.css') }}" rel="stylesheet">
+
+<hr />
+
+<form action="javascript:confirm()" method="post" enctype=multipart/form-data id="blog_post_form">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="text" id="caption_input" value='{% if post %}{{ post.caption }}{% endif %}' placeholder="Titel"> 
+    <div class="flex_wrapper">
+		<textarea id="body_input" placeholder="Inhalt">{% if post %}{{ post.body }}{% endif %}</textarea> 
+		<div class="files_container">
+			<div id="current_file_div">
+                <b>Bilder</b>
+			</div>
+            <input type=file id="file_input" onchange="addFile()" style="display: none;">
+            <input type="button" value="Bild hochladen" onclick="$(`#file_input`).click();" />
+		</div>
+	</div>
+    <input type="submit" value="Post veröffentlichen">
+</form>
 
 <form action="javascript:addTag()" id="tagForm">
     <input type="text" id="tag_input">

@@ -102,11 +102,12 @@
 				function openPopup(text, postUrl, postData) {
 					if (postUrl != '')
 						$.post(postUrl, postData).done(response => {
-							if (response.text!=="") if (response.redirect) window.location.href = response.text;
-													else {
-														destElem.html(response.text);
-														destWrapper.css("display", "flex")
-													}
+							if (response.text!=="") 
+								if (response.redirect) window.location.href = response.text;
+								else {
+									destElem.html(response.text);
+									destWrapper.css("display", "flex")
+								}
 						}).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
 					else {
 						destElem.html(text);
