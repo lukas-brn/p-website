@@ -9,7 +9,7 @@
         let blogId = 1;
         let maxArticleReached = false;
         let postsInQueue = 0
-        let ajaxIsProcessing = false;
+        let ajaxIsProcessing = 0;
         let route = "{{ route }}";
 
         ajaxRequest = () => {
@@ -18,12 +18,12 @@
         }
         
         ajaxManager = async () => {
-            ajaxIsProcessing = true;
+            ajaxIsProcessing++;
             while (postsInQueue>0) {
                 await checkAjaxHeight();
                 postsInQueue--;
             }
-            ajaxIsProcessing = false;
+            ajaxIsProcessing--;
         }
 
         async function checkAjaxHeight() {
@@ -111,7 +111,7 @@
         let commentId = 0;
         let maxCommentReached = false;
         let commentsInQueue = 0;
-        let commentAjaxIsProcessing = false;
+        let commentAjaxIsProcessing = 0;
         let currentCommentHeight = 0;
 
         function commentRequest() {
@@ -120,12 +120,12 @@
         }
         
         async function commentRequestManager() {
-            ajaxIsProcessing = true;
+            commentAjaxIsProcessing++;
             while (commentsInQueue>0) {
                 await getComments();
                 commentsInQueue--;
             }
-            commentAjaxIsProcessing = false;
+            commentAjaxIsProcessing--;
         }
 
         async function getComments() {
