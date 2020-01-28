@@ -2,7 +2,7 @@
 
 {% block head %}
     <script>
-        $(window).on('scroll', () => ajaxRequest())
+        $(window).on('scroll', () => ajaxRequest(0))
 
         let lowestScrollPos = 0;
         let currentHeight = 0;
@@ -29,10 +29,10 @@
         } 
 
         async function ajaxPost(i, route, data, post) {
+            lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
             if(post || !maxReached[i]) {
-                lowestScrollPos = Math.max(document.documentElement.scrollTop, lowestScrollPos);
                 if (lowestScrollPos + (2*$(window).height()) > currentHeight) {
-                    return await $.post(route, data).done(response => response).fail(() => { openPopup('Verbindung zum Server fehlgeschlagen!', '', ''); return {'status': '404'} });
+                    return await $.post(route, data).done(response => response).fail(() => { openPopup('Verbindung zum Server fehlgeschlagen!', '', ''); return {'status': 0} });
                 }
             }
         }
@@ -70,7 +70,7 @@
                     stopAjax(0);
                 }
                 ajaxRequest(0); // requests an article
-            } else stopAjax(0);
+            } else if (response) stopAjax(0);
         }
 
         requestPost();
@@ -152,9 +152,7 @@
 
         <div id="commentSection">
             <!-- position for comments -->
-            {% if comment_count == 0 %} 
-                <p>Es sind keine Kommentare verfügbar.</p>
-            {% endif %}
+            <p id="no_comments_msg">Es sind keine Kommentare verfügbar.</p>
         </div>
 
         <div id='comment_loading_div'>

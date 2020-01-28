@@ -1,7 +1,6 @@
 /* eslint-disable no-undef, no-unused-vars */
 
 let tags = [];
-const tagCounter = [];
 let dragSrcElTag;
 
 function addTag() {
@@ -11,31 +10,30 @@ function addTag() {
 }
 
 function removeTag(id) { 
-	tags.splice(id, 1); 
+	tags.splice(id, 1);
 	buildTagHtml();
+}
+
+function addTagSpacer(id) {
+	$('#current_tag_div').append(`<div id='tag_spacer_${ id }' class='tag_spacer' style='width: 100%; height: 10px;'></div>`);
+	tagSpacerListeners(id);
 }
 
 function addTagManager(id) {
 	$('#current_tag_div').append(`
-		${ addElement('tag', id) }
-		ID: ${ id+1 }: ${ tags[id] }
+		${ addElement('tag', id) }ID: ${ id+1 }: ${ tags[id] }</p>
 		<a onclick="removeTag(${ id })" style="cursor: pointer;">Delete</a>
 		<a onclick="tagPopup(${ id })" style="cursor: pointer;">Change Postiton</a>
-	</p></div></div>
+	</div>
 	`);
-	$(`#tag_div_spacer_${ id }`).hide();
-	tagCounter[id]=0;
+	addTagSpacer(id+1);
 	setupDragListenersTag(id);
 }
 
 function buildTagHtml() {
 	$('#current_tag_div').html('');
+	addTagSpacer(0);
 	tags.forEach((e, i) => addTagManager(i));
-}
-
-function switchTags(id1, id2) {
-	tags = switchElements(tags, id1, id2);
-	buildTagHtml();
 }
 
 function pushTag(srcId, destId) {
@@ -43,65 +41,43 @@ function pushTag(srcId, destId) {
 	buildTagHtml();
 }
 
+// --- Drag and drop
+
 function handleDragStartTag(e) {
 	dragSrcElTag = this;
 	handleDragStart(this, e);
 }
 
-function handleDragEnterTag(e) {
-	const srcID = parseInt(dragSrcElTag.id.slice(8));
-	const thisId = parseInt(this.id.slice(14));
-
-	this.classList.add('over');
-	tagCounter[thisId]++;
-	if (srcID !== thisId) $(`#tag_div_spacer_${ thisId }`).show();
+function handleDragSpacerEnterTag(e) {
+	const srcID = parseInt(dragSrcElTag.id.slice(8), 10);
+	const thisID = parseInt(this.id.slice(11), 10);
+	
+	if (srcID !== thisID && srcID + 1 !== thisID) this.classList.add('over');
 }
 
-function handleDragLeaveTag(e) {
-	const thisId = parseInt(this.id.slice(14));
-
-	tagCounter[thisId]--;
-	if (tagCounter[thisId] === 0) {
-		this.classList.remove('over');
-		$(`#tag_div_spacer_${ thisId }`).hide();
-	}
-}
-
-function handleDropTag(e) {
-	const destId = parseInt(this.id.slice(8));
-	const srcId = parseInt(dragSrcElTag.id.slice(8));
-
-	if (e.stopPropagation) e.stopPropagation();
-	this.parentElement.classList.remove('over');
-	tagCounter[destId] = 0;
-	if (dragSrcElTag !== this) switchTags(srcId, destId);
-	return false;
+function handleDragSpacerLeaveTag(e) {
+	this.classList.remove('over');
 }
 
 function handleSpacerDropTag(e) {
-	const srcId = parseInt(dragSrcElTag.id.slice(8));
-	const destId = parseInt(this.id.slice(15));
-
 	if (e.stopPropagation) e.stopPropagation();
 	this.parentElement.classList.remove('over');
-	tagCounter[destId] = 0;
-	pushTag(srcId, destId);
-	$('.tag_div_spacer').hide();
+	pushTag(parseInt(dragSrcElTag.id.slice(8), 10), parseInt(this.id.slice(11), 10));
 	return false;
 }
 
 function setupDragListenersTag(id) {
-	const parent = $(`#tag_outer_div_${ id }`)[0];
-	const spacer = parent.children[0];
-	const file = parent.children[1];
+	const dest = $(`#tag_div_${ id }`)[0];
+	dest.addEventListener('dragend', handleDragEnd, false);
+	dest.addEventListener('dragstart', handleDragStartTag, false);
+}
 
-	parent.addEventListener('dragenter', handleDragEnterTag, false);
-	parent.addEventListener('dragover', handleDragOver, false);
-	parent.addEventListener('dragleave', handleDragLeaveTag, false);
-	file.addEventListener('dragend', handleDragEnd, false);
-
-	file.addEventListener('dragstart', handleDragStartTag, false);
-	file.addEventListener('drop', handleDropTag, false);
-
+function tagSpacerListeners(id) {
+	const spacer = $(`#tag_spacer_${ id }`)[0];
+	spacer.addEventListener('dragenter', handleDragSpacerEnterTag, false);
+	spacer.addEventListener('dragover', handleDragOver, false);
+	spacer.addEventListener('dragleave', handleDragSpacerLeaveTag, false);
 	spacer.addEventListener('drop', handleSpacerDropTag, false);
 }
+
+buildTagHtml();

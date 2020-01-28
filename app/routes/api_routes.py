@@ -14,10 +14,10 @@ api = Api(app, decorators=[csrf.exempt])
 
 # region parser
 bmeParser = reqparse.RequestParser()
-bmeParser.add_argument('time', type=str, required=True)
-bmeParser.add_argument('temperature', type=float, required=True)
-bmeParser.add_argument('humidity', type=float, required=True)
-bmeParser.add_argument('pressure', type=float, required=True)
+bmeParser.add_argument('time', required=True)
+bmeParser.add_argument('temperature', required=True)
+bmeParser.add_argument('humidity', required=True)
+bmeParser.add_argument('pressure', required=True)
 #endregion
 
 @api.resource('/api/raspi/bme')

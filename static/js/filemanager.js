@@ -1,7 +1,6 @@
 /* eslint-disable no-undef, no-unused-vars */
 
 let files = [];
-const fileCounter = [];
 let dragSrcElFile;
 
 function addFile() {
@@ -15,27 +14,26 @@ function removeFile(id) {
 	buildFileHtml();
 }
 
+function addFileSpacer(id) {
+	$('#current_file_div').append(`<div id='file_spacer_${ id }' class='file_spacer' style='width: 100%; height: 10px;'></div>`);
+	fileSpacerListeners(id);
+}
+
 function addFileManager(id) {
 	$('#current_file_div').append(`
-		${ addElement('file', id) }
-		ID: ${ id+1 }: Name: ${ files[id].name }: Type: ${ files[id].type }
+		${ addElement('file', id) }ID: ${ id+1 }: Name: ${ files[id].name }: Type: ${ files[id].type }</p>
 		<a onclick="removeFile(${ id })" style="cursor: pointer;">Delete</a>
 		<a onclick="filePopup(${ id })" style="cursor: pointer;">Change Postiton</a>
-	</p></div></div>
+	</div>
 	`);
-	$(`#file_div_spacer_${ id }`).hide();
-	fileCounter[id]=0;
+	addFileSpacer(id+1);
 	setupDragListenersFile(id);
 }
 
 function buildFileHtml() {
 	$('#current_file_div').html('<b>Bilder</b>');
+	addFileSpacer(0);
 	files.forEach((e, i) => addFileManager(i));
-}
-
-function switchFiles(id1, id2) {
-	files = switchElements(files, id1, id2);
-	buildFileHtml();
 }
 
 function pushFile(srcId, destId) {
@@ -43,65 +41,43 @@ function pushFile(srcId, destId) {
 	buildFileHtml();
 }
 
+// --- Drag and drop
+
 function handleDragStartFile(e) {
-	dragSrcEl = this;
+	dragSrcElFile = this;
 	handleDragStart(this, e);
 }
 
-function handleDragEnter(e) {
-	const srcID = parseInt(dragSrcEl.id.slice(9), 10);
-	const thisId = parseInt(this.id.slice(15), 10);
+function handleDragSpacerEnterFile(e) {
+	const srcID = parseInt(dragSrcElFile.id.slice(9), 10);
+	const thisID = parseInt(this.id.slice(12), 10);
     
-	this.classList.add('over');
-	fileCounter[thisId]++;
-	if (srcID !== thisId) $(`#file_div_spacer_${ thisId }`).show();
+	if (srcID !== thisID && srcID + 1 !== thisID) this.classList.add('over');
 }
 
-function handleDragLeave(e) {
-	const thisId = this.id.slice(15);
-
-	fileCounter[thisId]--;
-	if (fileCounter[thisId] === 0) {
-		this.classList.remove('over');
-		$(`#file_div_spacer_${ thisId }`).hide();
-	}
+function handleDragSpacerLeaveFile(e) {
+	this.classList.remove('over');
 }
 
-function handleDrop(e) {
-	const destId = parseInt(this.id.slice(9), 10);
-	const srcId = parseInt(dragSrcEl.id.slice(9), 10);
-
+function handleSpacerDropFile(e) {
 	if (e.stopPropagation) e.stopPropagation();
 	this.parentElement.classList.remove('over');
-	fileCounter[destId] = 0;
-	if (dragSrcEl !== this) switchFiles(srcId, destId);
-	return false;
-}
-
-function handleSpacerDrop(e) {
-	const srcId = parseInt(dragSrcEl.id.slice(9), 10);
-	const destId = parseInt(this.id.slice(16), 10);
-
-	if (e.stopPropagation) e.stopPropagation();
-	this.parentElement.classList.remove('over');
-	fileCounter[destId] = 0;
-	pushFile(srcId, destId);
-	$('.file_div_spacer').hide();
+	pushFile(parseInt(dragSrcElFile.id.slice(9), 10), parseInt(this.id.slice(12), 10));
 	return false;
 }
 
 function setupDragListenersFile(id) {
-	const parent = $(`#file_outer_div_${ id }`)[0];
-	const spacer = parent.children[0];
-	const file = parent.children[1];
-
-	parent.addEventListener('dragenter', handleDragEnter, false);
-	parent.addEventListener('dragover', handleDragOver, false);
-	parent.addEventListener('dragleave', handleDragLeave, false);
-	file.addEventListener('dragend', handleDragEnd, false);
-
-	file.addEventListener('dragstart', handleDragStartFile, false);
-	file.addEventListener('drop', handleDrop, false);
-
-	spacer.addEventListener('drop', handleSpacerDrop, false);
+	const dest = $(`#file_div_${ id }`)[0];
+	dest.addEventListener('dragend', handleDragEnd, false);
+	dest.addEventListener('dragstart', handleDragStartFile, false);
 }
+
+function fileSpacerListeners(id) {
+	const spacer = $(`#file_spacer_${ id }`)[0];
+	spacer.addEventListener('dragenter', handleDragSpacerEnterFile, false);
+	spacer.addEventListener('dragover', handleDragOver, false);
+	spacer.addEventListener('dragleave', handleDragSpacerLeaveFile, false);
+	spacer.addEventListener('drop', handleSpacerDropFile, false);
+}
+
+buildFileHtml();

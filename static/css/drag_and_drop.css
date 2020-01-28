@@ -8,10 +8,10 @@
     -webkit-user-drag: element;
 }
 
-.file_outer_div.over {
-  border: 2px dashed #000;
+.file_spacer.over {
+  background-color: #2E6E89;
 }
 
-.tag_outer_div.over {
-  border: 2px dashed #000;
+.tag_spacer.over {
+  background-color: #2E6E89;
 }

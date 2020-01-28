@@ -34,10 +34,10 @@ if __name__ == "__main__":
         # db.session.delete(User.query.get_or_404(1))
         # db.session.commit()
 
-        # to_delete = BME.query.delete()
-        # db.session.commit()
-        # to_delete = MPU.query.delete()
-        # db.session.commit()
+        to_delete = BME.query.delete()
+        db.session.commit()
+        to_delete = MPU.query.delete()
+        db.session.commit()
 
         User.query.get_or_404(1).admin_acc = True
         db.session.commit()

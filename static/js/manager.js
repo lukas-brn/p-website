@@ -1,13 +1,8 @@
 /* eslint-disable no-param-reassign, no-unused-vars */
 
 function addElement(type, id) {
-	return `<div id="${ type }_outer_div_${ id }" class="${ type }_outer_div">
-                <div id="${ type }_div_spacer_${ id }" class="${ type }_div_spacer">
-                    <p>Drop here</p>  
-                </div>
-
-                <div id="${ type }_div_${ id }" class="${ type }_div" draggable="true">
-                    <p id="${ type }_p_${ id }" class="${ type }_p">`
+	return `<div id="${ type }_div_${ id }" class="${ type }_div" draggable="true">
+				<p id="${ type }_p_${ id }" class="${ type }_p">`
 }
 
 function switchElements(input, id1, id2) {
@@ -37,6 +32,5 @@ function handleDragOver(e) {
 }
 
 function handleDragEnd(e) {
-	this.classList.remove('over');
 	this.style.opacity = 1;
 }

@@ -12,6 +12,7 @@ def max_post_id():
 
 def parse_body(input, id):
     style_conv = re.sub( r'\r\n', '<br/>', input )
+    style_conv = re.sub( r'\n', '<br/>', style_conv )
     style_conv = re.sub( r"\[bold]", '<span class="fat_span">', style_conv )
     style_conv = re.sub( r"\[italic]", '<span class="italic_span">', style_conv )
     style_conv = re.sub( r"\[underline]", '<span class="underlined_span">', style_conv )
@@ -223,9 +224,9 @@ def get_comments(id):
                 user = "[deleted]"
             return jsonify({"comment": True, "id": comment.id, "posted_by": user, "author_id": comment.posted_by, "body": comment.body, "date_created": comment.time_created.strftime("%d.%m.%Y"), "day": comment.time_created.day, "month": comment.time_created.month, "year": comment.time_created.year})
         except:
-            return jsonify({"comment": False})
+            return jsonify({"comment": False, "error": 'comment not found'})
     except:
-        return jsonify({"comment": False})
+        return jsonify({"comment": False, "error": 'post not found'})
 
 @app.route('/blog/delete_comment/<int:id>', methods=['POST'])
 @login_required
