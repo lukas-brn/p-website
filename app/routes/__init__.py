@@ -33,6 +33,10 @@ def index(msg=''):
 def contact():
     return render_template('contact.html', title="Kontakt")
 
+@app.route("/impressum")
+def impressum():
+    return render_template('impressum.html', title='Impressum')
+
 from app.routes.admin_pages import *
 from app.routes.blog_pages import *
 from app.routes.input_registration import *
