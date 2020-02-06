@@ -28,6 +28,9 @@
 			});
 		</script>
 		<script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+		<script defer src="{{ url_for('static', filename='js/popups.js') }}"></script>
+		
+		
 		<script>let title = "{{ title }}";</script>
 		
 		{% block head %}  {% endblock %}
@@ -37,6 +40,13 @@
 	<body>
 	
 		<div id="container">
+		
+			<div id="popup" style="display: none;">
+				<div class="inner">
+					<div id="popup_text"></div>
+					<button type="submit" onclick="closePopup()">Schließen</button>
+				</div>
+			</div>
 		
 			<nav id="nav" bg>
 					
@@ -67,13 +77,6 @@
 				<h1 id='title'>{{ title }}</h1>
 			
 				{% block content %}  {% endblock %}
-				
-				<div id="popup_wrapper" style="display: none; position: absolute; top: 0; left: 0; z-index: 1000; width: 100vw; height: 100vh; background: rgba(50, 50, 50, 0.8); justify-content: center;">
-					<div id="popup_inner" style="height: 400px;">
-						<div id="popup_main"></div>
-						<button type="submit" onclick="closePopup()">Submit</button>
-					</div>
-				</div>
 
 			</section>
 			
@@ -94,30 +97,7 @@
 				</p>
 				
 			</footer>
-
-			<script>
-				let destElem = $("#popup_main")
-				let destWrapper = $("#popup_wrapper")
-		
-				function openPopup(text, postUrl, postData) {
-					if (postUrl != '')
-						$.post(postUrl, postData).done(response => {
-							if (response.text!=="") 
-								if (response.redirect) window.location.href = response.text;
-								else {
-									destElem.html(response.text);
-									destWrapper.css("display", "flex")
-								}
-						}).fail(() => openPopup('Verbindung zum Server fehlgeschlagen!', '', ''));
-					else {
-						destElem.html(text);
-						destWrapper.css("display", "flex")
-					}
-				}
-		
-				closePopup = () => destWrapper.css({"display": "none"});
-			</script>
-
+			
 			{% block script_footer %}  {% endblock %}
 		
 		</div>

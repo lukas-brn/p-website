@@ -1,5 +1,89 @@
 <link href="{{ url_for('static', filename='css/create_post.css') }}" rel="stylesheet">
 
+<script>
+
+function pasteMedia(mediaSpan)
+{
+	var mediaItem = mediaSpan.parentNode;
+	var media = null;
+	for (var i = 0; i < mediaItem.childNodes.length; i++) {
+		if (mediaItem.childNodes[i].className == "media") {
+			media = mediaItem.childNodes[i];
+			break;
+		}        
+	}
+	pasteHtmlAtCaret(media.innerHTML);
+}
+
+function pasteHtmlAtCaret(html) {
+    var sel, range;
+    if (window.getSelection) {
+        // IE9 and non-IE
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.deleteContents();
+
+            // Range.createContextualFragment() would be useful here but is
+            // only relatively recently standardized and is not supported in
+            // some browsers (IE9, for one)
+            var el = document.createElement("div");
+            el.innerHTML = html;
+            var frag = document.createDocumentFragment(), node, lastNode;
+            while ( (node = el.firstChild) ) {
+                lastNode = frag.appendChild(node);
+            }
+            range.insertNode(frag);
+
+            // Preserve the selection
+            if (lastNode) {
+                range = range.cloneRange();
+                range.setStartAfter(lastNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+    } else if (document.selection && document.selection.type != "Control") {
+        // IE < 9
+        document.selection.createRange().pasteHTML(html);
+    }
+}
+
+</script>
+
+<form id="postForm">
+
+	<input class="title" type="text" placeholder="Titel" />
+	
+	<div id="contentDiv" placeholder="Inhalt" contenteditable="true"></div>
+	
+	<div id="mediaDiv">
+		<div class="head"><p>Medien</p> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="black"/></svg></div>
+		
+		<div class="mediaItem">
+			<div class="media"><img class="acceptedMedia" src="{{ url_for('static', filename='img/tmp.jpg') }}" /></div>
+			<span class="infoText">tmp.jpg (64KB)</span>
+			<span class="actionText" onclick='pasteMedia(this)'>Einfügen</span>
+			<span class="actionText">Löschen</span>
+		</div>
+		
+		<div class="mediaItem">
+			<span class="infoText">Lade Medien hoch und füge sie dann in deinen Beitrag.</span>
+		</div>
+		
+	</div>
+
+</form>
+
+
+<!--
+
+************
+OLD STUFF
+
+
+
 <hr />
 
 <form action="javascript:confirm()" method="post" enctype=multipart/form-data id="blog_post_form">
@@ -83,4 +167,4 @@
         destFileInput.val('');
         destFileWrapper.css({"display": "none"});
     }
-</script>
+</script>-->

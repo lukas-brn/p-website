@@ -1,4 +1,4 @@
-
+/*
 form .flex_wrapper {
 	display: flex;
 }
@@ -33,4 +33,98 @@ form input[type="submit"]
 
 #tagForm input[type="submit"] {
 	margin-left: 12px;
+}*/
+
+@supports (display: grid)
+{
+	#postForm {
+		display: grid;
+		grid-gap: 16px;
+		grid-template-columns: 1fr 128px;
+		margin-top: 8px;
+	}
+	
+	#postForm > * {
+		margin: 0;
+	}
+	
+	#postForm .title {
+		grid-column: 1 / 3;
+	}
+	
+	@media (max-width: 500px)
+	{
+		#postForm {
+			display: block;
+		}
+		
+		#postForm > * {
+			margin: 0 0 16px 0;
+		}
+	}
 }
+
+@supports not (display: grid)
+{
+	#postForm > * {
+		margin: 0 0 16px 0;
+	}
+}
+
+
+#contentDiv {
+	resize: vertical;
+	padding: 12px;
+	border-radius: 4px;
+	border: 1px solid #CCCCCC;
+	box-sizing: border-box;
+	min-height: 200px;
+}
+
+#mediaDiv .head {
+	display: flex;
+	justify-content: space-between;
+}
+
+#mediaDiv .head p {
+	line-height: 24px;
+}
+
+#mediaDiv .head svg {
+	cursor: pointer;
+}
+
+#mediaDiv .mediaItem {
+	margin-top: 8px;
+	border-top: 1px solid #CCCCCC;
+	padding-top: 8px;
+}
+
+#mediaDiv .mediaItem .infoText {
+	color: #666666;
+	font-size: 14px;
+	display: block;
+}
+
+#mediaDiv .mediaItem .actionText {
+	color: #333333;
+	font-size: 14px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
