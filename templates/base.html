@@ -28,8 +28,39 @@
 			});
 		</script>
 		<script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
-		<script defer src="{{ url_for('static', filename='js/popups.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/popups.js') }}"></script>
 		
+		<script defer>
+		
+		function getCookie(name) {
+			var dc = document.cookie;
+			var prefix = name + "=";
+			var begin = dc.indexOf("; " + prefix);
+			if (begin == -1) {
+				begin = dc.indexOf(prefix);
+				if (begin != 0) return null;
+			}
+			else
+			{
+				begin += 2;
+				var end = document.cookie.indexOf(";", begin);
+				if (end == -1) {
+				end = dc.length;
+				}
+			}
+			// because unescape has been deprecated, replaced with decodeURI
+			//return unescape(dc.substring(begin + prefix.length, end));
+			return decodeURI(dc.substring(begin + prefix.length, end));
+		} 
+		
+		function setCookie(cname, cvalue, exdays) {
+			var d = new Date();
+			d.setTime(d.getTime() + (exdays*24*60*60*1000));
+			var expires = "expires="+ d.toUTCString();
+			document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+		}
+
+		</script>
 		
 		<script>let title = "{{ title }}";</script>
 		
@@ -88,7 +119,7 @@
 					&copy; <script>document.write(new Date().getFullYear());</script> P-Seminar PROJECT JUMBO<br />
 					Designed by Samuel Kroiß<br />
 					Backend by Lukas Brennauer<br />
-					<a href="#">Impressum</a> - <a href="#">Datenschutz</a><br />
+					<a href="{{ url_for('impressum') }}">Impressum</a> - <a href="{{ url_for('impressum') }}#datenschutz">Datenschutz</a><br />
 					{% if current_user.is_authenticated %}
 					<a href="{{ url_for('user_page') }}">Account</a> - <a href="{{ url_for('logout') }}">Logout</a>
 					{% else %}
@@ -104,3 +135,13 @@
 	</body>
 	
 </html>
+
+<script>
+
+if(getCookie("acceptCookies") == null)
+{
+	openPopup("Wir verwenden Cookies. Mit der Nutzung der Website erklärst du sich damit einverstanden...","","");
+	setCookie("acceptCookies", "true", 100);
+}
+		
+</script>

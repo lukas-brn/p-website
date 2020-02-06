@@ -119,11 +119,3 @@
 	width: 40px;
 }
 
-#begin {
-	opacity: 0;
-	width: 0;
-	height: 0;
-	z-index: -10;
-	margin-top: -96px;
-	margin-bottom: 96px;
-}
