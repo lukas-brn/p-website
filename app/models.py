@@ -78,3 +78,9 @@ class MPU(db.Model):
 
     rot_x = db.Column(db.Integer)
     rot_y = db.Column(db.Integer)
+
+class NEO(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime)
+
+    data = db.Column(db.String)

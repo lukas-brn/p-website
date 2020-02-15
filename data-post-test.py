@@ -30,6 +30,18 @@ def post_mpu():
     r = requests.put(url, params=data, auth=('Lukas Brennauer', 'a'))
     print('PUT: STATUS:', r.status_code ,'\nURL:', r.url, '\n', r.json())
 
+def post_neo():
+    time = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
+    url = 'http://127.0.0.1:5000/api/raspi/neo'
+    data = {
+        'time': time,
+        'data': "1"
+    }
+    r = requests.put(url, params=data, auth=('Lukas Brennauer', 'a'))
+    print('PUT: STATUS:', r.status_code, '\nURL:', r.url, '\n', r.json())
+
+
 if __name__ == '__main__':
     post_bme()
     post_mpu()
+    post_neo()
