@@ -40,7 +40,7 @@ form input[type="submit"]
 	#postForm {
 		display: grid;
 		grid-gap: 16px;
-		grid-template-columns: 1fr 128px;
+		grid-template-columns: 1fr 150px;
 		margin-top: 8px;
 	}
 	
@@ -111,6 +111,15 @@ form input[type="submit"]
 	font-size: 14px;
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+#submitDiv {
+	position: relative;
+}
+
+#submitDiv input {
+	position: absolute;
+	bottom: 0;
 }
 
 
