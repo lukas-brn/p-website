@@ -52,13 +52,18 @@ function pasteHtmlAtCaret(html) {
 
 </script>
 
-<form id="postForm">
+<form action="javascript:confirm()" method="post" enctype=multipart/form-data id="blog_post_form">
 
-	<input class="title" type="text" placeholder="Titel" />
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 	
-	<div id="contentDiv" placeholder="Inhalt" contenteditable="true"></div>
+
+	<input type="text" id="caption_input" value='{% if post %}{{ post.caption }}{% endif %}' placeholder="Titel" class="title">
+	
+	
+	<textarea id="body_input" placeholder="Inhalt">{% if post %}{{ post.body }}{% endif %}</textarea> 
 	
 	<div id="mediaDiv">
+	
 		<div class="head"><p>Medien</p> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="black"/></svg></div>
 		
 		<div class="mediaItem">
@@ -73,6 +78,7 @@ function pasteHtmlAtCaret(html) {
 		</div>
 		
 	</div>
+	
 	
 	<div id="tagDiv">
 		<span>Tags (mit einem Komma trennen)</span>
